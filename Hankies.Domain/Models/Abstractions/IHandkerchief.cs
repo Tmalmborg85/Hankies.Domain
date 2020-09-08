@@ -24,13 +24,50 @@ namespace Hankies.Domain.Models.Abstractions
         /// A one to four word title for this handkerchief
         /// </summary>
         public string Title { get; }
+
+        /// <summary>
+        /// An breif overview of what this Handkerchief is all about.
+        /// </summary>
         public string Overview { get; }
+
+        /// <summary>
+        /// What this handkerchief is currently being flagged as
+        /// </summary>
         public IFlaggingAs Flagging { get; }
 
+        /// <summary>
+        /// What pockets this handkercheif is currently being displayed/flagged
+        /// in 
+        /// </summary>
         public IEnumerable<PocketTypes> InPockets { get; }
 
+        /// <summary>
+        /// Display this handkerchief in a pocket if its not already being
+        /// displayed. 
+        /// </summary>
+        /// <param name="pocket">pocket to flag in</param>
         void FlagInPockect(PocketTypes pocket);
+
+        /// <summary>
+        /// Cease to display this handkerchief in a pocket if its being
+        /// displayed.
+        /// </summary>
+        /// <param name="pocket">pocket to flag in</param>
         void StopFlaggingInPockect(PocketTypes pocket);
+
+        /// <summary>
+        /// Update this handkerchief with a new Title
+        /// </summary>
+        /// <param name="newTitle"></param>
+        /// <returns></returns>
+        IStatus<IHandkerchief> UpdateTitle(string newTitle);
+
+        /// <summary>
+        /// Update this handkerchief with a new overview
+        /// </summary>
+        /// <param name="newOverview"></param>
+        /// <returns></returns>
+        IStatus<IHandkerchief> UpdateOverview(string newOverview);
     }
 
 }
