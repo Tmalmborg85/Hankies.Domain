@@ -2,7 +2,9 @@
 
 namespace Hankies.Domain.Models.Abstractions
 {
-
+    /// <summary>
+    /// An handle that others refer to you as.
+    /// </summary>
     public interface IHandle : IValueObject, IHandleValidator
     {
         /// <summary>
@@ -10,6 +12,6 @@ namespace Hankies.Domain.Models.Abstractions
         /// </summary>
         /// <example>
         /// Daddy, Pig, Gristle McThornbody</example>
-        public string Handle { get; }
+        public string HandleText { get; }
     }
 }

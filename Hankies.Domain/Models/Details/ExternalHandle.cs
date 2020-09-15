@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using Hankies.Domain.Models.Abstractions;
 
 namespace Hankies.Domain.Models.Details
 {
-    public class ExternalHandle : IExternalHandle
+    /// <summary>
+    /// A handle that leads to a trusted external profile.
+    /// </summary>
+    /// <example>
+    /// Facebook, twitter</example>
+    public class ExternalHandle : Handle, IExternalHandle
     {
-        // A private contructor for ORM mappers like EF Core and serializers
-        private ExternalHandle() { }
-
         public ExternalHandle(string handle, Uri link,
-            TrustedPlatforms platform)
+            TrustedPlatforms platform) : base(handle)
         {
             var validHandleStatus = ValidateHandle(handle);
             if (!validHandleStatus.IsSuccess())
@@ -20,47 +21,18 @@ namespace Hankies.Domain.Models.Details
                     , validHandleStatus.ErrorMessage);
             }
 
-            Handle = handle;
             Link = link;
             Platform = platform;
         }
 
-        public string Handle { get; private set; }
-
+        /// <summary>
+        /// Deep link to external user account
+        /// </summary>
         public Uri Link { get; private set; }
 
+        /// <summary>
+        /// The trusted platform that the account belonegs to. 
+        /// </summary>
         public TrustedPlatforms Platform { get; private set; }
-
-        public int HandleMinLength => 6;
-
-        public int HandleMaxLength => 50;
-
-        public string HandleAllowedCharacters => "^(a-zA-Z0-9_)";
-
-        public IStatus<string> ValidateHandle(string handle)
-        {
-            var validationStatus = new Status<string>();
-
-            // Check for reserved words.
-            Regex reservedWordFilter = new Regex(ReserverdWords.Pattern());
-            if (reservedWordFilter.IsMatch(handle))
-            {
-                validationStatus.AddError(handle + " matches a reserved word");
-            }
-
-            if (handle.Length < HandleMinLength)
-                validationStatus.AddError("Handle is to short.");
-
-            if (handle.Length > HandleMaxLength)
-                validationStatus.AddError("Handle to long.");
-
-            Regex allowedCharactersFilter = new Regex(HandleAllowedCharacters);
-            if (!allowedCharactersFilter.IsMatch(handle))
-            {
-                validationStatus.AddError("Handle contains invalid characters");
-            }
-
-            return validationStatus;
-        }
     }
 }

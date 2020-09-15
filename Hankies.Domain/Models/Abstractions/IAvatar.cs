@@ -1,27 +1,35 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using Hankies.Domain.Models.Details;
 
 namespace Hankies.Domain.Models.Abstractions
 {
     /// <summary>
     /// A persons expressive identity at a specific moment in time
     /// </summary>
-    /// <example>
+    /// <remarks>
     /// Most other objects are owned by an IAvatar, reflecting their centricity
     /// to the Hankies domain. In the real world an IAvatar would be a person’s
     /// self identity at the moment when they cruise an area. This is done with
     /// handkerchiefs in their pockets which indicate attributes about themselfs
     /// and what they what they are looking for. Handkerchiefs can indicate
     /// anything from gender identity to kinks, sex rolls, and occupation.
-    /// </example>
-    public interface IAvatar
+    ///
+    /// Avatars are the same if they contain the same handkerchief makeup,
+    /// handle, photos, ect. Start time, locations, ect can be different.  
+    /// </remarks>
+    public interface IAvatar : IEntity, IEqualityComparer<IAvatar>
     {
+        #region Properties
+
         /// <summary>
         /// The customer who is responsible for this avatar.
         /// </summary>
         public ICustomer Owner { get; }
+
+        /// <summary>
+        /// Gets an owner's chat ID
+        /// </summary>
+        public Guid ChatId => Owner.ChatID;
 
         /// <summary>
         /// A collection of session specific settings. Determines if cruise is
@@ -80,6 +88,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// </remarks>
         IEnumerable<IHandkerchief> Handkerchiefs { get; }
 
+        
         /// <summary>
         /// When the current session expires. Can be extended.
         /// </summary>
@@ -123,7 +132,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// <returns></returns>
         bool CanTheySeeMe(IAvatar they);
 
-
+        #endregion
         #region Actions
 
         /// <summary>

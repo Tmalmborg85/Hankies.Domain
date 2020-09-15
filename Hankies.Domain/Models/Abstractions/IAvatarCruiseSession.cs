@@ -11,7 +11,7 @@ namespace Hankies.Domain.Models.Abstractions
     /// this can be an enimic model with no or minimalactions. Most if not all
     /// actions should be done by the owning avatar. 
     /// </remarks>
-    public interface IAvatarCruiseSession : IValueObject
+    public interface IAvatarCruiseSession : IEntity
     {
         #region Properties
         /// <summary>
@@ -31,6 +31,11 @@ namespace Hankies.Domain.Models.Abstractions
         /// Collection of time extensions. can be empty. 
         /// </summary>
         IEnumerable<ITimeExtension> TimeExtensions { get; }
+
+        /// <summary>
+        /// Collection of locations cruise. 
+        /// </summary>
+        IEnumerable<ICruiseCoordinates> CruisedLocations { get; }
 
         /// <summary>
         /// Avatars that meet certain cruisable critira.
