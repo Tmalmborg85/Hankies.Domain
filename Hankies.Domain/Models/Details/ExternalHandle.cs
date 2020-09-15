@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using Hankies.Domain.Models.Abstractions;
-using Hankies.Domain.Models.Abstractions.Validators;
 
 namespace Hankies.Domain.Models.Details
 {
-    public class ExternalHandle : IExternalHandle, IHandleValidator
+    public class ExternalHandle : IExternalHandle
     {
         // A private contructor for ORM mappers like EF Core and serializers
         private ExternalHandle() { }

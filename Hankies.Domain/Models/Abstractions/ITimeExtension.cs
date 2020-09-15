@@ -1,6 +1,10 @@
 ﻿namespace Hankies.Domain.Models.Abstractions
 {
-    public interface ITimeExtension
+    /// <summary>
+    /// A purchasable extension of time. 
+    /// </summary>
+    public interface ITimeExtension : ITokenProduct, IValueObject
     {
+        public int Minutes { get; }
     }
 }

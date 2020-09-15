@@ -1,7 +1,9 @@
-﻿namespace Hankies.Domain.Models.Abstractions
+﻿using Hankies.Domain.Models.Abstractions.Validators;
+
+namespace Hankies.Domain.Models.Abstractions
 {
 
-    public interface IHandle : IValueObject
+    public interface IHandle : IValueObject, IHandleValidator
     {
         /// <summary>
         /// A human readable string indicating what others should call you.
@@ -9,13 +11,5 @@
         /// <example>
         /// Daddy, Pig, Gristle McThornbody</example>
         public string Handle { get; }
-
-        /// <summary>
-        /// Sets <c>Handle</c> to a value that follows Hankie's handle rules. 
-        /// </summary>
-        /// <param name="handle"></param>
-        /// <returns>A status indicating if setting the handle worked.
-        /// </returns>
-        IStatus<string> SetHandleTo(string handle);
     }
 }

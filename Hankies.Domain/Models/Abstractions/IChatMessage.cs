@@ -23,11 +23,6 @@ namespace Hankies.Domain.Models.Abstractions
         public Guid SenderChatID { get; }
 
         /// <summary>
-        /// Conversation ID this messahe belongs to
-        /// </summary>
-        public Guid ConversationID { get; }
-
-        /// <summary>
         /// The text of this message. 
         /// </summary>
         public string Text { get; }
@@ -35,11 +30,12 @@ namespace Hankies.Domain.Models.Abstractions
         /// <summary>
         /// Handles seting the message to sent after it has been sent.
         /// </summary>
-        void Sent();
+        void Sent(DateTimeOffset sentAt);
 
         /// <summary>
-        /// Sets the 
+        /// Handles seting this message to read after it has been read by a
+        /// recipient.
         /// </summary>
-        void Read();
+        void Read(DateTimeOffset readAt);
     }
 }
