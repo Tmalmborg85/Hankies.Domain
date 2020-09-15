@@ -2,6 +2,10 @@
 
 namespace Hankies.Domain.Models.Abstractions
 {
+    /// <summary>
+    /// An entity that customers can vote on. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IVoteable<T>
     {
         /// <summary>

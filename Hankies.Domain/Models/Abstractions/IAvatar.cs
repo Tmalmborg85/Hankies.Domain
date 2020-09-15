@@ -94,8 +94,8 @@ namespace Hankies.Domain.Models.Abstractions
         /// Avatars i can interact with in more detail.  
         /// </summary>
         /// <remarks>
-        /// Avatars that I have cruise and have cruised me back can be
-        /// interacted with further.</remarks>
+        /// Avatars that I have cruised and have cruised me back and have an
+        /// active session can be interacted with further.</remarks>
         /// <returns>A collection of interactable avatars.</returns>
         public IEnumerable<IAvatar> InteractableAvatars();
 
@@ -156,7 +156,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// triggers an avatars CruisedBy action.
         /// </remarks>
         /// <param name="cruisee"></param>
-        void CruiseAvatar(IAvatar cruisee);
+        void CruiseAnAvatar(IAvatar cruisee);
 
         /// <summary>
         /// Be cruised by an avatar. 
@@ -165,7 +165,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// Adds a cruise to the cruised by collection in response to an
         /// event</remarks>
         /// <param name="cruisee"></param>
-        void CruisedBy(IAvatar cruisee);
+        void WasCruisedBy(IAvatar cruisee);
 
         /// <summary>
         /// Look for avatars that match enouch attributes to be cruiseable. 
@@ -207,6 +207,15 @@ namespace Hankies.Domain.Models.Abstractions
         /// <returns></returns>
         IStatus<IAvatar> ReDonHoodFor(IAvatar them);
 
+        /// <summary>
+        /// Sends a message to a customer.
+        /// </summary>
+        /// <remarks>
+        /// Sends a message to a customer via there avatar. creates a new
+        /// conversation if none exsists.
+        /// </remarks>
+        /// <param name="message"></param>
+        IStatus<IAvatar> SendMessage(IChatMessage message);
         #endregion
     }
 }

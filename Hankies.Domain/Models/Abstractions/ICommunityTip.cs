@@ -14,12 +14,14 @@ namespace Hankies.Domain.Models.Abstractions
     /// example. These differences tend to be washed out as user bases grow and
     /// homonegeization takes over. I belive for Hankies to truly thrive these
     /// differences need to be allowed to exist </remarks>
-    public interface ICommunityTip : IVoteable<ICommunityTip>
+    public interface ICommunityTip : IVoteable<ICommunityTip>, IReportableContent
     {
+        #region Properties
+
         /// <summary>
         /// Display name and Uri of who wrote the tip
         /// </summary>
-        public IExternalHandle Handle { get; }
+        public IExternalHandle Attribution { get; }
 
         /// <summary>
         /// The customer who owns this tip
@@ -31,11 +33,9 @@ namespace Hankies.Domain.Models.Abstractions
         /// </summary>
         public ICruiseCoordinates Location { get; }
 
-        /// <summary>
-        /// Complaintes about this tip. 
-        /// </summary>
-        public IEnumerable<ICommunityReport> Reports { get; }
+        #endregion
 
+        #region Actions
 
         /// <summary>
         /// Removes the handle from this tip. 
@@ -70,15 +70,6 @@ namespace Hankies.Domain.Models.Abstractions
         /// <returns>a status indicating if update worked</returns>
         public IStatus<IExternalHandle> ReplaceHandle(IExternalHandle newHandle);
 
-        /// <summary>
-        /// Add a violation report from a distinct customer. 
-        /// </summary>
-        /// <param name="reporter">a distinct customer</param>
-        /// <param name="reason">general reason this was reported</param>
-        /// <param name="message">More detailed message</param>
-        /// <returns></returns>
-        public IStatus<ICommunityReport> Report(ICustomer reporter, ReportReasons reason,
-            string message);
-
+        #endregion
     }
 }

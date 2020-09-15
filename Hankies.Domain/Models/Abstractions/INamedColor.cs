@@ -3,6 +3,9 @@ using Hankies.Domain.Models.Details;
 
 namespace Hankies.Domain.Models.Abstractions
 {
+    /// <summary>
+    /// A hex color with a human friendly name. 
+    /// </summary>
     public interface INamedColor
     {
         /// <summary>

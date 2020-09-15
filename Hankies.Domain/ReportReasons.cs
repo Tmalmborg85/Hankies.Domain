@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Hankies.Domain
 {
-    public enum FlaggedCodes
+    public enum ReportReasons
     {
         Trolling,
         Abusive,

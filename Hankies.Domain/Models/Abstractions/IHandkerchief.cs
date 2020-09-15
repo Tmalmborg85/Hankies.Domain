@@ -5,23 +5,25 @@ namespace Hankies.Domain.Models.Abstractions
 {
     public interface IHandkerchief : ICommunityTips
     {
+        #region Properties
+
         /// <summary>
-        /// What material is this handkerchief made from
+        /// What material is this handkerchief made from.
         /// </summary>
         public MaterialTypes Material { get; }
 
         /// <summary>
-        /// The named color hex value to use as a base color
+        /// The named color hex value to use as a base color.
         /// </summary>
         public INamedColor Color { get; }
 
         /// <summary>
-        /// A pattern, such as red stripe or checker
+        /// A pattern, such as red stripe or checker.
         /// </summary>
         public IPattern Pattern { get; }
 
         /// <summary>
-        /// A one to four word title for this handkerchief
+        /// A one to four word title for this handkerchief.
         /// </summary>
         public string Title { get; }
 
@@ -31,7 +33,7 @@ namespace Hankies.Domain.Models.Abstractions
         public string Overview { get; }
 
         /// <summary>
-        /// What this handkerchief is currently being flagged as
+        /// What this handkerchief is currently being flagged as.
         /// </summary>
         public IFlaggingAs Flagging { get; }
 
@@ -40,6 +42,10 @@ namespace Hankies.Domain.Models.Abstractions
         /// in 
         /// </summary>
         public IEnumerable<PocketTypes> InPockets { get; }
+
+        #endregion
+
+        #region Actions
 
         /// <summary>
         /// Display this handkerchief in a pocket if its not already being
@@ -68,6 +74,8 @@ namespace Hankies.Domain.Models.Abstractions
         /// <param name="newOverview"></param>
         /// <returns></returns>
         IStatus<IHandkerchief> UpdateOverview(string newOverview);
+
+        #endregion
     }
 
 }

@@ -8,6 +8,8 @@ namespace Hankies.Domain.Models.Abstractions
     /// </summary>
     public interface IFlaggingAs : ICommunityTips
     {
+        #region Properties
+
         /// <summary>
         /// What this flagging definition is primarily known as
         /// </summary>
@@ -25,8 +27,12 @@ namespace Hankies.Domain.Models.Abstractions
         /// </summary>
         public string Description { get; }
 
+        #endregion
+
+        #region Actions
+
         /// <summary>
-        /// Add a distinct alternate title
+        /// Add a distinct alternate title.
         /// </summary>
         /// <param name="title">the proposed title to add</param>
         /// <returns>A status with the new title</returns>
@@ -57,6 +63,6 @@ namespace Hankies.Domain.Models.Abstractions
         /// </remarks>
         IStatus<string> UpdateKeyTitle(string oldTitle, string newTitle);
 
-        
+        #endregion
     }
 }

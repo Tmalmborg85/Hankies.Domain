@@ -17,10 +17,10 @@ namespace Hankies.Domain.Models.Abstractions
         /// </summary>
         /// <param name="voteableThing">The thing that can recive this entities
         /// vote</param>
-        public void UpVote(IVoteable voteableThing);
+        public void UpVote(IVoteable<object> voteableThing);
 
         /// <inheritdoc cref="UpVote(IVoteable)"/>
-        public void DownVote(IVoteable votableThing);
+        public void DownVote(IVoteable<object> votableThing);
 
     }
 }

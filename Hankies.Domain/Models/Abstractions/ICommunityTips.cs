@@ -19,7 +19,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// <param name="location">Where this tip is about</param>
         /// <returns></returns>
         IStatus<string> CreateNewTip(string tip, IExternalHandle handle,
-            ICustomer author, ICommunityLocation location);
+            ICustomer author, ICruiseCoordinates location);
 
         /// <summary>
         /// Remove a tip that already is in the tip list. 
