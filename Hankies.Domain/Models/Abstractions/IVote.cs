@@ -14,7 +14,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// <summary>
         /// The distinct customer casting this vote.
         /// </summary>
-        public ICustomer Voter { get; }
+        public IVoter Voter { get; }
 
         /// <summary>
         /// The up/down vote cast

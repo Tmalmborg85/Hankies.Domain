@@ -4,7 +4,7 @@ using Hankies.Domain.Models.Details;
 
 namespace Hankies.Domain.Models.Abstractions
 {
-    public interface ICustomer
+    public interface ICustomer : IVoter
     {
         /// <summary>
         /// All the photos this customer owns.

@@ -4,13 +4,8 @@ namespace Hankies.Domain.Models.Abstractions
     /// <summary>
     /// A human friendly and reputable link to an external user profile.
     /// </summary>
-    public interface IExternalHandle : IValueObject
+    public interface IExternalHandle : IHandle
     {
-        /// <summary>
-        /// Human friendly handle
-        /// </summary>
-        public string Handle { get; }
-
         /// <summary>
         /// Reputable link to an external user profile.
         /// </summary>
