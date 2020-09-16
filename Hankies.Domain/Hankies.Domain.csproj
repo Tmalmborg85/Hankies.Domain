@@ -10,8 +10,7 @@
     <Folder Include="Models\Details\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Models\Abstractions\Validators\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+    <Folder Include="Models\Abstractions\Entities\" />
+    <Folder Include="Models\Details\Entities\" />
   </ItemGroup>
 </Project>
