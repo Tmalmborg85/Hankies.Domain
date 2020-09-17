@@ -13,7 +13,7 @@ namespace Hankies.Domain.Details.DomainEntities
     /// </summary>
     public abstract class DomainEntity : IDomainEntity
     {
-        private DomainEntity()
+        public DomainEntity()
         {
         }
 

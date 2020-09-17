@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Details.DomainEntities;
 using Hankies.Domain.Models.Abstractions;
 
 namespace Hankies.Domain.Abstractions.DomainEntities
@@ -37,8 +38,12 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// A collection of session specific settings. Determines if cruise is
         /// active.  
         /// </summary>
-        IEnumerable<IAvatarCruiseSession> Sessions { get; }
+        public IEnumerable<IAvatarCruiseSession> Sessions { get; }
 
+        /// <summary>
+        /// The last or current cruise session. 
+        /// </summary>
+        public IAvatarCruiseSession LastSession { get; }
         /// <summary>
         /// A human readable string indicating what others should call you.
         /// </summary>
@@ -84,17 +89,34 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <remarks>
         /// Changing this would be a new avatar.
         /// </remarks>
-        IEnumerable<IPhoto> ExposingPhotos { get; }
+        public IEnumerable<IPhoto> ExposingPhotos { get; }
 
         /// <summary>
-        /// An immutable collection of handkerchiefs. 
+        /// An immutable collection of safe for work photos. 
         /// </summary>
         /// <remarks>
         /// Changing this would be a new avatar.
         /// </remarks>
-        IEnumerable<IHandkerchief> Handkerchiefs { get; }
+        public IEnumerable<IPhoto> SafeForWorkPhotos { get; }
 
-        
+        /// <summary>
+        /// An immutable collection of all handkerchiefs. 
+        /// </summary>
+        /// <remarks>
+        /// Changing this would be a new avatar.
+        /// </remarks>
+        public IEnumerable<IHandkerchief> Handkerchiefs { get; }
+
+        /// <summary>
+        /// Only the handkerchiefs in the left pocket
+        /// </summary>
+        public IEnumerable<IHandkerchief> LeftPocket { get; }
+
+        /// <summary>
+        /// Only the handkerchiefs in the right pocket
+        /// </summary>
+        public IEnumerable<IHandkerchief> RightPocket { get; }
+
         /// <summary>
         /// When the current session expires. Can be extended.
         /// </summary>
@@ -124,7 +146,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// them.</remarks>
         /// <param name="them">The avatar I am atempting to see</param>
         /// <returns></returns>
-        bool CanISeeThem(IAvatar them);
+        public bool CanISeeThem(IAvatar them);
 
         /// <summary>
         /// Can another Avatar see me? 
@@ -136,7 +158,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// may be wearing a blindfold. 
         /// </remarks>   
         /// <returns></returns>
-        bool CanTheySeeMe(IAvatar they);
+        public bool CanTheySeeMe(IAvatar they);
 
         #endregion
         #region Actions
@@ -147,21 +169,21 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <param name="coordinates">The starting location of this cruise.</param>
         /// <param name="time">The initial amount of tuime to cruise for</param>
         /// <returns></returns>
-        IStatus<IAvatarCruiseSession> StartNewCruiseSession(ICruiseCoordinates
+        public IStatus<IAvatarCruiseSession> StartNewCruiseSession(ICruiseCoordinates
             coordinates, TimeSpan time);
 
         /// <summary>
         /// Stops the current cruise session. 
         /// </summary>
         /// <returns></returns>
-        void EndCruiseSession();
+        public void EndCruiseSession();
 
         /// <summary>
         /// Extend the current session with a time extension object. 
         /// </summary>
         /// <param name="timeExtension">Typicaly a purchased extension</param>
         /// <returns>A status indicating success or not</returns>
-        IStatus<IAvatarCruiseSession> ExtendCurrentSession(ITimeExtension timeExtension);
+        public IStatus<IAvatarCruiseSession> ExtendCurrentSession(ITimeExtension timeExtension);
 
         /// <summary>
         /// Cruise an avatar.
@@ -171,7 +193,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// triggers an avatars CruisedBy action.
         /// </remarks>
         /// <param name="cruisee"></param>
-        void CruiseAnAvatar(IAvatar cruisee);
+        public void CruiseAnAvatar(IAvatar cruisee);
 
         /// <summary>
         /// Be cruised by an avatar. 
@@ -180,13 +202,13 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// Adds a cruise to the cruised by collection in response to an
         /// event</remarks>
         /// <param name="cruisee"></param>
-        void WasCruisedBy(IAvatar cruisee);
+        public void WasCruisedBy(IAvatar cruisee);
 
         /// <summary>
         /// Look for avatars that match enouch attributes to be cruiseable. 
         /// </summary>
         /// <returns></returns>
-        IStatus<IAvatar> SearchForCruisableAvatars();
+        public IStatus<IAvatar> SearchForCruisableAvatars();
 
         /// <summary>
         /// Take blinfold off for a specific avatar. 
@@ -195,14 +217,14 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// Does not persist over sessions, like consent.</remarks>
         /// <param name="them">Who you are doffing your blindfold for</param>
         /// <returns></returns>
-        IStatus<IAvatar> DoffBlindfoldFor(IAvatar them);
+        public IStatus<IAvatar> DoffBlindfoldFor(IAvatar them);
 
         /// <summary>
         /// Put your blindfold back on for an avatar. if you are waering one. 
         /// </summary>
         /// <param name="them">Who you are re donning your blindfold for</param>
         /// <returns></returns>
-        IStatus<IAvatar> ReDonBlindfoldFor(IAvatar them);
+        public IStatus<IAvatar> ReDonBlindfoldFor(IAvatar them);
 
         /// <summary>
         /// Take your hood off for a specific avatar. 
@@ -211,7 +233,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// Does not persist over sessions, like consent.</remarks>
         /// <param name="them">Who you are doffing your blindfold for</param>
         /// <returns></returns>
-        IStatus<IAvatar> DoffHoodFor(IAvatar them);
+        public IStatus<IAvatar> DoffHoodFor(IAvatar them);
 
         /// <summary>
         /// Put your hood back on if you are waering one. 
@@ -220,7 +242,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// Does not persist over sessions, like consent.</remarks>
         /// <param name="them">Who you are doffing your blindfold for</param>
         /// <returns></returns>
-        IStatus<IAvatar> ReDonHoodFor(IAvatar them);
+        public IStatus<IAvatar> ReDonHoodFor(IAvatar them);
 
         /// <summary>
         /// Sends a message to a customer.
@@ -230,7 +252,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// conversation if none exsists.
         /// </remarks>
         /// <param name="message"></param>
-        IStatus<IAvatar> SendMessage(IChatMessage message);
+        public IStatus<IAvatar> SendMessage(IChatMessage message);
         #endregion
     }
 }
