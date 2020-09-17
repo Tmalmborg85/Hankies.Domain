@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// An distinct entity that can up or down vote once. 

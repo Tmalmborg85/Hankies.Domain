@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hankies.Domain.Models.Details;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// A distinct person using Hankies as a customer. 
     /// </summary>
-    public interface ICustomer : IVoter
+    public interface ICustomer : IDeletableDomainEntity, IVoter
     {
         #region Properties
 

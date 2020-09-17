@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// Tips from customers tied to a location
@@ -21,7 +22,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// <summary>
         /// Display name and Uri of who wrote the tip
         /// </summary>
-        public IExternalHandle Attribution { get; }
+        public string Attribution { get; }
 
         /// <summary>
         /// The customer who owns this tip
@@ -48,28 +49,11 @@ namespace Hankies.Domain.Models.Abstractions
         public void RemoveAttribution();
 
         /// <summary>
-        /// Update the handle's display text only
+        /// Update the handle's display text
         /// </summary>
         /// <param name="newDisplayText"></param>
         /// <returns>a status indicating if update worked</returns>
-        public IStatus<IExternalHandle> UpdateHandleDisplay(string newDisplayText);
-
-        /// <summary>
-        /// Update the handle's link and trusted platform
-        /// </summary>
-        /// <param name="newLink">The new link</param>
-        /// <param name="newPlatform">The new social media platform to use</param>
-        /// <returns>a status indicating if update worked</returns>
-        public IStatus<IExternalHandle> UpdateHandleLink(Uri newLink,
-            TrustedPlatforms newPlatform);
-
-        /// <summary>
-        /// Replace the handle with a new one
-        /// </summary>
-        /// <param name="newHandle">The new handle to replace with</param>
-        /// <returns>a status indicating if update worked</returns>
-        public IStatus<IExternalHandle> ReplaceHandle(IExternalHandle newHandle);
-
+        public IStatus<ICommunityTip> UpdateHandleDisplay(string newDisplayText);
         #endregion
     }
 }

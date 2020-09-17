@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// A chat message.
     /// </summary>
-    public interface IChatMessage : IReportableContent, IEntity
+    public interface IChatMessage : IDomainEntity, IReportableContent
     {
         /// <summary>
         /// When this message was sent by a service.

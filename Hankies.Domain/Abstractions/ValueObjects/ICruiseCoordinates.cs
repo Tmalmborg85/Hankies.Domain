@@ -1,7 +1,7 @@
 ﻿using System;
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.ValueObjects
 {
-    public interface ICruiseCoordinates
+    public interface ICruiseCoordinates : IValueObject
     {
         public double Lattitude { get; set; }
         public double Longitude { get; }

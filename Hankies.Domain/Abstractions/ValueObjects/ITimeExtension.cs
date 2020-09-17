@@ -1,4 +1,5 @@
-﻿namespace Hankies.Domain.Models.Abstractions
+﻿
+namespace Hankies.Domain.Abstractions.ValueObjects
 {
     /// <summary>
     /// A purchasable extension of time. 

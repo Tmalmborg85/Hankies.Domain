@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// A holder of messages and members
     /// </summary>
-    public interface IConversation : IEntity
+    public interface IConversation : IDomainEntity
     {
         /// <summary>
         /// The Chat IDs of who is in this conversation.

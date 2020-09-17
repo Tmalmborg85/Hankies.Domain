@@ -1,5 +1,5 @@
-﻿using System;
-namespace Hankies.Domain.Models.Abstractions
+﻿
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     public enum VoteOptions
     {

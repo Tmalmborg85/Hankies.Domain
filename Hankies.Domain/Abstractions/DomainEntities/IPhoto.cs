@@ -1,7 +1,8 @@
 ﻿using System;
-namespace Hankies.Domain.Models.Abstractions
+
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
-    public interface IPhoto : IEntity
+    public interface IPhoto : IDeletableDomainEntity, IReportableContent
     {
         public ICustomer Owner { get; }
         public Uri Location { get; }

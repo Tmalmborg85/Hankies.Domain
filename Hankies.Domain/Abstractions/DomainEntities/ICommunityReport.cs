@@ -1,6 +1,7 @@
 ﻿using System;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// A report that can be filed on reportable content

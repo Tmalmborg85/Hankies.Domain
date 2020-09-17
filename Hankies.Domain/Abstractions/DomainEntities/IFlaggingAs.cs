@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// An abstract object that represents what a handkerchief’s flagging means. 
     /// </summary>
-    public interface IFlaggingAs : ICommunityTips
+    public interface IFlaggingAs : IDomainEntity, ICommunityTips
     {
         #region Properties
 

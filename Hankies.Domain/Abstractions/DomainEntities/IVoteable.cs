@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// An entity that customers can vote on. 

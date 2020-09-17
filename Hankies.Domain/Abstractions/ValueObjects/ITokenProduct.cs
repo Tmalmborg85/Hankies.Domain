@@ -1,4 +1,4 @@
-﻿namespace Hankies.Domain.Models.Abstractions
+﻿namespace Hankies.Domain.Abstractions.ValueObjects
 {
     public interface ITokenProduct 
     {

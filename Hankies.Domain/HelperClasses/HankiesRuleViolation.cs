@@ -20,9 +20,21 @@ namespace Hankies.Domain.HelperClasses
         /// </summary>
         public string Violator { get; }
 
+        /// <summary>
+        /// Construct a Rule Violation from a rule and a named violator.
+        /// </summary>
+        /// <param name="rule">The business rule that was broken.</param>
+        /// <param name="violator">Who broke the busines rule</param>
         public HankiesRuleViolation(string rule, string violator)
         {
+            if (string.IsNullOrEmpty(rule) || string.IsNullOrWhiteSpace(rule))
+                throw new Exception(nameof(rule) + " is required.");
 
+            if (string.IsNullOrEmpty(violator) || string.IsNullOrWhiteSpace(violator))
+                throw new Exception(nameof(violator) + " is required.");
+
+            Rule = rule;
+            Violator = violator;
         }
 
         /// <summary>
@@ -31,10 +43,6 @@ namespace Hankies.Domain.HelperClasses
         /// <param name="rule">The business rule that was broken.</param>
         /// <param name="violator">Who broke the busines rule</param>
         public HankiesRuleViolation(string rule, object violator) : this
-            (rule, nameof(violator))
-        {
-        }
-
-        
+            (rule, nameof(violator)) { }
     }
 }

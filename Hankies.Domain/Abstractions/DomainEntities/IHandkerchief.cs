@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
-    public interface IHandkerchief : ICommunityTips
+    public interface IHandkerchief : IDomainEntity, ICommunityTips
     {
         #region Properties
 

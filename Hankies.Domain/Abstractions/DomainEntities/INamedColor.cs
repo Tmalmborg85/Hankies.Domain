@@ -1,12 +1,9 @@
-﻿using System;
-using Hankies.Domain.Models.Details;
-
-namespace Hankies.Domain.Models.Abstractions
+﻿namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// A hex color with a human friendly name. 
     /// </summary>
-    public interface INamedColor
+    public interface INamedColor : IValidateable
     {
         /// <summary>
         /// A distinct human friendly name for the color. Could be used as a
@@ -24,14 +21,6 @@ namespace Hankies.Domain.Models.Abstractions
         /// #0F0F0F0
         /// </example>
         public string Value { get; }
-
-        /// <summary>
-        /// Trys to update the hex of this named color. The hex must be in a
-        /// valid format.
-        /// </summary>
-        /// <param name="newHex">the new hex to use</param>
-        /// <returns></returns>
-        IStatus<string> UpdateHex(string newHex);
 
         /// <summary>
         /// Determines if dark or light font is easiest to read when overlayed

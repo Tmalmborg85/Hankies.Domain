@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     public interface ICommunityTips
     {
@@ -18,7 +20,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// <param name="author">Customer who owns this Tip</param>
         /// <param name="location">Where this tip is about</param>
         /// <returns></returns>
-        IStatus<string> CreateNewTip(string tip, IExternalHandle handle,
+        IStatus<string> CreateNewTip(string tip, string handle,
             ICustomer author, ICruiseCoordinates location);
 
         /// <summary>

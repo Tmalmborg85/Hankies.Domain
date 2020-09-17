@@ -1,7 +1,10 @@
 ﻿using System;
-namespace Hankies.Domain.Models.Abstractions
+using Hankies.Domain.Details.DomainEntities;
+using Hankies.Domain.Models.Abstractions;
+
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
-    public interface IPattern
+    public interface IPattern : IDomainEntity
     {
         /// <summary>
         /// The name of this pattern. 
@@ -19,25 +22,25 @@ namespace Hankies.Domain.Models.Abstractions
         /// <summary>
         /// Detail color of this pattern.
         /// </summary>
-        public INamedColor Color { get; }
+        public NamedColor Color { get; }
 
         /// <summary>
         /// Update this pattern's Uri pointer. 
         /// </summary>
         /// <param name="newUri"></param>
         /// <returns>An IStatus with pattern</returns>
-        IStatus<IPattern> UpdateUri(Uri newUri);
+        public IStatus<IPattern> UpdateUri(Uri newUri);
 
         /// <summary>
         /// Update this pattern's detail color with a valid color
         /// </summary>
         /// <param name="newColor">The new color detail.</param>
         /// <returns></returns>
-        IStatus<IPattern> UpdateColor(INamedColor newColor);
+        public IStatus<IPattern> UpdateColor(NamedColor newColor);
 
         /// <summary>
         /// Remove the color from this pattern.
         /// </summary>
-        void RemoveColor();
+        public void RemoveColor();
     }
 }

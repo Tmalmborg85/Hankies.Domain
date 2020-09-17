@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hankies.Domain.Abstractions.ValueObjects;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// An avatars representation at a range in time. 
@@ -11,7 +12,7 @@ namespace Hankies.Domain.Models.Abstractions
     /// this can be an enimic model with no or minimalactions. Most if not all
     /// actions should be done by the owning avatar. 
     /// </remarks>
-    public interface IAvatarCruiseSession : IEntity
+    public interface IAvatarCruiseSession : IDomainEntity
     {
         #region Properties
         /// <summary>

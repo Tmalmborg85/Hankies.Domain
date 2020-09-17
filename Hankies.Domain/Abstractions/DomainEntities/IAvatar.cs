@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Models.Abstractions;
 
 namespace Hankies.Domain.Abstractions.DomainEntities
 {
@@ -17,7 +19,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
     /// Avatars are the same if they contain the same handkerchief makeup,
     /// handle, photos, ect. Start time, locations, ect can be different.  
     /// </remarks>
-    public interface IAvatar : IEntity, IEqualityComparer<IAvatar>
+    public interface IAvatar : IDeletableDomainEntity, IEqualityComparer<IAvatar>
     {
         #region Properties
 
@@ -37,8 +39,12 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// </summary>
         IEnumerable<IAvatarCruiseSession> Sessions { get; }
 
-        /// <inheritdoc cref="IHandle.Handle"/>
-        public IHandle Handle { get; }
+        /// <summary>
+        /// A human readable string indicating what others should call you.
+        /// </summary>
+        /// <example>
+        /// Daddy, Pig, Gristle McThornbody</example>
+        public string Handle { get; }
 
         /// <summary>
         /// Indicates if an avatar can see other's photos by default. Immutable. 

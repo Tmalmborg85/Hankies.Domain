@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Models.Abstractions
+namespace Hankies.Domain.Abstractions.DomainEntities
 {
     /// <summary>
     /// An entity that can be reported for violations by community members

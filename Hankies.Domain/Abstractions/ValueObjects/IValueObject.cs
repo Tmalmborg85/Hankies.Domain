@@ -1,5 +1,6 @@
 ﻿using System;
-namespace Hankies.Domain.Models.Abstractions
+
+namespace Hankies.Domain.Abstractions.ValueObjects
 {
     /// <summary>
     /// Base interface for a Value Object.
