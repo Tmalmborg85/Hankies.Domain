@@ -38,12 +38,12 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// A collection of session specific settings. Determines if cruise is
         /// active.  
         /// </summary>
-        public IEnumerable<IAvatarCruiseSession> Sessions { get; }
+        public IEnumerable<IICCruiseSession> Sessions { get; }
 
         /// <summary>
         /// The last or current cruise session. 
         /// </summary>
-        public IAvatarCruiseSession LastSession { get; }
+        public IICCruiseSession LastSession { get; }
         /// <summary>
         /// A human readable string indicating what others should call you.
         /// </summary>
@@ -169,7 +169,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <param name="coordinates">The starting location of this cruise.</param>
         /// <param name="time">The initial amount of tuime to cruise for</param>
         /// <returns></returns>
-        public IStatus<IAvatarCruiseSession> StartNewCruiseSession(ICruiseCoordinates
+        public IStatus<IICCruiseSession> StartNewCruiseSession(ICruiseCoordinates
             coordinates, TimeSpan time);
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// </summary>
         /// <param name="timeExtension">Typicaly a purchased extension</param>
         /// <returns>A status indicating success or not</returns>
-        public IStatus<IAvatarCruiseSession> ExtendCurrentSession(ITimeExtension timeExtension);
+        public IStatus<IICCruiseSession> ExtendCurrentSession(ITimeExtension timeExtension);
 
         /// <summary>
         /// Cruise an avatar.

@@ -212,7 +212,7 @@ namespace Hankies.Domain.Details.DomainEntities
 
         public IStatus<IAvatarCruiseSession> StartNewCruiseSession(ICruiseCoordinates coordinates, TimeSpan time)
         {
-            throw new NotImplementedException();
+            var avatarSessionStartedDomainEvent = new AvatarSessionStartedDomainEvent();
         }
 
         public void WasCruisedBy(IAvatar cruisee)
