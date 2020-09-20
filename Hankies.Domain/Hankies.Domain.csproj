@@ -11,6 +11,8 @@
     <Compile Remove="Abstractions\IExternalHandle.cs" />
     <Compile Remove="Details\NamedColor.cs" />
     <Compile Remove="Details\Pattern.cs" />
+    <Compile Remove="Abstractions\DomainEntities\ICruiseSession.cs" />
+    <Compile Remove="HelperClasses\ITerminatable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Abstractions\.DS_Store" />
@@ -19,5 +21,9 @@
   <ItemGroup>
     <Folder Include="Abstractions\DomainEvents\" />
     <Folder Include="Details\DomainEvents\" />
+    <Folder Include="Details\ValueObject\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\DomainEntities\ITerminatable.cs" />
   </ItemGroup>
 </Project>

@@ -32,7 +32,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <summary>
         /// General area this tip was posted from. 
         /// </summary>
-        public ICruiseCoordinates Location { get; }
+        public ICCooordinates Location { get; }
 
         #endregion
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Models.Abstractions;
 
 namespace Hankies.Domain.Abstractions.DomainEntities
 {
@@ -12,7 +13,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
     /// this can be an enimic model with no or minimalactions. Most if not all
     /// actions should be done by the owning avatar. 
     /// </remarks>
-    public interface ICruiseSession : IDomainEntity
+    public interface ICruise
     {
         #region Properties
         /// <summary>
@@ -21,37 +22,15 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         public DateTimeOffset StartedAt { get; }
 
         /// <summary>
-        /// When this session was originaly set to expire.
+        /// Contains a collection of nearby avatars that meet your criteria
+        /// and tools to look for them
         /// </summary>
-        /// <remarks>
-        /// Immutable. This is also used in calulation to determine the current
-        /// experation time. </remarks>
-        public DateTimeOffset OriginalExperation { get; }
+        IRadar Radar { get; }
 
         /// <summary>
-        /// Collection of time extensions. can be empty. 
+        /// Avatars that I have cruised. 
         /// </summary>
-        IEnumerable<ITimeExtension> TimeExtensions { get; }
-
-        /// <summary>
-        /// Collection of locations cruise. 
-        /// </summary>
-        IEnumerable<ICruiseCoordinates> CruisedLocations { get; }
-
-        /// <summary>
-        /// Avatars that meet certain cruisable critira.
-        /// </summary>
-        IEnumerable<IAvatar> CruiseableAvatars { get; }
-
-        /// <summary>
-        /// Cruiseable avatars that I have cruise. 
-        /// </summary>
-        IEnumerable<IAvatar> CruisedAvatars { get; }
-
-        /// <summary>
-        /// Avatars that have cruised me or cruised me back. 
-        /// </summary>
-        IEnumerable<IAvatar> CruisedByAvatars { get; }
+        IEnumerable<IAvatar> Cruised { get; }
 
         /// <summary>
         /// Specific people the blind fold is off for. 
@@ -70,5 +49,20 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         IEnumerable<IAvatar> HoodRemovedFor { get; }
 
         #endregion
+
+        
+        IStatus<ICruise> CruiseALocation(ICoordinates location);
+
+        /// <summary>
+        /// You wont see this avatar again this cruise. May see again in later
+        /// cruise. VERY different from a block. 
+        /// </summary>
+        /// <param name="avatar"></param>
+        /// <returns>An IRadar. Check the Clutter collection for the added
+        /// IAvatar</returns>
+        /// <remarks>
+        /// Avatar is marked as clutter in this cruises radar. 
+        /// </remarks>
+        IStatus<IRadar> PassAvatarThisTime(IAvatar avatar);
     }
 }

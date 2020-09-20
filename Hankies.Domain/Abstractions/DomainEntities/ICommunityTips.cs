@@ -21,7 +21,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <param name="location">Where this tip is about</param>
         /// <returns></returns>
         IStatus<string> CreateNewTip(string tip, string handle,
-            ICustomer author, ICruiseCoordinates location);
+            ICustomer author, ICCooordinates location);
 
         /// <summary>
         /// Remove a tip that already is in the tip list. 

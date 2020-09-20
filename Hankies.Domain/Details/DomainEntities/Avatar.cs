@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Linq.Expressions;
 using Hankies.Domain.Abstractions.DomainEntities;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.HelperClasses;
@@ -19,10 +18,9 @@ namespace Hankies.Domain.Details.DomainEntities
             string handle) : base
             (id, createdAt)
         {
+            // Newly created avatars automatically start cruising.
             Owner = owner;
             Handle = handle;
-
-           
 
             OnValidate();
         }
@@ -32,18 +30,18 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <summary>
         /// Hashtable backing. 
         /// </summary>
-        private HashSet<AvatarCruiseSession> sessions;
+        private HashSet<CruiseSession> sessions;
 
         /// <inheritdoc cref="IAvatar.Sessions"/>
-        public IEnumerable<IAvatarCruiseSession> Sessions => sessions?
+        public IEnumerable<ICruisee>> Sessions => sessions?
             .ToList();
 
-        public IAvatarCruiseSession LastSession =>
-            sessions.OrderBy((IAvatarCruiseSession arg) => arg.StartedAt)
+        public ICruisee LastSession =>
+            sessions.OrderBy((ICruisee arg) => arg.StartedAt)
             .FirstOrDefault();
 
         public string Handle { get; private set; }
-        
+
         public bool Blindfolded { get; private set; }
 
         public bool Hooded { get; private set; }
@@ -81,6 +79,8 @@ namespace Hankies.Domain.Details.DomainEntities
 
         public bool Deleted { get; private set; }
 
+        public bool HasActiveCruiseSession => throw new NotImplementedException();
+
         public bool CanISeeThem(IAvatar them)
         {
             // If I am blindfolded I can see no one.
@@ -90,7 +90,8 @@ namespace Hankies.Domain.Details.DomainEntities
                 if (LastSession.BlindfoldRemovedFor.Contains(them))
                 {
                     return true;
-                } else
+                }
+                else
                 {
                     // I am blinfolded and they do not have exception
                     return false;
@@ -104,7 +105,8 @@ namespace Hankies.Domain.Details.DomainEntities
                 if (them.LastSession.HoodRemovedFor.Contains(this))
                 {
                     return true;
-                } else
+                }
+                else
                 {
                     // I am hooded and they do not have an excpetion. 
                     return false;
@@ -112,7 +114,7 @@ namespace Hankies.Domain.Details.DomainEntities
             }
 
             // nothing is blocking them from seeing me.
-            return true; 
+            return true;
         }
 
         public bool CanTheySeeMe(IAvatar they)
@@ -122,6 +124,7 @@ namespace Hankies.Domain.Details.DomainEntities
 
         public void CruiseAnAvatar(IAvatar cruisee)
         {
+            //LastSession.CruisedAvatars
             throw new NotImplementedException();
         }
 
@@ -155,7 +158,7 @@ namespace Hankies.Domain.Details.DomainEntities
             throw new NotImplementedException();
         }
 
-        public IStatus<IAvatarCruiseSession> ExtendCurrentSession(ITimeExtension timeExtension)
+        public IStatus<ICruisee>> ExtendCurrentSession(ITimeExtension timeExtension)
         {
             throw new NotImplementedException();
         }
@@ -167,20 +170,52 @@ namespace Hankies.Domain.Details.DomainEntities
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
         {
-            // Check for and add any handle rule violations. 
+            if (Owner == null)
+            {
+                yield return new HankiesRuleViolation
+                    ("Avatars are owned by one customer.", Owner);
+            }
+            else if (Owner.Avatars != null && Owner.Avatars.Contains(this))
+            {
+                yield return new HankiesRuleViolation
+                    ("Avatars are distinct per customer.", Owner.Avatars);
+            }
+
+            // Rule: Newly created avatars automatically start cruising.
+
+            if (handkerchiefs == null || handkerchiefs.Count == 0)
+                yield return new HankiesRuleViolation
+                    ("Avatars must have at least one handkerchief", handkerchiefs);
+
+            // Rule: Avatars must have a handle that is valid.
             var handleViolations = HandleRules.GetHandleRuleViolations(Handle);
             foreach (var violation in handleViolations)
             {
                 yield return violation;
             }
 
-            // Check for and add any self description rule violations. 
-            var selfDescriptionViolations = HandleRules.GetHandleRuleViolations
-                (ImpressionDescription);
-            foreach (var violation in selfDescriptionViolations)
+            if (ImpressionPhoto == null && (string.IsNullOrEmpty
+                (ImpressionDescription) || string.IsNullOrWhiteSpace
+                (ImpressionDescription)))
+                yield return new HankiesRuleViolation("Avatars must have an " +
+                    "approved SFW photo, a pending aproval photo, or a " +
+                    "description.", "Photo & Description");
+
+
+
+            if (Sessions == null)
             {
-                yield return violation;
+                yield return new HankiesRuleViolation
+                    ("One avatar owns many Sessions.", Sessions);
             }
+            else if (LastSession == null)
+            {
+                yield return new HankiesRuleViolation
+                    ("Every avatar has at least one session.", LastSession);
+            }
+
+            // Rule: Avatars are immutable exception for the Session aggregate.
+            // Rule: “Editing” an avatar creates a clone with the changed properties.
 
             yield break;
         }
@@ -210,9 +245,10 @@ namespace Hankies.Domain.Details.DomainEntities
             throw new NotImplementedException();
         }
 
-        public IStatus<IAvatarCruiseSession> StartNewCruiseSession(ICruiseCoordinates coordinates, TimeSpan time)
+        public IStatus<ICruisee>> StartNewCruiseSession(ICoordinates coordinates, TimeSpan time)
         {
-            var avatarSessionStartedDomainEvent = new AvatarSessionStartedDomainEvent();
+            //var avatarSessionStartedDomainEvent = new AvatarSessionStartedDomainEvent();
+            throw new NotImplementedException();
         }
 
         public void WasCruisedBy(IAvatar cruisee)

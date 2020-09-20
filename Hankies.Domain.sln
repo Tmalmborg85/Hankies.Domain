@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hankies.Domain", "Hankies.Domain\Hankies.Domain.csproj", "{14139777-5B4D-44A7-88DD-81CA7BE1AFB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hankies.Domain.Tests", "Hankies.Domain.Tests\Hankies.Domain.Tests.csproj", "{AC2BEE0F-EA24-4D59-9E09-FCC2BFA69EDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{14139777-5B4D-44A7-88DD-81CA7BE1AFB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14139777-5B4D-44A7-88DD-81CA7BE1AFB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14139777-5B4D-44A7-88DD-81CA7BE1AFB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC2BEE0F-EA24-4D59-9E09-FCC2BFA69EDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC2BEE0F-EA24-4D59-9E09-FCC2BFA69EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC2BEE0F-EA24-4D59-9E09-FCC2BFA69EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC2BEE0F-EA24-4D59-9E09-FCC2BFA69EDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

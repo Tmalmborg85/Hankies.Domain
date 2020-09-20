@@ -1,10 +1,10 @@
 ﻿using System;
+
 namespace Hankies.Domain.Abstractions.ValueObjects
 {
-    public interface ICruiseCoordinates : IValueObject
+    public interface ICoordinates : IValueObject
     {
-        public double Lattitude { get; set; }
+        public double Lattitude { get; }
         public double Longitude { get; }
-
     }
 }

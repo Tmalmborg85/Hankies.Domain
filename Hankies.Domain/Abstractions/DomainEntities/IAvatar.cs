@@ -35,15 +35,15 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         public Guid ChatId => Owner.ChatID;
 
         /// <summary>
-        /// A collection of session specific settings. Determines if cruise is
-        /// active.  
+        /// A collection of cruise sessions this Avatar has started.
         /// </summary>
-        public IEnumerable<IICCruiseSession> Sessions { get; }
+        public IEnumerable<ICruise> Sessions { get; }
 
         /// <summary>
         /// The last or current cruise session. 
         /// </summary>
-        public IICCruiseSession LastSession { get; }
+        public ICruise LastSession { get; }
+
         /// <summary>
         /// A human readable string indicating what others should call you.
         /// </summary>
@@ -160,6 +160,11 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <returns></returns>
         public bool CanTheySeeMe(IAvatar they);
 
+        /// <summary>
+        /// Is this cruise currently active
+        /// </summary>
+        public bool HasActiveCruiseSession { get; }
+
         #endregion
         #region Actions
 
@@ -169,7 +174,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <param name="coordinates">The starting location of this cruise.</param>
         /// <param name="time">The initial amount of tuime to cruise for</param>
         /// <returns></returns>
-        public IStatus<IICCruiseSession> StartNewCruiseSession(ICruiseCoordinates
+        public IStatus<ICruise> StartNewCruiseSession(ICoordinates
             coordinates, TimeSpan time);
 
         /// <summary>
@@ -183,7 +188,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// </summary>
         /// <param name="timeExtension">Typicaly a purchased extension</param>
         /// <returns>A status indicating success or not</returns>
-        public IStatus<IICCruiseSession> ExtendCurrentSession(ITimeExtension timeExtension);
+        public IStatus<ICruise> ExtendCurrentSession(ITimeExtension timeExtension);
 
         /// <summary>
         /// Cruise an avatar.
@@ -256,4 +261,3 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         #endregion
     }
 }
-    
