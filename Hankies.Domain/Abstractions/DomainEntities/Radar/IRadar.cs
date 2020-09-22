@@ -4,10 +4,10 @@ using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEvents;
 using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Abstractions.DomainEntities
+namespace Hankies.Domain.Abstractions.DomainEntities.Radar
 {
     /// <summary>
-    /// A radar used to look for other avatars while cruising. 
+    /// A radar used to look for other IEchos (avatars) in an area. 
     /// </summary>
     public interface IRadar
     {
@@ -31,7 +31,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         public IEnumerable<IAvatar> Clutter { get; }
 
         /// <summary>
-        /// Pulses this radar has emited and gotten back. 
+        /// Pulses this radar has emited. 
         /// </summary>
         IEnumerable<IRadarPulse> Pulses { get; }
 
@@ -49,23 +49,38 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         IStatus<IRadar> EmitPulse(ICoordinates location, float radius);
 
         /// <summary>
-        /// Return a pulse to this radar. 
+        /// Evatulate a single echo as Clutter or Contact.
         /// </summary>
-        /// <param name="pulse"></param>
-        public void PulseReturned(IRadarPulse pulse);
+        /// <param name="echo">The echo to evaluate</param>
+        public void EvaluateEcho(IRadarEcho<IAvatar> echo);
 
         /// <summary>
-        /// Flag an avatar as clutter for this radar. 
+        /// Evaluate many Echos as Clutter or Contacts.
         /// </summary>
-        /// <param name="avatar"></param>
-        /// <returns></returns>
+        /// <param name="echos">The echos to evaluate.</param>
+        public void EvaluateEchos(IEnumerable<IRadarEcho<IAvatar>> echos);
+
+        /// <summary>
+        /// Manualy flag an avatar as clutter for this radar, skipping the
+        /// normal EvaluateEcho method.
+        /// </summary>
+        /// <param name="avatar">The avatar to be flagged</param>
+        /// <returns>A status.</returns>
+        /// <remarks>
+        /// This could be used in case an Avatar later decides an IAvatar is
+        /// clutter. If the IAvatar matches any avatars in Contacts, they
+        /// should be removed. </remarks>
         IStatus<IRadar> FlagAsClutter(IAvatar avatar);
 
         /// <summary>
-        /// Flag mutliple avatars as clutter. 
+        /// Manualy flag multiple avatars as clutter for this radar, skipping
+        /// the normal EvaluateEchos method.
         /// </summary>
-        /// <param name="avatars"></param>
-        /// <returns></returns>
+        /// <param name="avatars">The avatars to be flagged</param>
+        /// <returns>A status.</returns>
+        /// <remarks>
+        /// This would be a good place to pre-flag blocked customers.
+        /// </remarks>
         IStatus<IRadar> FlagAsClutter(IEnumerable<IAvatar> avatars);
     }
 }

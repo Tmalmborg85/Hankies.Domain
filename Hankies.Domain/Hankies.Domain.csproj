@@ -22,6 +22,7 @@
     <Folder Include="Abstractions\DomainEvents\" />
     <Folder Include="Details\DomainEvents\" />
     <Folder Include="Details\ValueObject\" />
+    <Folder Include="Abstractions\DomainEntities\Radar\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\DomainEntities\ITerminatable.cs" />

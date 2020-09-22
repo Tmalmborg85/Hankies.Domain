@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hankies.Domain.Abstractions.DomainEntities.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Models.Abstractions;
 

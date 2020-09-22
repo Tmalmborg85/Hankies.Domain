@@ -1,9 +1,15 @@
 ﻿using System;
+using Hankies.Domain.Abstractions.DomainEntities.Radar;
+using Hankies.Domain.Abstractions.DomainEvents;
+
 namespace Hankies.Domain.Details.DomainEvents
 {
-    public class PulseEmitedDomainEvent
+    /// <summary>
+    /// An event that lets the Application layer know a pulse has been emited. 
+    /// </summary>
+    public class PulseEmitedDomainEvent : IRadarPulse, IDomainEvent
     {
-        public PulseEmitedDomainEvent()
+        public PulseEmitedDomainEvent(IRadarPulse pulse)
         {
         }
     }
