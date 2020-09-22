@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hankies.Domain.Abstractions.DomainEntities;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEvents;
 using Hankies.Domain.Models.Abstractions;
 
-namespace Hankies.Domain.Abstractions.DomainEntities.Radar
+namespace Hankies.Domain.Abstractions.Radar
 {
     /// <summary>
     /// A radar used to look for other IEchos (avatars) in an area. 
@@ -12,13 +13,24 @@ namespace Hankies.Domain.Abstractions.DomainEntities.Radar
     public interface IRadar
     {
         /// <summary>
+        /// The domain entity that owns this radar. Radars must be owned by a
+        /// single domain entity. 
+        /// </summary>
+        public IDomainEntity Owner { get; }
+
+        /// <summary>
+        /// How far out will this radars pulse's look for echos. 
+        /// </summary>
+        public float Range { get; }
+
+        /// <summary>
         /// IAvatars the radar has picked up. 
         /// </summary>
         /// <remarks>
         /// In the context of maritime radar the term Contact means any echo
         /// detected on the radarscope not evaluated as clutter or as a false
         /// echo.</remarks>
-        public IEnumerable<IAvatar> Contacts { get; }
+        public IEnumerable<IRadarEcho<IAvatar>> Contacts { get; }
 
         /// <summary>
         /// IAvatars that dont match enouch factors to be considerd Contacts. 
@@ -28,7 +40,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities.Radar
         /// (RF) echoes returned from targets which are uninteresting to the
         /// radar operators.
         /// </remarks>
-        public IEnumerable<IAvatar> Clutter { get; }
+        public IEnumerable<IRadarEcho<IAvatar>> Clutter { get; }
 
         /// <summary>
         /// Pulses this radar has emited. 
@@ -46,7 +58,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities.Radar
         /// IRadarPulse to the radar object before saving to the database
         /// context.
         /// </remarks>
-        IStatus<IRadar> EmitPulse(ICoordinates location, float radius);
+        IStatus<PulseEmitedDomainEvent> EmitPulse(ICoordinates location, float radius);
 
         /// <summary>
         /// Evatulate a single echo as Clutter or Contact.
