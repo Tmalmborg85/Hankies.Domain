@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hankies.Domain.Abstractions.DomainEntities;
+using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.HelperClasses;
 using Hankies.Domain.Models.Abstractions;
@@ -10,7 +11,7 @@ using Hankies.Domain.Rules;
 
 namespace Hankies.Domain.Details.DomainEntities
 {
-    public class Avatar : DomainEntity, IAvatar
+    public class Avatar : DomainEntity, IAvatar, IRadarEcho<Avatar>
     {
         private Avatar() { }
 

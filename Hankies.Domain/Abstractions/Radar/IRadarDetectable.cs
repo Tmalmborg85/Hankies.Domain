@@ -1,6 +1,4 @@
 ﻿using System;
-using Hankies.Domain.Abstractions.DomainEntities;
-using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEvents;
 using Hankies.Domain.Models.Abstractions;
 
@@ -10,6 +8,7 @@ namespace Hankies.Domain.Abstractions.Radar
 	/// An object that is detectable by a Hankies IRadar.
 	/// </summary>
 	/// <remarks>
+    /// Add this interface to any implementation that can be detected by a Radar.
 	/// </remarks>
     public interface IRadarDetectable
     {
