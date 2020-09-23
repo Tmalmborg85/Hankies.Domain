@@ -8,21 +8,23 @@ using Hankies.Domain.Details.DomainEvents;
 using Hankies.Domain.Models.Abstractions;
 using Hankies.Domain.Models.Details;
 
-namespace Hankies.Domain.Details
+namespace Hankies.Domain.Details.Radar
 {
-    public class Radar : IRadar
+    public class CruiseRadar : IRadar
     {
 
-        public Radar(IDomainEntity ownedBy)
+        public CruiseRadar(IDomainEntity ownedBy)
         {
             owner = ownedBy;
         }
 
-        public HashSet<IRadarEcho<IAvatar>> _contacts { get; }
-        public IEnumerable<IRadarEcho<IAvatar>> Contacts => _contacts?.ToList();
+        public Dictionary<Guid, AvatarRadarEcho> _contacts { get; }
+        public IEnumerable<IRadarEcho<IAvatar>> Contacts => _contacts?.Values
+            .ToList();
 
-        public HashSet<IRadarEcho<IAvatar>> _clutter { get; }
-        public IEnumerable<IRadarEcho<IAvatar>> Clutter => _clutter?.ToList();
+        public Dictionary<Guid, AvatarRadarEcho> _clutter { get; }
+        public IEnumerable<IRadarEcho<IAvatar>> Clutter => _clutter?.Values
+            .ToList();
 
         public HashSet<IRadarPulse> _pulses { get; }
         public IEnumerable<IRadarPulse> Pulses => _pulses?.ToList();
@@ -74,9 +76,16 @@ namespace Hankies.Domain.Details
         {
             // Make a Radr Echo from the provided avatar that can be added to
             // clutter
-            var radioEcho =
+            var clutterKey = avatar.LastSession.EchoID;
+            var clutterValue = new AvatarRadarEcho()
 
-            if (_clutter.Contains(avatar))
+
+
+            if (!_clutter.ContainsKey(clutterKey))
+            {
+                _clutter.Add(clutterKey, avatar);
+            }
+
         }
 
         public IStatus<IRadar> FlagAsClutter(IEnumerable<IAvatar> avatars)

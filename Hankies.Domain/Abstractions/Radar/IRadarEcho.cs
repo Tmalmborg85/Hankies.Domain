@@ -7,7 +7,6 @@ namespace Hankies.Domain.Abstractions.Radar
     /// <typeparam name="T">Type of object this radar echo is </typeparam>
     public interface IRadarEcho<T> : IEquatable<T>
     {
-        
         /// <summary>
         /// The pulse that triggerd this echo. 
         /// </summary>

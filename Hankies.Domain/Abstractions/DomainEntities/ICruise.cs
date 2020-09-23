@@ -15,7 +15,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
     /// this can be an enimic model with no or minimalactions. Most if not all
     /// actions should be done by the owning avatar. 
     /// </remarks>
-    public interface ICruise
+    public interface ICruise : IRadarDetectable
     {
         #region Properties
         /// <summary>

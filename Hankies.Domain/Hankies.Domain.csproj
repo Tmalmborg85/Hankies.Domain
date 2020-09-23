@@ -23,5 +23,6 @@
     <Folder Include="Details\DomainEvents\" />
     <Folder Include="Details\ValueObject\" />
     <Folder Include="Abstractions\Radar\" />
+    <Folder Include="Details\Radar\" />
   </ItemGroup>
 </Project>

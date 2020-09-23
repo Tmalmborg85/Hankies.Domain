@@ -15,5 +15,6 @@
 
   <ItemGroup>
     <Folder Include="DomainEntities\" />
+    <Folder Include="DomainEvents\" />
   </ItemGroup>
 </Project>

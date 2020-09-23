@@ -16,7 +16,7 @@ namespace Hankies.Domain.Abstractions.Radar
         /// <summary>
         /// The IRadar that emitted this pulse
         /// </summary>
-        public IRadar EmittedFrom { get; }
+        public IRadar Source { get; }
 
         /// <summary>
         /// How far this pulse should look from its lat/long
