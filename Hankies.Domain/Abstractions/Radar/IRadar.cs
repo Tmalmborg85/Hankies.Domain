@@ -30,7 +30,7 @@ namespace Hankies.Domain.Abstractions.Radar
         /// In the context of maritime radar the term Contact means any echo
         /// detected on the radarscope not evaluated as clutter or as a false
         /// echo.</remarks>
-        public IEnumerable<IRadarEcho<IAvatar>> Contacts { get; }
+        public IEnumerable<IRadarDetectable> Contacts { get; }
 
         /// <summary>
         /// IAvatars that dont match enouch factors to be considerd Contacts. 
@@ -40,7 +40,7 @@ namespace Hankies.Domain.Abstractions.Radar
         /// (RF) echoes returned from targets which are uninteresting to the
         /// radar operators.
         /// </remarks>
-        public IEnumerable<IRadarEcho<IAvatar>> Clutter { get; }
+        public IEnumerable<IRadarDetectable> Clutter { get; }
 
         /// <summary>
         /// Pulses this radar has emited. 
@@ -76,23 +76,24 @@ namespace Hankies.Domain.Abstractions.Radar
         /// Manualy flag an avatar as clutter for this radar, skipping the
         /// normal EvaluateEcho method.
         /// </summary>
-        /// <param name="avatar">The avatar to be flagged</param>
+        /// <param name="detectedObject">The object to be flagged</param>
         /// <returns>A status.</returns>
         /// <remarks>
         /// This could be used in case an Avatar later decides an IAvatar is
         /// clutter. If the IAvatar matches any avatars in Contacts, they
         /// should be removed. </remarks>
-        IStatus<IRadar> FlagAsClutter(IAvatar avatar);
+        IStatus<IRadar> FlagAsClutter(IRadarDetectable detectedObject);
 
         /// <summary>
         /// Manualy flag multiple avatars as clutter for this radar, skipping
         /// the normal EvaluateEchos method.
         /// </summary>
-        /// <param name="avatars">The avatars to be flagged</param>
+        /// <param name="detectedObjects">The objects to be flagged</param>
         /// <returns>A status.</returns>
         /// <remarks>
         /// This would be a good place to pre-flag blocked customers.
         /// </remarks>
-        IStatus<IRadar> FlagAsClutter(IEnumerable<IAvatar> avatars);
+        IStatus<IRadar> FlagAsClutter(IEnumerable<IRadarDetectable>
+            detectedObjects);
     }
 }

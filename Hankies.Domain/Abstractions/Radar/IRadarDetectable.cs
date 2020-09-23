@@ -1,5 +1,6 @@
 ﻿using System;
 using Hankies.Domain.Details.DomainEvents;
+using Hankies.Domain.Details.Radar;
 using Hankies.Domain.Models.Abstractions;
 
 namespace Hankies.Domain.Abstractions.Radar
@@ -20,7 +21,7 @@ namespace Hankies.Domain.Abstractions.Radar
         /// <summary>
         /// Position and time stamp detectable by radar.
         /// </summary>
-        public IEchoLocation Location { get; }
+        public EchoLocation Location { get; }
 
 		/// <summary>
 		/// Create a EchoDetectedDomainEvent in response to this objects echo

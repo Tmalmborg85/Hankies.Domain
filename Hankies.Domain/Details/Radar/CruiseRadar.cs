@@ -18,12 +18,12 @@ namespace Hankies.Domain.Details.Radar
             owner = ownedBy;
         }
 
-        public Dictionary<Guid, AvatarRadarEcho> _contacts { get; }
-        public IEnumerable<IRadarEcho<IAvatar>> Contacts => _contacts?.Values
+        public Dictionary<Guid, IRadarDetectable> _contacts { get; }
+        public IEnumerable<IRadarDetectable> Contacts => _contacts?.Values
             .ToList();
 
-        public Dictionary<Guid, AvatarRadarEcho> _clutter { get; }
-        public IEnumerable<IRadarEcho<IAvatar>> Clutter => _clutter?.Values
+        public Dictionary<Guid, IRadarDetectable> _clutter { get; }
+        public IEnumerable<IRadarDetectable> Clutter => _clutter?.Values
             .ToList();
 
         public HashSet<IRadarPulse> _pulses { get; }
@@ -72,25 +72,43 @@ namespace Hankies.Domain.Details.Radar
             throw new NotImplementedException();
         }
 
-        public IStatus<IRadar> FlagAsClutter(IAvatar avatar)
+        public IStatus<IRadar> FlagAsClutter(IRadarDetectable detectedObject)
         {
-            // Make a Radr Echo from the provided avatar that can be added to
-            // clutter
-            var clutterKey = avatar.LastSession.EchoID;
-            var clutterValue = new AvatarRadarEcho()
+            var response = new Status<IRadar>();
 
+            var clutterKey = detectedObject.EchoID;
+            var clutterValue = detectedObject;
 
+            if (detectedObject == null)
+                response.AddError("Object to flag as clutter cannot be null");
+
+            if (clutterKey == null)
+                response.AddError("Clutter must have a GUID key to be added " +
+                    "to clutter the collection");
 
             if (!_clutter.ContainsKey(clutterKey))
             {
-                _clutter.Add(clutterKey, avatar);
+                _clutter.Add(clutterKey, clutterValue);
+
+                RemoveClutterFromContact(clutterKey);
             }
+
+            response.RespondWith(this);
+            return response;
+        }
+
+        public IStatus<IRadar> FlagAsClutter(IEnumerable<IRadarDetectable> detectedObjects)
+        {
+            var response = new Status<IRadar>();
+
+            if (detectedObjects == null)
 
         }
 
-        public IStatus<IRadar> FlagAsClutter(IEnumerable<IAvatar> avatars)
+        private void RemoveClutterFromContact(Guid clutterKey)
         {
-            throw new NotImplementedException();
+            if (_contacts.ContainsKey(clutterKey))
+                _contacts.Remove(clutterKey);
         }
     }
 }

@@ -11,7 +11,7 @@ using Hankies.Domain.Rules;
 
 namespace Hankies.Domain.Details.DomainEntities
 {
-    public class Avatar : DomainEntity, IAvatar, IRadarEcho<Avatar>
+    public class Avatar : DomainEntity, IAvatar
     {
         private Avatar() { }
 
