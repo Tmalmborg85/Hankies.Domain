@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hankies.Domain.Abstractions.DomainEntities.Radar;
 using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Details.DomainEvents;
+using Hankies.Domain.Details.Radar;
+using Hankies.Domain.HelperClasses;
 using Hankies.Domain.Models.Abstractions;
+using Hankies.Domain.Models.Details;
 
-namespace Hankies.Domain.Abstractions.DomainEntities
+namespace Hankies.Domain.Details.DomainEntities
 {
     /// <summary>
     /// An avatars representation at a range in time. 
@@ -15,7 +18,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
     /// this can be an enimic model with no or minimalactions. Most if not all
     /// actions should be done by the owning avatar. 
     /// </remarks>
-    public interface ICruise : IRadarDetectable
+    public class Cruise : DomainEntity, IRadarDetectable
     {
         #region Properties
         /// <summary>
@@ -24,15 +27,33 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         public DateTimeOffset StartedAt { get; }
 
         /// <summary>
+        /// The Avatar this cruise is for. 
+        /// </summary>
+        public Avatar CruisingAsAvatar { get; private set; }
+
+        /// <summary>
+        /// ID that can be picked up by a <c cref="CruiseRadar">Cruise Radar</c>
+        /// </summary>
+        /// <remarks>
+        /// Cruise EchoIDs should be the same as the cruises owning AvatarID.
+        /// This ensures that echo flagging (clutter or contact) will persist
+        /// in the cruise radars session
+        /// </remarks>
+        public Guid EchoID => CruisingAsAvatar.Id;
+
+        public EchoLocation CurrentLocation { get; private set; }
+
+        public IEnumerable<EchoLocation> Locations { get; private set; }
+        /// <summary>
         /// Contains a collection of nearby avatars that meet your criteria
         /// and tools to look for them
         /// </summary>
-        IRadar Radar { get; }
+        CruiseRadar CruiseRadar { get; }
 
         /// <summary>
         /// Avatars that I have cruised. 
         /// </summary>
-        IEnumerable<IAvatar> Cruised { get; }
+        IEnumerable<Avatar> Cruised { get; }
 
         /// <summary>
         /// Specific people the blind fold is off for. 
@@ -40,7 +61,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <remarks>
         /// This only applies to avatars that are wearing a blindfold. 
         /// </remarks>
-        IEnumerable<IAvatar> BlindfoldRemovedFor { get; }
+        IEnumerable<Avatar> BlindfoldRemovedFor { get; }
 
         /// <summary>
         /// Specific people the hood is off for. 
@@ -50,10 +71,24 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// </remarks>
         IEnumerable<IAvatar> HoodRemovedFor { get; }
 
+
+
         #endregion
 
-        
-        IStatus<ICruise> CruiseALocation(ICoordinates location);
+        public IStatus<EchoDetectedDomainEvent> Echo(IRadarPulse pulse)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
+        {
+            throw new NotImplementedException();
+        }
+
+        Status<Cruise> CruiseALocation(ICoordinates location)
+        {
+
+        }
 
         /// <summary>
         /// You wont see this avatar again this cruise. May see again in later
@@ -65,6 +100,9 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <remarks>
         /// Avatar is marked as clutter in this cruises radar. 
         /// </remarks>
-        IStatus<IRadar> PassAvatarThisTime(IAvatar avatar);
+        Status<IRadar> PassAvatarThisTime(Avatar avatar)
+        {
+
+        }
     }
 }

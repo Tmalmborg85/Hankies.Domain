@@ -15,18 +15,18 @@ namespace Hankies.Domain.Details.DomainEntities
     {
         private Avatar() { }
 
-        public Avatar(Guid id, DateTimeOffset createdAt, ICustomer owner,
+        public Avatar(Guid id, DateTimeOffset createdAt, Customer owner,
             string handle) : base
             (id, createdAt)
         {
             // Newly created avatars automatically start cruising.
-            Owner = owner;
+            CreatedByCustomer = owner;
             Handle = handle;
 
             OnValidate();
         }
 
-        public ICustomer Owner { get; private set; }
+        public Customer CreatedByCustomer { get; private set; }
 
         /// <summary>
         /// Hashtable backing. 
@@ -82,6 +82,10 @@ namespace Hankies.Domain.Details.DomainEntities
 
         public bool HasActiveCruiseSession => throw new NotImplementedException();
 
+        public IEnumerable<ICruise> Sessions => throw new NotImplementedException();
+
+        ICruise IAvatar.LastSession => throw new NotImplementedException();
+
         public bool CanISeeThem(IAvatar them)
         {
             // If I am blindfolded I can see no one.
@@ -121,6 +125,17 @@ namespace Hankies.Domain.Details.DomainEntities
         public bool CanTheySeeMe(IAvatar they)
         {
             return they.CanISeeThem(this);
+        }
+
+        public bool HardPassedOnHandkerchied(Handkerchief handkerchief)
+        {
+
+        }
+
+        public bool HardPassedOnAnyOfTheseHandkerchiefs
+            (IEnumerable<Handkerchief> handkerchiefs)
+        {
+
         }
 
         public void CruiseAnAvatar(IAvatar cruisee)
@@ -171,15 +186,15 @@ namespace Hankies.Domain.Details.DomainEntities
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
         {
-            if (Owner == null)
+            if (CreatedByCustomer == null)
             {
                 yield return new HankiesRuleViolation
-                    ("Avatars are owned by one customer.", Owner);
+                    ("Avatars are owned by one customer.", CreatedByCustomer);
             }
-            else if (Owner.Avatars != null && Owner.Avatars.Contains(this))
+            else if (CreatedByCustomer.Avatars != null && CreatedByCustomer.Avatars.Contains(this))
             {
                 yield return new HankiesRuleViolation
-                    ("Avatars are distinct per customer.", Owner.Avatars);
+                    ("Avatars are distinct per customer.", CreatedByCustomer.Avatars);
             }
 
             // Rule: Newly created avatars automatically start cruising.
@@ -253,6 +268,16 @@ namespace Hankies.Domain.Details.DomainEntities
         }
 
         public void WasCruisedBy(IAvatar cruisee)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<ICruise> StartNewCruiseSession(ICoordinates coordinates, TimeSpan time)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<ICruise> ExtendCurrentSession(ITimeExtension timeExtension)
         {
             throw new NotImplementedException();
         }

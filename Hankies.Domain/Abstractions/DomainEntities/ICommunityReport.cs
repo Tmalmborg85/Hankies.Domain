@@ -17,7 +17,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <summary>
         /// Who is fileing this report.
         /// </summary>
-        public ICustomer Reporter { get; }
+        public  CCustomer Reporter { get; }
 
         /// <summary>
         /// The reason code for this report

@@ -31,12 +31,12 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        IStatus<IConversation> Join(ICustomer customer);
+        IStatus<IConversation> Join((CCustomer customer);
 
         /// <summary>
         /// Remove a customer's chat ID from this conversation. 
         /// </summary>
         /// <param name="customer"></param>
-        void Leave(ICustomer customer);
+        void Leave((CCustomer customer);
     }
 }

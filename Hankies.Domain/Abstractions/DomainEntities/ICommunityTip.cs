@@ -27,7 +27,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <summary>
         /// The customer who owns this tip
         /// </summary>
-        public ICustomer Author { get; }
+        public  CCustomer Author { get; }
 
         /// <summary>
         /// General area this tip was posted from. 

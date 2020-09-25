@@ -27,12 +27,12 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <summary>
         /// The customer who is responsible for this avatar.
         /// </summary>
-        public ICustomer Owner { get; }
+        public Customer CreatedByCustomer { get; }
 
         /// <summary>
         /// Gets an owner's chat ID
         /// </summary>
-        public Guid ChatId => Owner.ChatID;
+        public Guid ChatId => CreatedByCustomer.ChatID;
 
         /// <summary>
         /// A collection of cruise sessions this Avatar has started.
