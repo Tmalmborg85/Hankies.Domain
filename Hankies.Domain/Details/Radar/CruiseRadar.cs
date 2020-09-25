@@ -126,7 +126,7 @@ namespace Hankies.Domain.Details.Radar
         /// 6. Cruise can’t be clutter 
         /// 8. match one of my handkerchiefs.
         /// </remarks>
-        public void EvaluateNewEcho(RadarEcho echo)
+        public void EvaluateEcho(RadarEcho echo)
         {
             // Already in radar, stop evaluating as new echo.
             if (_clutter.ContainsKey(echo.Source.EchoID) ||
