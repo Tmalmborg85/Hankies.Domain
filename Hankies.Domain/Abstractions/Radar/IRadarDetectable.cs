@@ -6,10 +6,11 @@ using Hankies.Domain.Models.Abstractions;
 namespace Hankies.Domain.Abstractions.Radar
 {
     /// <summary>
-	/// An object that is detectable by a Hankies IRadar.
+	/// An object that is detectable by a <c>CruiseRadar</c>.
 	/// </summary>
 	/// <remarks>
-    /// Add this interface to any implementation that can be detected by a Radar.
+    /// Add this interface to any implementation that can be detected by a
+    /// <c>CruiseRadar</c>. Mostly implemented by <c>Avatars</c>. 
 	/// </remarks>
     public interface IRadarDetectable
     {
@@ -29,6 +30,6 @@ namespace Hankies.Domain.Abstractions.Radar
 		/// </summary>
 		/// <param name="pulse"></param>
 		/// <returns></returns>
-		public IStatus<EchoDetectedDomainEvent> Echo(IRadarPulse pulse);
+		public IStatus<EchoDetectedDomainEvent> Echo(RadarPulse pulse);
 	}
 }

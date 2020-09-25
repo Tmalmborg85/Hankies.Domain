@@ -16,7 +16,7 @@ namespace Hankies.Domain.Details.Radar
     /// </summary>
     public class CruiseRadar 
     {
-        public CruiseRadar(Cruise ownedBy, IEnumerable<Customer> blockedCustomers, )
+        public CruiseRadar(Cruise ownedBy, IEnumerable<Customer> blockedCustomers)
         {
             Owner = ownedBy;
         }
@@ -24,7 +24,7 @@ namespace Hankies.Domain.Details.Radar
         /// <summary>
         /// Detected objects keyed into a dictiunary by thier EchoID
         /// </summary>
-        private Dictionary<Guid, IRadarDetectable> _contacts { get; }
+        private Dictionary<Guid, Cruise> _contacts { get; }
 
         /// <summary>
         /// IAvatars the radar has picked up. 
@@ -33,13 +33,13 @@ namespace Hankies.Domain.Details.Radar
         /// In the context of maritime radar the term Contact means any echo
         /// detected on the radarscope not evaluated as clutter or as a false
         /// echo.</remarks>
-        public IEnumerable<IRadarDetectable> Contacts => _contacts?.Values
+        public IEnumerable<Cruise> Contacts => _contacts?.Values
             .ToList();
 
         /// <summary>
         /// Objects flagged as clutter keyed into a dicinary by EchoID
         /// </summary>
-        private Dictionary<Guid, IRadarDetectable> _clutter { get; }
+        private Dictionary<Guid, Cruise> _clutter { get; }
 
         /// <summary>
         /// IAvatars that dont match enouch factors to be considerd Contacts. 
@@ -49,18 +49,18 @@ namespace Hankies.Domain.Details.Radar
         /// (RF) echoes returned from targets which are uninteresting to the
         /// radar operators.
         /// </remarks>
-        public IEnumerable<IRadarDetectable> Clutter => _clutter?.Values
+        public IEnumerable<Cruise> Clutter => _clutter?.Values
             .ToList();
 
         /// <summary>
         /// Pulses this radar has emited. 
         /// </summary>
-        private HashSet<IRadarPulse> _pulses { get; }
+        private HashSet<RadarPulse> _pulses { get; }
 
         /// <summary>
         /// Pulses this radar has emited. 
         /// </summary>
-        public IEnumerable<IRadarPulse> Pulses => _pulses?.ToList();
+        public IEnumerable<RadarPulse> Pulses => _pulses?.ToList();
 
         /// <summary>
         /// The domain entity that owns this radar. Radars must be owned by a
@@ -126,40 +126,40 @@ namespace Hankies.Domain.Details.Radar
         /// 6. Cruise can’t be clutter 
         /// 8. match one of my handkerchiefs.
         /// </remarks>
-        public void EvaluateNewEcho(Cruise echo)
+        public void EvaluateNewEcho(RadarEcho echo)
         {
             // Already in radar, stop evaluating as new echo.
-            if (_clutter.ContainsKey(echo.EchoID) ||
-                _contacts.ContainsKey(echo.EchoID))
+            if (_clutter.ContainsKey(echo.Source.EchoID) ||
+                _contacts.ContainsKey(echo.Source.EchoID))
                 return;
 
-            if (EchoOwnerIsOnMyBlockedList(echo))
+            if (EchoOwnerIsOnMyBlockedList(echo.Source))
             {
-                FlagAsClutter(echo);
+                FlagAsClutter(echo.Source);
                 return;
             }
 
-            if (IAmBlockedByEchoOwner(echo))
+            if (IAmBlockedByEchoOwner(echo.Source))
             {
-                FlagAsClutter(echo);
+                FlagAsClutter(echo.Source);
                 return;
             }
 
             if (!echo.IsValid)
             {
-                FlagAsClutter(echo);
+                FlagAsClutter(echo.Source);
                 return;
             }
 
-            if (EchoHardPassedOnAnyOfMyHandkerchiefs(echo))
+            if (EchoHardPassedOnAnyOfMyHandkerchiefs(echo.Source))
             {
-                FlagAsClutter(echo);
+                FlagAsClutter(echo.Source);
                 return;
             }
 
-            if(EchoMatchesNoneOfMyHandkerchiefs(echo))
+            if(EchoMatchesNoneOfMyHandkerchiefs(echo.Source))
             {
-                FlagAsClutter(echo);
+                FlagAsClutter(echo.Source);
                 return;
             }
         }

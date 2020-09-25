@@ -41,9 +41,10 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </remarks>
         public Guid EchoID => CruisingAsAvatar.Id;
 
-        public EchoLocation CurrentLocation { get; private set; }
+        public EchoLocation Location { get; private set; }
 
         public IEnumerable<EchoLocation> Locations { get; private set; }
+
         /// <summary>
         /// Contains a collection of nearby avatars that meet your criteria
         /// and tools to look for them
@@ -69,15 +70,26 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <remarks>
         /// This only applies to avatars that are wearing a hood. 
         /// </remarks>
-        IEnumerable<IAvatar> HoodRemovedFor { get; }
-
-
+        IEnumerable<Avatar> HoodRemovedFor { get; }
 
         #endregion
 
-        public IStatus<EchoDetectedDomainEvent> Echo(IRadarPulse pulse)
+        public IStatus<EchoDetectedDomainEvent> Echo(RadarPulse pulse)
         {
-            throw new NotImplementedException();
+            var response = new Status<EchoDetectedDomainEvent>();
+
+            try
+            {
+                var echoEvent = new EchoDetectedDomainEvent(pulse, this);
+                this.AddDomainEvent(echoEvent);
+                response.RespondWith(echoEvent);
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return response;
         }
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()

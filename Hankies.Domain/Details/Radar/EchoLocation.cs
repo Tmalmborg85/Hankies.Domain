@@ -15,7 +15,8 @@ namespace Hankies.Domain.Details.Radar
     /// <summary>
     /// A validated location with a timestamp
     /// </summary>
-    public class EchoLocation : IEchoLocation<EchoLocation>, IValidateable
+    public class EchoLocation : IEchoLocation<EchoLocation>, IValidateable,
+        ICoordinates, IEquatable<EchoLocation>
     {
         #region constructors
         /// <summary>
@@ -35,6 +36,12 @@ namespace Hankies.Domain.Details.Radar
             OnValidate();
         }
 
+        /// <summary>
+        /// Create a new Echo Location with a specified Timestamp
+        /// </summary>
+        /// <param name="lat">Lattitude</param>
+        /// <param name="lon">Longitude</param>
+        /// <param name="timestamp">Timestamp from now or the past</param>
         public EchoLocation(double lat, double lon, DateTimeOffset timestamp)
         {
             Lattitude = lat;
@@ -44,6 +51,7 @@ namespace Hankies.Domain.Details.Radar
             OnValidate();
         }
         #endregion
+
         #region Properties
         public DateTimeOffset TimeStamp { get; private set; }
 
@@ -51,6 +59,7 @@ namespace Hankies.Domain.Details.Radar
 
         public double Longitude { get; private set; }
         #endregion
+
         #region Validation
         public bool IsValid
         {

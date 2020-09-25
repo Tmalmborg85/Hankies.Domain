@@ -5,12 +5,9 @@ using Hankies.Domain.Models.Abstractions;
 namespace Hankies.Domain.Abstractions.Radar
 {
     /// <summary>
-    /// Time stamped coordinates detectable by IRadars
+    /// Time stamped location detectable by <c>Cruise Radars</c>
     /// </summary>
-    /// <remarks>
-    /// Im
-    /// </remarks>
-    public interface IEchoLocation<T> : ICoordinates, IEquatable<T>
+    public interface IEchoLocation<T>
     {
         /// <summary>
         /// When the coordnates were recorded. 
