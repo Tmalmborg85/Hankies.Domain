@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Hankies.Domain.Abstractions.DomainEntities;
 using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEntities;
@@ -21,6 +20,7 @@ namespace Hankies.Domain.Details.Radar
             Owner = ownedBy;
         }
         #region Properties
+
         /// <summary>
         /// Detected objects keyed into a dictiunary by thier EchoID
         /// </summary>
@@ -126,11 +126,10 @@ namespace Hankies.Domain.Details.Radar
         /// 6. Cruise can’t be clutter 
         /// 8. match one of my handkerchiefs.
         /// </remarks>
-        public void EvaluateEcho(RadarEcho echo)
+        private void EvaluateEchoForClutter(RadarEcho echo)
         {
-            // Already in radar, stop evaluating as new echo.
-            if (_clutter.ContainsKey(echo.Source.EchoID) ||
-                _contacts.ContainsKey(echo.Source.EchoID))
+            // Already in clutter, stop evaluating as new echo.
+            if (_clutter.ContainsKey(echo.Source.EchoID))
                 return;
 
             if (EchoOwnerIsOnMyBlockedList(echo.Source))
@@ -166,7 +165,7 @@ namespace Hankies.Domain.Details.Radar
 
         private bool EchoMatchesNoneOfMyHandkerchiefs(Cruise echo)
         {
-            echo.CruisingAsAvatar.HasAnyCo
+            echo.CruisingAsAvatar.Handkerchiefs
         }
 
         /// <summary>
@@ -222,7 +221,7 @@ namespace Hankies.Domain.Details.Radar
         /// This could be used in case an Avatar later decides an IAvatar is
         /// clutter. If the IAvatar matches any avatars in Contacts, they
         /// should be removed. </remarks>
-        public IStatus<CruiseRadar> FlagAsClutter(IRadarDetectable detectedObject)
+        public IStatus<CruiseRadar> FlagAsClutter(Cruise detectedObject)
         {
             var response = new Status<CruiseRadar>();
 
@@ -257,7 +256,7 @@ namespace Hankies.Domain.Details.Radar
         /// This would be a good place to pre-flag blocked customers.
         /// </remarks>
         public IStatus<CruiseRadar> FlagAsClutter
-            (IEnumerable<IRadarDetectable> detectedObjects)
+            (IEnumerable<Cruise> detectedObjects)
         {
             var response = new Status<CruiseRadar>();
 

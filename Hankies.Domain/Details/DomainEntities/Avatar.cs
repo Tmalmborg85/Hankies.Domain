@@ -66,14 +66,14 @@ namespace Hankies.Domain.Details.DomainEntities
 
         private HashSet<Handkerchief> handkerchiefs;
 
-        public IEnumerable<IHandkerchief> Handkerchiefs => handkerchiefs.ToList();
+        public IEnumerable<Handkerchief> Handkerchiefs => handkerchiefs.ToList();
 
-        public IEnumerable<IHandkerchief> LeftPocket => handkerchiefs
-            .Where((IHandkerchief hanky) => hanky.InPockets.Contains(PocketTypes.Left))
+        public IEnumerable<Handkerchief> LeftPocket => handkerchiefs
+            .Where((Handkerchief hanky) => hanky.InPockets.Contains(PocketTypes.Left))
             .ToList();
 
-        public IEnumerable<IHandkerchief> RightPocket => handkerchiefs
-            .Where((IHandkerchief hanky) => hanky.InPockets.Contains(PocketTypes.Right))
+        public IEnumerable<Handkerchief> RightPocket => handkerchiefs
+            .Where((Handkerchief hanky) => hanky.InPockets.Contains(PocketTypes.Right))
             .ToList();
 
         public DateTimeOffset? DeletedAt { get; private set; }

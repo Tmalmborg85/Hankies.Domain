@@ -105,17 +105,17 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <remarks>
         /// Changing this would be a new avatar.
         /// </remarks>
-        public IEnumerable<IHandkerchief> Handkerchiefs { get; }
+        public IEnumerable<Handkerchief> Handkerchiefs { get; }
 
         /// <summary>
         /// Only the handkerchiefs in the left pocket
         /// </summary>
-        public IEnumerable<IHandkerchief> LeftPocket { get; }
+        public IEnumerable<Handkerchief> LeftPocket { get; }
 
         /// <summary>
         /// Only the handkerchiefs in the right pocket
         /// </summary>
-        public IEnumerable<IHandkerchief> RightPocket { get; }
+        public IEnumerable<Handkerchief> RightPocket { get; }
 
         /// <summary>
         /// When the current session expires. Can be extended.
