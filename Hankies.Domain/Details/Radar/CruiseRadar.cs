@@ -11,8 +11,17 @@ using Hankies.Domain.Models.Details;
 namespace Hankies.Domain.Details.Radar
 {
     /// <summary>
-    /// A radar used to look for other IEchos (avatars) in an area. 
+    /// Tracks nearby Avatars that are crusing that may be of interest.  
     /// </summary>
+    /// <remarks>
+    /// A *CruiseRadar* is used to find nearby avatars that are cruising and
+    /// correspond to at least some portions of my cruising avatar. Avatars on a
+    /// CruiseRadar are added by various triggers and methods. It is up to the
+    /// CruiseRadar to ensure Avatars added meet the required criteria.
+    /// Conceptually the CruiseRadars are like real Radars so their properties
+    /// and methods are named using maritime radar ubiquitous language as much
+    /// as possible. 
+    /// </remarks>
     public class CruiseRadar 
     {
         public CruiseRadar(Cruise ownedBy, IEnumerable<Customer> blockedCustomers)
@@ -22,24 +31,32 @@ namespace Hankies.Domain.Details.Radar
         #region Properties
 
         /// <summary>
-        /// Detected objects keyed into a dictiunary by thier EchoID
+        /// Unique cruise contacts this radar has that have not been flagged as
+        /// clutter.  
         /// </summary>
-        private Dictionary<Guid, Cruise> _contacts { get; }
+        /// <remarks>
+        /// This backing is a dictinary in place of a list so that O(1) lookups
+        /// can be done for Contacts instead on O(N).
+        /// </remarks>
+        private HashSet<Cruise> _contacts { get; }
 
         /// <summary>
-        /// IAvatars the radar has picked up. 
+        /// Cruises the radar has picked up. 
         /// </summary>
         /// <remarks>
         /// In the context of maritime radar the term Contact means any echo
         /// detected on the radarscope not evaluated as clutter or as a false
         /// echo.</remarks>
-        public IEnumerable<Cruise> Contacts => _contacts?.Values
-            .ToList();
+        public IEnumerable<Cruise> Contacts => _contacts?.ToList();
 
         /// <summary>
         /// Objects flagged as clutter keyed into a dicinary by EchoID
         /// </summary>
-        private Dictionary<Guid, Cruise> _clutter { get; }
+        /// <remarks>
+        /// This backing is a dictinary in place of a list so that O(1) lookups
+        /// can be done for Contacts instead on O(N).
+        /// </remarks>
+        private HashSet<Cruise> _clutter { get; }
 
         /// <summary>
         /// IAvatars that dont match enouch factors to be considerd Contacts. 
@@ -49,8 +66,7 @@ namespace Hankies.Domain.Details.Radar
         /// (RF) echoes returned from targets which are uninteresting to the
         /// radar operators.
         /// </remarks>
-        public IEnumerable<Cruise> Clutter => _clutter?.Values
-            .ToList();
+        public IEnumerable<Cruise> Clutter => _clutter?.ToList();
 
         /// <summary>
         /// Pulses this radar has emited. 
@@ -122,14 +138,15 @@ namespace Hankies.Domain.Details.Radar
         /// 2. I can’t be blocked by echo’s owning customer.
         /// 3. Cruises must be valid
         /// 4. Cruises can’t already be in the my Radar.
-        /// 5. Cruise's Avatar can’t have handkerchiefs in my hard pass handkerchiefs collection.
+        /// 5. Cruise's Avatar can’t have handkerchiefs in my hard pass
+        /// handkerchiefs collection.
         /// 6. Cruise can’t be clutter 
         /// 8. match one of my handkerchiefs.
         /// </remarks>
         private void EvaluateEchoForClutter(RadarEcho echo)
         {
             // Already in clutter, stop evaluating as new echo.
-            if (_clutter.ContainsKey(echo.Source.EchoID))
+            if (_clutter.Contains(echo.Source))
                 return;
 
             if (EchoOwnerIsOnMyBlockedList(echo.Source))
@@ -221,25 +238,17 @@ namespace Hankies.Domain.Details.Radar
         /// This could be used in case an Avatar later decides an IAvatar is
         /// clutter. If the IAvatar matches any avatars in Contacts, they
         /// should be removed. </remarks>
-        public IStatus<CruiseRadar> FlagAsClutter(Cruise detectedObject)
+        public IStatus<CruiseRadar> FlagAsClutter(IRadarDetectable detectedObject)
         {
             var response = new Status<CruiseRadar>();
-
-            var clutterKey = detectedObject.EchoID;
-            var clutterValue = detectedObject;
 
             if (detectedObject == null)
                 response.AddError("Object to flag as clutter cannot be null");
 
-            if (clutterKey == null)
-                response.AddError("Clutter must have a GUID key to be added " +
-                    "to clutter the collection");
-
-            if (!_clutter.ContainsKey(clutterKey))
+            if (!_clutter.Contains(detectedObject))
             {
-                _clutter.Add(clutterKey, clutterValue);
-
-                RemoveClutterFromContact(clutterKey);
+                _clutter.Add(detectedObject);
+                RemoveClutterFromContact(detectedObject);
             }
 
             response.RespondWith(this);
@@ -277,10 +286,10 @@ namespace Hankies.Domain.Details.Radar
             return response;
         }
 
-        private void RemoveClutterFromContact(Guid clutterKey)
+        private void RemoveClutterFromContact(IRadarDetectable clutter)
         {
-            if (_contacts.ContainsKey(clutterKey))
-                _contacts.Remove(clutterKey);
+            if (_contacts.Contains(clutter))
+                _contacts.Remove(clutter);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEvents;
@@ -90,6 +91,14 @@ namespace Hankies.Domain.Details.DomainEntities
             }
 
             return response;
+        }
+
+        public bool Equals([AllowNull] IRadarDetectable other)
+        {
+            if (other == null)
+                return false;
+
+            return this.EchoID == other.EchoID;
         }
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()

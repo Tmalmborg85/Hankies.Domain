@@ -12,7 +12,7 @@ namespace Hankies.Domain.Abstractions.Radar
     /// Add this interface to any implementation that can be detected by a
     /// <c>CruiseRadar</c>. Mostly implemented by <c>Avatars</c>. 
 	/// </remarks>
-    public interface IRadarDetectable
+    public interface IRadarDetectable : IEquatable<IRadarDetectable>
     {
 		/// <summary>
         /// The unique ID that radars will use to track this item. 
