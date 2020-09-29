@@ -11,8 +11,13 @@ using Hankies.Domain.Rules;
 
 namespace Hankies.Domain.Details.DomainEntities
 {
-    public class Avatar : DomainEntity, IAvatar
+    public class Avatar : DomainEntity, IDeletableDomainEntity, IAvatar
     {
+        #region Constructors
+
+        /// <summary>
+        /// For serialization and ORMs
+        /// </summary>
         private Avatar() { }
 
         public Avatar(Guid id, DateTimeOffset createdAt, Customer owner,
@@ -20,41 +25,73 @@ namespace Hankies.Domain.Details.DomainEntities
             (id, createdAt)
         {
             // Newly created avatars automatically start cruising.
-            CreatedByCustomer = owner;
+            Customer = owner;
             Handle = handle;
 
             OnValidate();
         }
+        #endregion
 
-        public Customer CreatedByCustomer { get; private set; }
+        #region Properties
 
         /// <summary>
-        /// Hashtable backing. 
+        /// The customer who is responsible for this avatar.
         /// </summary>
-        private HashSet<CruiseSession> sessions;
+        public Customer Customer { get; private set; }
 
-        /// <inheritdoc cref="IAvatar.Sessions"/>
-        public IEnumerable<ICruisee>> Sessions => sessions?
-            .ToList();
+        private HashSet<Cruise> cruises;
 
-        public ICruisee LastSession =>
-            sessions.OrderBy((ICruisee arg) => arg.StartedAt)
-            .FirstOrDefault();
+        public IEnumerable<Cruise> Cruises => cruises?.ToList();
 
+        //public Cruise LastSession =>
+        //    sessions.OrderBy((ICruisee arg) => arg.StartedAt)
+        //    .FirstOrDefault();
+
+        /// <summary>
+        /// Thes the owninmg customers chat ID. Chat IDs belong to the
+        /// customer object. 
+        /// </summary>
+        public Guid ChatId => Customer.ChatID;
+
+        /// <summary>
+        /// A human readable string indicating what others should call you.
+        /// </summary>
+        /// <example>
+        /// Daddy, Pig, Gristle McThornbody</example>
         public string Handle { get; private set; }
 
+        /// <summary>
+        /// Indicates if an avatar can see other's photos by default. Immutable. 
+        /// </summary>
+        /// <remarks>
+        /// Exceptions to the blindfold rule are granted in the avatar sessions
+        /// </remarks>
         public bool Blindfolded { get; private set; }
 
+        /// <summary>
+        /// Indicates if others can see this avatar's photos by default.
+        /// Immutable.
+        /// </summary>
+        /// /// <remarks>
+        /// Exceptions to the hooded rule are granted in the avatar sessions
+        /// </remarks>
         public bool Hooded { get; private set; }
 
         public IPhoto ImpressionPhoto { get; private set; }
 
         public string ImpressionDescription { get; private set; }
 
+        public DateTimeOffset? DeletedAt { get; private set; }
+
+        public bool Deleted { get; private set; }
+
+        #endregion
+
+        #region Aggregates
         /// <summary>
         /// Hash set of all photos this customer owns
         /// </summary>
-        private HashSet<CustomerPhoto> photos;
+        private HashSet<IPhoto> photos;
 
         public IEnumerable<IPhoto> ExposingPhotos => photos?
             .Where((IPhoto arg) => arg.Rating == PhotoRatings.NSFW)
@@ -76,17 +113,11 @@ namespace Hankies.Domain.Details.DomainEntities
             .Where((Handkerchief hanky) => hanky.InPockets.Contains(PocketTypes.Right))
             .ToList();
 
-        public DateTimeOffset? DeletedAt { get; private set; }
-
-        public bool Deleted { get; private set; }
-
+        #endregion
+        
         public bool HasActiveCruiseSession => throw new NotImplementedException();
 
-        public IEnumerable<ICruise> Sessions => throw new NotImplementedException();
-
-        ICruise IAvatar.LastSession => throw new NotImplementedException();
-
-        public bool CanISeeThem(IAvatar them)
+        public bool CanISeeThem(Avatar them)
         {
             // If I am blindfolded I can see no one.
             if (Blindfolded)
@@ -186,15 +217,15 @@ namespace Hankies.Domain.Details.DomainEntities
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
         {
-            if (CreatedByCustomer == null)
+            if (Customer == null)
             {
                 yield return new HankiesRuleViolation
-                    ("Avatars are owned by one customer.", CreatedByCustomer);
+                    ("Avatars are owned by one customer.", Customer);
             }
-            else if (CreatedByCustomer.Avatars != null && CreatedByCustomer.Avatars.Contains(this))
+            else if (Customer.Avatars != null && Customer.Avatars.Contains(this))
             {
                 yield return new HankiesRuleViolation
-                    ("Avatars are distinct per customer.", CreatedByCustomer.Avatars);
+                    ("Avatars are distinct per customer.", Customer.Avatars);
             }
 
             // Rule: Newly created avatars automatically start cruising.

@@ -29,7 +29,7 @@ namespace Hankies.Domain.Details.Radar
         const float MinRadarRange = 1.0f;
         const float MaxRadarRange = 10.0f;
 
-
+        #region Constructors
         /// <summary>
         /// New radar with no pre exsisting data. 
         /// </summary>
@@ -80,6 +80,7 @@ namespace Hankies.Domain.Details.Radar
             _clutter = clutter;
             _contacts = contacts;
         }
+        #endregion
 
         #region Properties
 
@@ -144,7 +145,7 @@ namespace Hankies.Domain.Details.Radar
 
         #endregion
 
-        #region public methods
+        #region Actions
         /// <summary>
         /// Emits a radar pulse via a PulseEmittedDomainEvent
         /// </summary>
@@ -271,6 +272,9 @@ namespace Hankies.Domain.Details.Radar
             response.RespondWith(this);
             return response;
         }
+        #endregion
+
+        #region Helper Methods
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
         {
@@ -301,7 +305,7 @@ namespace Hankies.Domain.Details.Radar
                     _clutter);
 
         }
-        #endregion
+
 
         /// <summary>
         /// Evatulate a single new echo as Clutter or Contact.
@@ -358,8 +362,8 @@ namespace Hankies.Domain.Details.Radar
         /// <returns></returns>
         private bool EchoHardPassedOnAnyOfMyHandkerchiefs(Cruise echo)
         {
-            return echo.CruisingAsAvatar.HardPassedOnAnyOfTheseHandkerchiefs
-                (Owner.CruisingAsAvatar.Handkerchiefs);
+            return echo.Avatar.HardPassedOnAnyOfTheseHandkerchiefs
+                (Owner.Avatar.Handkerchiefs);
         }
 
         /// <summary>
@@ -369,8 +373,8 @@ namespace Hankies.Domain.Details.Radar
         /// <returns></returns>
         private bool IAmBlockedByEchoOwner(Cruise echo)
         {
-            return echo.CruisingAsAvatar.CreatedByCustomer.HasBlocked
-                (Owner.CruisingAsAvatar.CreatedByCustomer);
+            return echo.Avatar.Customer.HasBlocked
+                (Owner.Avatar.Customer);
         }
 
         /// <summary>
@@ -380,8 +384,8 @@ namespace Hankies.Domain.Details.Radar
         /// <returns></returns>
         private bool EchoOwnerIsOnMyBlockedList(Cruise echo)
         {
-            return Owner.CruisingAsAvatar.CreatedByCustomer.HasBlocked
-                (echo.CruisingAsAvatar.CreatedByCustomer);
+            return Owner.Avatar.Customer.HasBlocked
+                (echo.Avatar.Customer);
         }
 
         /// <summary>
@@ -394,6 +398,6 @@ namespace Hankies.Domain.Details.Radar
                 _contacts.Remove(clutter);
         }
 
-        
+        #endregion
     }
 }

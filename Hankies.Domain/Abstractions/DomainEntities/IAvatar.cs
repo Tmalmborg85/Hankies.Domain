@@ -24,16 +24,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
     {
         #region Properties
 
-        /// <summary>
-        /// The customer who is responsible for this avatar.
-        /// </summary>
-        public Customer CreatedByCustomer { get; }
-
-        /// <summary>
-        /// Gets an owner's chat ID
-        /// </summary>
-        public Guid ChatId => CreatedByCustomer.ChatID;
-
+        
         /// <summary>
         /// A collection of cruise sessions this Avatar has started.
         /// </summary>
@@ -43,30 +34,6 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// The last or current cruise session. 
         /// </summary>
         public ICruise LastSession { get; }
-
-        /// <summary>
-        /// A human readable string indicating what others should call you.
-        /// </summary>
-        /// <example>
-        /// Daddy, Pig, Gristle McThornbody</example>
-        public string Handle { get; }
-
-        /// <summary>
-        /// Indicates if an avatar can see other's photos by default. Immutable. 
-        /// </summary>
-        /// <remarks>
-        /// Exceptions to the blindfold rule are granted in the avatar sessions
-        /// </remarks>
-        public bool Blindfolded { get; }
-
-        /// <summary>
-        /// Indicates if others can see this avatar's photos by default.
-        /// Immutable.
-        /// </summary>
-        /// /// <remarks>
-        /// Exceptions to the hooded rule are granted in the avatar sessions
-        /// </remarks>
-        public bool Hooded { get; }
 
         /// <summary>
         /// The first thing others see.   

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEvents;
@@ -21,6 +22,28 @@ namespace Hankies.Domain.Details.DomainEntities
     /// </remarks>
     public class Cruise : DomainEntity, IRadarDetectable
     {
+        #region Constructors
+
+        /// <summary>
+        /// For serialization and ORMs
+        /// </summary>
+        private Cruise() { }
+
+        public Cruise(Avatar avatar, EchoLocation startLocation)
+        {
+           
+            Avatar = avatar;
+
+            Locations = new List<EchoLocation>();
+            Locations.Add(startLocation);
+
+            if (StartedAt == null)
+                StartedAt = DateTimeOffset.UtcNow;
+
+            OnValidate();
+        }
+        #endregion
+
         #region Properties
         /// <summary>
         /// When this session was started. Immutable.
@@ -30,7 +53,7 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <summary>
         /// The Avatar this cruise is for. 
         /// </summary>
-        public Avatar CruisingAsAvatar { get; private set; }
+        public Avatar Avatar { get; private set; }
 
         /// <summary>
         /// ID that can be picked up by a <c cref="CruiseRadar">Cruise Radar</c>
@@ -40,11 +63,12 @@ namespace Hankies.Domain.Details.DomainEntities
         /// This ensures that echo flagging (clutter or contact) will persist
         /// in the cruise radars session
         /// </remarks>
-        public Guid EchoID => CruisingAsAvatar.Id;
+        public Guid EchoID => Avatar.Id;
 
-        public EchoLocation Location { get; private set; }
+        public IList<EchoLocation> Locations { get; private set; }
 
-        public IEnumerable<EchoLocation> Locations { get; private set; }
+        public EchoLocation MostRecentLocation => Locations.OrderBy
+            (EL => EL.TimeStamp).FirstOrDefault();
 
         /// <summary>
         /// Contains a collection of nearby avatars that meet your criteria
@@ -52,6 +76,7 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </summary>
         CruiseRadar CruiseRadar { get; }
 
+        
         /// <summary>
         /// Avatars that I have cruised. 
         /// </summary>
@@ -75,6 +100,7 @@ namespace Hankies.Domain.Details.DomainEntities
 
         #endregion
 
+        #region Actions
         public IStatus<EchoDetectedDomainEvent> Echo(RadarPulse pulse)
         {
             var response = new Status<EchoDetectedDomainEvent>();
@@ -93,6 +119,9 @@ namespace Hankies.Domain.Details.DomainEntities
             return response;
         }
 
+        #endregion
+
+        #region Helper Methods
         public bool Equals([AllowNull] IRadarDetectable other)
         {
             if (other == null)
@@ -106,24 +135,6 @@ namespace Hankies.Domain.Details.DomainEntities
             throw new NotImplementedException();
         }
 
-        Status<Cruise> CruiseALocation(ICoordinates location)
-        {
-
-        }
-
-        /// <summary>
-        /// You wont see this avatar again this cruise. May see again in later
-        /// cruise. VERY different from a block. 
-        /// </summary>
-        /// <param name="avatar"></param>
-        /// <returns>An IRadar. Check the Clutter collection for the added
-        /// IAvatar</returns>
-        /// <remarks>
-        /// Avatar is marked as clutter in this cruises radar. 
-        /// </remarks>
-        Status<IRadar> PassAvatarThisTime(Avatar avatar)
-        {
-
-        }
+        #endregion
     }
 }
