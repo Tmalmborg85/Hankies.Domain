@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hankies.Domain.Abstractions;
 using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEntities;
 using Hankies.Domain.Details.DomainEvents;
+using Hankies.Domain.HelperClasses;
 using Hankies.Domain.Models.Abstractions;
 using Hankies.Domain.Models.Details;
 
@@ -22,12 +24,63 @@ namespace Hankies.Domain.Details.Radar
     /// and methods are named using maritime radar ubiquitous language as much
     /// as possible. 
     /// </remarks>
-    public class CruiseRadar 
+    public class CruiseRadar : ValidateableObject
     {
-        public CruiseRadar(Cruise ownedBy, IEnumerable<Customer> blockedCustomers)
+        const float MinRadarRange = 1.0f;
+        const float MaxRadarRange = 10.0f;
+
+
+        /// <summary>
+        /// New radar with no pre exsisting data. 
+        /// </summary>
+        /// <param name="ownedBy">The cruise this radar belongs to.</param>
+        /// <param name="range">How far this radar will scan from its
+        /// centerpoint.</param>
+        public CruiseRadar(Cruise ownedBy, float range)
         {
+            if (_contacts == null) 
+                _contacts = new HashSet<Cruise>();
+
+            if (_clutter == null)
+                _clutter = new HashSet<Cruise>();
+
+            _pulses = new HashSet<RadarPulse>();
+
             Owner = ownedBy;
+            Range = range;
+
+            OnValidate();
         }
+
+        /// <summary>
+        /// New radar pre-populated with  clutter data. 
+        /// </summary>
+        /// <param name="ownedBy">The cruise this radar belongs to.</param>
+        /// <param name="range">How far this radar will scan from its
+        /// centerpoint.</param>
+        /// <param name="clutter">Items this radar should ignore</param>
+        public CruiseRadar(Cruise ownedBy, float range
+            , HashSet<Cruise> clutter) : this(ownedBy, range)
+        {
+            _clutter = clutter;
+        }
+
+        /// <summary>
+        /// Radar with pre-populated contacts and clutter data. 
+        /// </summary>
+        /// <param name="ownedBy">The cruise this radar belongs to.</param>
+        /// <param name="range">How far this radar will scan from its
+        /// centerpoint.</param>
+        /// <param name="clutter">Items this radar should ignore</param>
+        /// <param name="contacts">Items this radar has already contacted</param>
+        public CruiseRadar(Cruise ownedBy, float range
+            , HashSet<Cruise> clutter, HashSet<Cruise> contacts)
+            : this(ownedBy, range)
+        {
+            _clutter = clutter;
+            _contacts = contacts;
+        }
+
         #region Properties
 
         /// <summary>
@@ -91,6 +144,7 @@ namespace Hankies.Domain.Details.Radar
 
         #endregion
 
+        #region public methods
         /// <summary>
         /// Emits a radar pulse via a PulseEmittedDomainEvent
         /// </summary>
@@ -129,126 +183,58 @@ namespace Hankies.Domain.Details.Radar
         }
 
         /// <summary>
-        /// Evatulate a single new echo as Clutter or Contact.
+        /// Return an echo from a pulse this radar emited.  
         /// </summary>
-        /// <param name="echo"></param>
-        /// <remarks>
-        /// 1. Cruise’s owning customer can not be blocked by my cruises’s
-        ///     owning customer.
-        /// 2. I can’t be blocked by echo’s owning customer.
-        /// 3. Cruises must be valid
-        /// 4. Cruises can’t already be in the my Radar.
-        /// 5. Cruise's Avatar can’t have handkerchiefs in my hard pass
-        /// handkerchiefs collection.
-        /// 6. Cruise can’t be clutter 
-        /// 8. match one of my handkerchiefs.
-        /// </remarks>
-        private void EvaluateEchoForClutter(RadarEcho echo)
-        {
-            // Already in clutter, stop evaluating as new echo.
-            if (_clutter.Contains(echo.Source))
-                return;
-
-            if (EchoOwnerIsOnMyBlockedList(echo.Source))
-            {
-                FlagAsClutter(echo.Source);
-                return;
-            }
-
-            if (IAmBlockedByEchoOwner(echo.Source))
-            {
-                FlagAsClutter(echo.Source);
-                return;
-            }
-
-            if (!echo.IsValid)
-            {
-                FlagAsClutter(echo.Source);
-                return;
-            }
-
-            if (EchoHardPassedOnAnyOfMyHandkerchiefs(echo.Source))
-            {
-                FlagAsClutter(echo.Source);
-                return;
-            }
-
-            if(EchoMatchesNoneOfMyHandkerchiefs(echo.Source))
-            {
-                FlagAsClutter(echo.Source);
-                return;
-            }
-        }
-
-        private bool EchoMatchesNoneOfMyHandkerchiefs(Cruise echo)
-        {
-            echo.CruisingAsAvatar.Handkerchiefs
-        }
-
-        /// <summary>
-        /// Checks if a Cruise's Avatar has hard passed on any of my Avatars
-        /// handkerchiefs. 
-        /// </summary>
-        /// <param name="echo"></param>
+        /// <param name="returnedEcho">The echo to return.</param>
         /// <returns></returns>
-        private bool EchoHardPassedOnAnyOfMyHandkerchiefs(Cruise echo)
+        public IStatus<CruiseRadar> ReturnEcho(RadarEcho returnedEcho)
         {
-            return echo.CruisingAsAvatar.HardPassedOnAnyOfTheseHandkerchiefs
-                (Owner.CruisingAsAvatar.Handkerchiefs);
-        }
+            var response = new Status<CruiseRadar>();
 
-        /// <summary>
-        /// Checks if I am blocked by customer who created the echo. 
-        /// </summary>
-        /// <param name="echo"></param>
-        /// <returns></returns>
-        private bool IAmBlockedByEchoOwner(Cruise echo)
-        {
-            return echo.CruisingAsAvatar.CreatedByCustomer.HasBlocked
-                (Owner.CruisingAsAvatar.CreatedByCustomer);
-        }
+            try
+            {
+                if (_pulses.Contains(returnedEcho.OriginatingPulse))
+                {
+                    ContactOrClutter(returnedEcho);
+                }
+                else
+                {
+                    response.AddError
+                        ("Echos can only be returned to the radars that " +
+                        "emited the original pulse. ");
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
 
-        /// <summary>
-        /// Checks if the customer who created this cruise is blocked by me. 
-        /// </summary>
-        /// <param name="echo"></param>
-        /// <returns></returns>
-        private bool EchoOwnerIsOnMyBlockedList(Cruise echo)
-        {
-            return Owner.CruisingAsAvatar.CreatedByCustomer.HasBlocked
-                (echo.CruisingAsAvatar.CreatedByCustomer);
-        }
+            response.RespondWith(this);
+            return response;
 
-        /// <summary>
-        /// Evaluate many Echos as Clutter or Contacts.
-        /// </summary>
-        /// <param name="echos">The echos to evaluate.</param>
-        public void EvaluateEchos(IEnumerable<Cruise> echos)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Manualy flag an avatar as clutter for this radar, skipping the
         /// normal EvaluateEcho method.
         /// </summary>
-        /// <param name="detectedObject">The object to be flagged</param>
+        /// <param name="cruise">The object to be flagged</param>
         /// <returns>A status.</returns>
         /// <remarks>
         /// This could be used in case an Avatar later decides an IAvatar is
         /// clutter. If the IAvatar matches any avatars in Contacts, they
         /// should be removed. </remarks>
-        public IStatus<CruiseRadar> FlagAsClutter(IRadarDetectable detectedObject)
+        public IStatus<CruiseRadar> FlagAsClutter(Cruise cruise)
         {
             var response = new Status<CruiseRadar>();
 
-            if (detectedObject == null)
+            if (cruise == null)
                 response.AddError("Object to flag as clutter cannot be null");
 
-            if (!_clutter.Contains(detectedObject))
+            if (!_clutter.Contains(cruise))
             {
-                _clutter.Add(detectedObject);
-                RemoveClutterFromContact(detectedObject);
+                _clutter.Add(cruise);
+                RemoveClutterFromContact(cruise);
             }
 
             response.RespondWith(this);
@@ -286,10 +272,128 @@ namespace Hankies.Domain.Details.Radar
             return response;
         }
 
-        private void RemoveClutterFromContact(IRadarDetectable clutter)
+        public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
+        {
+            if (Owner == null)
+                yield return new HankiesRuleViolation
+                    ("Radars must be owned by a non null cruise", "Owner");
+
+            if (Range < MinRadarRange)
+                yield return new HankiesRuleViolation
+                    ("Radar range must be greater than " + MinRadarRange, Range);
+
+            if (Range > MinRadarRange)
+                yield return new HankiesRuleViolation
+                    ("Radar range must be less than " + MaxRadarRange, Range);
+
+            if (Pulses == null)
+                yield return new HankiesRuleViolation
+                    ("Radars must have a non null pulse collection", _pulses);
+
+            if (Contacts == null)
+                yield return new HankiesRuleViolation
+                    ("Radars must have a non null contacts collection",
+                    _contacts);
+
+            if (Clutter == null)
+                yield return new HankiesRuleViolation
+                    ("Radars must have a non null clutter collection",
+                    _clutter);
+
+        }
+        #endregion
+
+        /// <summary>
+        /// Evatulate a single new echo as Clutter or Contact.
+        /// </summary>
+        /// <param name="echo"></param>
+        /// <remarks>
+        /// 1. Cruise’s owning customer can not be blocked by my cruises’s
+        ///     owning customer.
+        /// 2. I can’t be blocked by echo’s owning customer.
+        /// 3. Cruises must be valid
+        /// 4. Cruises can’t already be in the my Radar.
+        /// 5. Cruise's Avatar can’t have handkerchiefs in my hard pass
+        /// handkerchiefs collection.
+        /// 6. Cruise can’t be clutter 
+        /// 8. match one of my handkerchiefs.
+        /// </remarks>
+        private void ContactOrClutter(RadarEcho echo)
+        {
+            // Already in clutter, stop evaluating as new echo.
+            if (_clutter.Contains(echo.Source))
+                return;
+
+            if (EchoOwnerIsOnMyBlockedList(echo.Source))
+            {
+                FlagAsClutter(echo.Source);
+                return;
+            }
+
+            if (IAmBlockedByEchoOwner(echo.Source))
+            {
+                FlagAsClutter(echo.Source);
+                return;
+            }
+
+            if (!echo.IsValid)
+            {
+                FlagAsClutter(echo.Source);
+                return;
+            }
+
+            if (EchoHardPassedOnAnyOfMyHandkerchiefs(echo.Source))
+            {
+                FlagAsClutter(echo.Source);
+                return;
+            }
+            
+        }
+
+        /// <summary>
+        /// Checks if a Cruise's Avatar has hard passed on any of my Avatars
+        /// handkerchiefs. 
+        /// </summary>
+        /// <param name="echo"></param>
+        /// <returns></returns>
+        private bool EchoHardPassedOnAnyOfMyHandkerchiefs(Cruise echo)
+        {
+            return echo.CruisingAsAvatar.HardPassedOnAnyOfTheseHandkerchiefs
+                (Owner.CruisingAsAvatar.Handkerchiefs);
+        }
+
+        /// <summary>
+        /// Checks if I am blocked by customer who created the echo. 
+        /// </summary>
+        /// <param name="echo"></param>
+        /// <returns></returns>
+        private bool IAmBlockedByEchoOwner(Cruise echo)
+        {
+            return echo.CruisingAsAvatar.CreatedByCustomer.HasBlocked
+                (Owner.CruisingAsAvatar.CreatedByCustomer);
+        }
+
+        /// <summary>
+        /// Is the customer who owns this cruise blocked by me. 
+        /// </summary>
+        /// <param name="echo"></param>
+        /// <returns></returns>
+        private bool EchoOwnerIsOnMyBlockedList(Cruise echo)
+        {
+            return Owner.CruisingAsAvatar.CreatedByCustomer.HasBlocked
+                (echo.CruisingAsAvatar.CreatedByCustomer);
+        }
+
+        /// <summary>
+        /// Remove clutter from the contact list if it is there. 
+        /// </summary>
+        /// <param name="clutter"></param>
+        private void RemoveClutterFromContact(Cruise clutter)
         {
             if (_contacts.Contains(clutter))
                 _contacts.Remove(clutter);
         }
+
+        
     }
 }

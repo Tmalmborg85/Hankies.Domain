@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hankies.Domain.Abstractions;
-using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Details.DomainEntities;
+using Hankies.Domain.Details.ValueObject;
 using Hankies.Domain.HelperClasses;
 
 namespace Hankies.Domain.Details.Radar
@@ -31,6 +31,8 @@ namespace Hankies.Domain.Details.Radar
         /// When this echo was triggerd
         /// </summary>
         public DateTimeOffset EchoedAt { get; }
+
+        public HandkerchiefMatchResult MatchResults { get; }
 
         /// <summary>
         /// The radar detectable object the Originating Pulse 'bounced' off of. 
