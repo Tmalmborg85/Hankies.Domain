@@ -70,6 +70,8 @@ namespace Hankies.Domain.Details.DomainEntities
         public EchoLocation MostRecentLocation => Locations.OrderBy
             (EL => EL.TimeStamp).FirstOrDefault();
 
+
+        
         /// <summary>
         /// Contains a collection of nearby avatars that meet your criteria
         /// and tools to look for them

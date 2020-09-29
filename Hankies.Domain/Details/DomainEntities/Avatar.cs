@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hankies.Domain.Abstractions.DomainEntities;
-using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.HelperClasses;
 using Hankies.Domain.Models.Abstractions;
@@ -11,7 +10,24 @@ using Hankies.Domain.Rules;
 
 namespace Hankies.Domain.Details.DomainEntities
 {
-    public class Avatar : DomainEntity, IDeletableDomainEntity, IAvatar
+    /// <summary>
+    /// A persons expressive identity at a specific moment in time
+    /// </summary>
+    /// <remarks>
+    /// Most other objects are owned by an Avatar, reflecting their centricity
+    /// to the Hankies domain. In the real world an IAvatar would be a person’s
+    /// self identity at the moment when they cruise an area. This is done with
+    /// handkerchiefs in their pockets which indicate attributes about themselfs
+    /// and what they what they are looking for. Handkerchiefs can indicate
+    /// anything from gender identity to kinks, sex rolls, and occupation.
+    ///
+    /// Avatars are the same if they contain the same handkerchief makeup,
+    /// handle, photos, ect. Start time, locations, ect can be different.
+    ///
+    /// Avatars 
+    /// </remarks>
+    public class Avatar : DomainEntity, IDeletableDomainEntity,
+        IEqualityComparer<Avatar>
     {
         #region Constructors
 
@@ -39,16 +55,15 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </summary>
         public Customer Customer { get; private set; }
 
-        private HashSet<Cruise> cruises;
-
-        public IEnumerable<Cruise> Cruises => cruises?.ToList();
-
-        //public Cruise LastSession =>
-        //    sessions.OrderBy((ICruisee arg) => arg.StartedAt)
-        //    .FirstOrDefault();
+        /// <summary>
+        /// The last or current cruise. 
+        /// </summary>
+        public Cruise LastCruise =>
+            cruises.OrderBy((Cruise arg) => arg.StartedAt)
+            .FirstOrDefault();
 
         /// <summary>
-        /// Thes the owninmg customers chat ID. Chat IDs belong to the
+        /// The owninmg customers chat ID. Chat IDs belong to the
         /// customer object. 
         /// </summary>
         public Guid ChatId => Customer.ChatID;
@@ -77,8 +92,19 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </remarks>
         public bool Hooded { get; private set; }
 
+        /// <summary>
+        /// The first thing others see.   
+        /// </summary>
+        /// <remarks>
+        /// A description can be used instead
+        /// </remarks>
         public IPhoto ImpressionPhoto { get; private set; }
 
+        /// <summary>
+        /// The first thing others read about you. 
+        /// </summary>
+        /// <remarks>
+        /// Used in place of a photo. Not the same as being hooded.</remarks>
         public string ImpressionDescription { get; private set; }
 
         public DateTimeOffset? DeletedAt { get; private set; }
@@ -89,35 +115,80 @@ namespace Hankies.Domain.Details.DomainEntities
 
         #region Aggregates
         /// <summary>
+        /// Distinct cruise sessions this avatar has. 
+        /// </summary>
+        private HashSet<Cruise> cruises { get; }
+
+        /// <summary>
+        /// Distinct cruise sessions this avatar has, as a list. 
+        /// </summary>
+        public IList<Cruise> Cruises => cruises?.ToList();
+
+        /// <summary>
         /// Hash set of all photos this customer owns
         /// </summary>
-        private HashSet<IPhoto> photos;
+        private HashSet<IPhoto> photos { get; }
 
-        public IEnumerable<IPhoto> ExposingPhotos => photos?
+        /// <summary>
+        /// An immutable collection of exposing photos. 
+        /// </summary>
+        /// <remarks>
+        /// Changing this would be a new avatar.
+        /// </remarks>
+        public IList<IPhoto> ExposingPhotos => photos?
             .Where((IPhoto arg) => arg.Rating == PhotoRatings.NSFW)
             .ToList();
 
-        public IEnumerable<IPhoto> SafeForWorkPhotos => photos?
+        /// <summary>
+        /// An immutable collection of safe for work photos. 
+        /// </summary>
+        /// <remarks>
+        /// Changing this would be a new avatar.
+        /// </remarks>
+        public IList<IPhoto> SafeForWorkPhotos => photos?
             .Where((IPhoto arg) => arg.Rating == PhotoRatings.SFW)
             .ToList();
 
-        private HashSet<Handkerchief> handkerchiefs;
+        
+        private HashSet<Handkerchief> handkerchiefs { get; }
 
+        /// <summary>
+        /// An immutable collection of all handkerchiefs. 
+        /// </summary>
+        /// <remarks>
+        /// Changing this would be a new avatar.
+        /// </remarks>
         public IEnumerable<Handkerchief> Handkerchiefs => handkerchiefs.ToList();
 
+        /// <summary>
+        /// Only the handkerchiefs in the left pocket
+        /// </summary>
         public IEnumerable<Handkerchief> LeftPocket => handkerchiefs
             .Where((Handkerchief hanky) => hanky.InPockets.Contains(PocketTypes.Left))
             .ToList();
 
+        /// <summary>
+        /// Only the handkerchiefs in the right pocket
+        /// </summary>
         public IEnumerable<Handkerchief> RightPocket => handkerchiefs
             .Where((Handkerchief hanky) => hanky.InPockets.Contains(PocketTypes.Right))
             .ToList();
 
         #endregion
-        
-        public bool HasActiveCruiseSession => throw new NotImplementedException();
 
-        public bool CanISeeThem(Avatar them)
+        #region Public Methods
+
+        /// <summary>
+        /// Can I see another Avatar's impression photo?
+        /// </summary>
+        /// <remarks>
+        /// A number of factors can influance if another avatar can be seen.
+        /// You could be wearing a blindfold. They could be excpempt from that
+        /// blindfold. They could be wearing a hood preventing you from seeing
+        /// them.</remarks>
+        /// <param name="them">The avatar I am atempting to see</param>
+        /// <returns></returns>
+        public bool ICanSeeThem(Avatar them)
         {
             // If I am blindfolded I can see no one.
             if (Blindfolded)
@@ -153,10 +224,48 @@ namespace Hankies.Domain.Details.DomainEntities
             return true;
         }
 
-        public bool CanTheySeeMe(IAvatar they)
+        /// <summary>
+        /// Can another Avatar see me? 
+        /// </summary>
+        /// <param name="they">The avatar I want to check</param>
+        /// <remarks>
+        /// Lots of things can alter if another avatar can see you. namly if
+        /// you are wearing a hood and they are not except from it. also they
+        /// may be wearing a blindfold. 
+        /// </remarks>   
+        /// <returns></returns>
+        public bool TheyCanSeeMe(Avatar they)
         {
             return they.CanISeeThem(this);
         }
+
+        /// <summary>
+        /// Gets the experation of the last cruise. 
+        /// </summary>
+        /// <returns></returns>
+        public DateTimeOffset CurrentExperation()
+        {
+            var lastEXPTime = LastCruise != null ? LastCruise.
+        }
+        #endregion
+
+        #region Actions
+
+        public void CruiseAvatar(Avatar cruisee)
+        {
+            //LastSession.CruisedAvatars
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        #endregion
+        public bool HasActiveCruiseSession => throw new NotImplementedException();
+
+        
+        
 
         public bool HardPassedOnHandkerchied(Handkerchief handkerchief)
         {
@@ -169,16 +278,9 @@ namespace Hankies.Domain.Details.DomainEntities
 
         }
 
-        public void CruiseAnAvatar(IAvatar cruisee)
-        {
-            //LastSession.CruisedAvatars
-            throw new NotImplementedException();
-        }
+        
 
-        public DateTimeOffset CurrentExperation()
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public void DeletedEntity(DateTimeOffset deletedTimestamp)
         {

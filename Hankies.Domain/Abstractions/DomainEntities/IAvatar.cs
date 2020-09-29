@@ -6,94 +6,11 @@ using Hankies.Domain.Models.Abstractions;
 
 namespace Hankies.Domain.Abstractions.DomainEntities
 {
-    /// <summary>
-    /// A persons expressive identity at a specific moment in time
-    /// </summary>
-    /// <remarks>
-    /// Most other objects are owned by an IAvatar, reflecting their centricity
-    /// to the Hankies domain. In the real world an IAvatar would be a person’s
-    /// self identity at the moment when they cruise an area. This is done with
-    /// handkerchiefs in their pockets which indicate attributes about themselfs
-    /// and what they what they are looking for. Handkerchiefs can indicate
-    /// anything from gender identity to kinks, sex rolls, and occupation.
-    ///
-    /// Avatars are the same if they contain the same handkerchief makeup,
-    /// handle, photos, ect. Start time, locations, ect can be different.  
-    /// </remarks>
+    
     public interface IAvatar : IDeletableDomainEntity, IEqualityComparer<IAvatar>
     {
         #region Properties
-
         
-        /// <summary>
-        /// A collection of cruise sessions this Avatar has started.
-        /// </summary>
-        public IEnumerable<ICruise> Sessions { get; }
-
-        /// <summary>
-        /// The last or current cruise session. 
-        /// </summary>
-        public ICruise LastSession { get; }
-
-        /// <summary>
-        /// The first thing others see.   
-        /// </summary>
-        /// <remarks>
-        /// A description can be used instead
-        /// </remarks>
-        public IPhoto ImpressionPhoto { get; }
-
-        /// <summary>
-        /// The first thing others read about you. 
-        /// </summary>
-        /// <remarks>
-        /// Used in place of a photo. Not the same as being hooded.</remarks>
-        public string ImpressionDescription { get; }
-
-        /// <summary>
-        /// An immutable collection of exposing photos. 
-        /// </summary>
-        /// <remarks>
-        /// Changing this would be a new avatar.
-        /// </remarks>
-        public IEnumerable<IPhoto> ExposingPhotos { get; }
-
-        /// <summary>
-        /// An immutable collection of safe for work photos. 
-        /// </summary>
-        /// <remarks>
-        /// Changing this would be a new avatar.
-        /// </remarks>
-        public IEnumerable<IPhoto> SafeForWorkPhotos { get; }
-
-        /// <summary>
-        /// An immutable collection of all handkerchiefs. 
-        /// </summary>
-        /// <remarks>
-        /// Changing this would be a new avatar.
-        /// </remarks>
-        public IEnumerable<Handkerchief> Handkerchiefs { get; }
-
-        /// <summary>
-        /// Only the handkerchiefs in the left pocket
-        /// </summary>
-        public IEnumerable<Handkerchief> LeftPocket { get; }
-
-        /// <summary>
-        /// Only the handkerchiefs in the right pocket
-        /// </summary>
-        public IEnumerable<Handkerchief> RightPocket { get; }
-
-        /// <summary>
-        /// When the current session expires. Can be extended.
-        /// </summary>
-        /// <returns>The experation date time for this session</returns>
-        /// <remarks>
-        /// Checks for any time extesnions and adds them to the original
-        /// experation time.
-        /// </remarks>
-        public DateTimeOffset CurrentExperation();
-
         /// <summary>
         /// Avatars i can interact with in more detail.  
         /// </summary>
@@ -103,30 +20,7 @@ namespace Hankies.Domain.Abstractions.DomainEntities
         /// <returns>A collection of interactable avatars.</returns>
         public IEnumerable<IAvatar> InteractableAvatars();
 
-        /// <summary>
-        /// Can I see another Avatar's impression photo?
-        /// </summary>
-        /// <remarks>
-        /// A number of factors can influance if another avatar can be seen.
-        /// You could be wearing a blindfold. They could be excpempt from that
-        /// blindfold. They could be wearing a hood preventing you from seeing
-        /// them.</remarks>
-        /// <param name="them">The avatar I am atempting to see</param>
-        /// <returns></returns>
-        public bool CanISeeThem(IAvatar them);
-
-        /// <summary>
-        /// Can another Avatar see me? 
-        /// </summary>
-        /// <param name="they">The avatar I want to check</param>
-        /// <remarks>
-        /// Lots of things can alter if another avatar can see you. namly if
-        /// you are wearing a hood and they are not except from it. also they
-        /// may be wearing a blindfold. 
-        /// </remarks>   
-        /// <returns></returns>
-        public bool CanTheySeeMe(IAvatar they);
-
+        
         /// <summary>
         /// Is this cruise currently active
         /// </summary>
