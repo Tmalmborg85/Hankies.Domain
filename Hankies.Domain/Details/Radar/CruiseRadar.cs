@@ -36,13 +36,13 @@ namespace Hankies.Domain.Details.Radar
         /// <param name="ownedBy">The cruise this radar belongs to.</param>
         /// <param name="range">How far this radar will scan from its
         /// centerpoint.</param>
-        public CruiseRadar(Cruise ownedBy, float range)
+        public CruiseRadar(Avatar ownedBy, float range)
         {
             if (_contacts == null) 
-                _contacts = new HashSet<Cruise>();
+                _contacts = new HashSet<Avatar>();
 
             if (_clutter == null)
-                _clutter = new HashSet<Cruise>();
+                _clutter = new HashSet<Avatar>();
 
             _pulses = new HashSet<RadarPulse>();
 
@@ -59,8 +59,8 @@ namespace Hankies.Domain.Details.Radar
         /// <param name="range">How far this radar will scan from its
         /// centerpoint.</param>
         /// <param name="clutter">Items this radar should ignore</param>
-        public CruiseRadar(Cruise ownedBy, float range
-            , HashSet<Cruise> clutter) : this(ownedBy, range)
+        public CruiseRadar(Avatar ownedBy, float range
+            , HashSet<Avatar> clutter) : this(ownedBy, range)
         {
             _clutter = clutter;
         }
@@ -73,8 +73,8 @@ namespace Hankies.Domain.Details.Radar
         /// centerpoint.</param>
         /// <param name="clutter">Items this radar should ignore</param>
         /// <param name="contacts">Items this radar has already contacted</param>
-        public CruiseRadar(Cruise ownedBy, float range
-            , HashSet<Cruise> clutter, HashSet<Cruise> contacts)
+        public CruiseRadar(Avatar ownedBy, float range
+            , HashSet<Avatar> clutter, HashSet<Avatar> contacts)
             : this(ownedBy, range)
         {
             _clutter = clutter;
@@ -92,7 +92,7 @@ namespace Hankies.Domain.Details.Radar
         /// This backing is a dictinary in place of a list so that O(1) lookups
         /// can be done for Contacts instead on O(N).
         /// </remarks>
-        private HashSet<Cruise> _contacts { get; }
+        private HashSet<Avatar> _contacts { get; }
 
         /// <summary>
         /// Cruises the radar has picked up. 
@@ -101,7 +101,7 @@ namespace Hankies.Domain.Details.Radar
         /// In the context of maritime radar the term Contact means any echo
         /// detected on the radarscope not evaluated as clutter or as a false
         /// echo.</remarks>
-        public IEnumerable<Cruise> Contacts => _contacts?.ToList();
+        public IEnumerable<Avatar> Contacts => _contacts?.ToList();
 
         /// <summary>
         /// Objects flagged as clutter keyed into a dicinary by EchoID
@@ -110,7 +110,7 @@ namespace Hankies.Domain.Details.Radar
         /// This backing is a dictinary in place of a list so that O(1) lookups
         /// can be done for Contacts instead on O(N).
         /// </remarks>
-        private HashSet<Cruise> _clutter { get; }
+        private HashSet<Avatar> _clutter { get; }
 
         /// <summary>
         /// IAvatars that dont match enouch factors to be considerd Contacts. 
@@ -120,7 +120,7 @@ namespace Hankies.Domain.Details.Radar
         /// (RF) echoes returned from targets which are uninteresting to the
         /// radar operators.
         /// </remarks>
-        public IEnumerable<Cruise> Clutter => _clutter?.ToList();
+        public IEnumerable<Avatar> Clutter => _clutter?.ToList();
 
         /// <summary>
         /// Pulses this radar has emited. 
@@ -136,7 +136,7 @@ namespace Hankies.Domain.Details.Radar
         /// The domain entity that owns this radar. Radars must be owned by a
         /// single domain entity. 
         /// </summary>
-        public Cruise Owner { get; private set; }
+        public Avatar Owner { get; private set; }
 
         /// <summary>
         /// How far out will this radars pulse's look for echos. 
@@ -225,7 +225,7 @@ namespace Hankies.Domain.Details.Radar
         /// This could be used in case an Avatar later decides an IAvatar is
         /// clutter. If the IAvatar matches any avatars in Contacts, they
         /// should be removed. </remarks>
-        public IStatus<CruiseRadar> FlagAsClutter(Cruise cruise)
+        public IStatus<CruiseRadar> FlagAsClutter(Avatar cruise)
         {
             var response = new Status<CruiseRadar>();
 
@@ -252,7 +252,7 @@ namespace Hankies.Domain.Details.Radar
         /// This would be a good place to pre-flag blocked customers.
         /// </remarks>
         public IStatus<CruiseRadar> FlagAsClutter
-            (IEnumerable<Cruise> detectedObjects)
+            (IEnumerable<Avatar> detectedObjects)
         {
             var response = new Status<CruiseRadar>();
 
@@ -360,10 +360,10 @@ namespace Hankies.Domain.Details.Radar
         /// </summary>
         /// <param name="echo"></param>
         /// <returns></returns>
-        private bool EchoHardPassedOnAnyOfMyHandkerchiefs(Cruise echo)
+        private bool EchoHardPassedOnAnyOfMyHandkerchiefs(Avatar echo)
         {
-            return echo.Avatar.HardPassedOnAnyOfTheseHandkerchiefs
-                (Owner.Avatar.Handkerchiefs);
+            return echo.HardPassedOnAnyOfTheseHandkerchiefs
+                (Owner.Handkerchiefs);
         }
 
         /// <summary>
@@ -371,10 +371,10 @@ namespace Hankies.Domain.Details.Radar
         /// </summary>
         /// <param name="echo"></param>
         /// <returns></returns>
-        private bool IAmBlockedByEchoOwner(Cruise echo)
+        private bool IAmBlockedByEchoOwner(Avatar echo)
         {
-            return echo.Avatar.Customer.HasBlocked
-                (Owner.Avatar.Customer);
+            return echo.Customer.HasBlocked
+                (Owner.Customer);
         }
 
         /// <summary>
@@ -382,17 +382,17 @@ namespace Hankies.Domain.Details.Radar
         /// </summary>
         /// <param name="echo"></param>
         /// <returns></returns>
-        private bool EchoOwnerIsOnMyBlockedList(Cruise echo)
+        private bool EchoOwnerIsOnMyBlockedList(Avatar echo)
         {
-            return Owner.Avatar.Customer.HasBlocked
-                (echo.Avatar.Customer);
+            return Owner.Customer.HasBlocked
+                (echo.Customer);
         }
 
         /// <summary>
         /// Remove clutter from the contact list if it is there. 
         /// </summary>
         /// <param name="clutter"></param>
-        private void RemoveClutterFromContact(Cruise clutter)
+        private void RemoveClutterFromContact(Avatar clutter)
         {
             if (_contacts.Contains(clutter))
                 _contacts.Remove(clutter);

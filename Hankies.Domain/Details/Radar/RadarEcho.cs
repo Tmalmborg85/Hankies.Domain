@@ -37,7 +37,7 @@ namespace Hankies.Domain.Details.Radar
         /// <summary>
         /// The radar detectable object the Originating Pulse 'bounced' off of. 
         /// </summary>
-        public Cruise Source { get; }
+        public Avatar Source { get; }
 
         public bool IsValid
         {

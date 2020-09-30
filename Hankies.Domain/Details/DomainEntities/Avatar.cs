@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hankies.Domain.Abstractions.DomainEntities;
 using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Details.Radar;
 using Hankies.Domain.HelperClasses;
 using Hankies.Domain.Models.Abstractions;
 using Hankies.Domain.Rules;
@@ -29,6 +30,7 @@ namespace Hankies.Domain.Details.DomainEntities
     public class Avatar : DomainEntity, IDeletableDomainEntity,
         IEqualityComparer<Avatar>
     {
+        const float DefaultRadarRange = 5.0f;
         #region Constructors
 
         /// <summary>
@@ -37,13 +39,24 @@ namespace Hankies.Domain.Details.DomainEntities
         private Avatar() { }
 
         public Avatar(Guid id, DateTimeOffset createdAt, Customer owner,
-            string handle) : base
+            string handle, IEnumerable<Handkerchief> _handkerchiefs) : base
             (id, createdAt)
         {
             // Newly created avatars automatically start cruising.
             Customer = owner;
             Handle = handle;
+            handkerchiefs = _handkerchiefs.ToHashSet();
 
+            if (CruiseRadar == null)
+                CruiseRadar = new CruiseRadar(this, DefaultRadarRange);
+
+            if (cruises == null)
+                cruises = new HashSet<Cruise>();
+
+            if (photos == null)
+                photos = new HashSet<IPhoto>();
+
+            
             OnValidate();
         }
         #endregion
@@ -61,6 +74,12 @@ namespace Hankies.Domain.Details.DomainEntities
         public Cruise LastCruise =>
             cruises.OrderBy((Cruise arg) => arg.StartedAt)
             .FirstOrDefault();
+
+        /// <summary>
+        /// Contains a collection of nearby avatars that meet your criteria
+        /// and tools to look for them
+        /// </summary>
+        CruiseRadar CruiseRadar { get; }
 
         /// <summary>
         /// The owninmg customers chat ID. Chat IDs belong to the
