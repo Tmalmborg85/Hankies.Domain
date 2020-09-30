@@ -31,6 +31,7 @@ namespace Hankies.Domain.Details.DomainEntities
         IEqualityComparer<Avatar>
     {
         const float DefaultRadarRange = 5.0f;
+
         #region Constructors
 
         /// <summary>
@@ -71,9 +72,7 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <summary>
         /// The last or current cruise. 
         /// </summary>
-        public Cruise LastCruise =>
-            cruises.OrderBy((Cruise arg) => arg.StartedAt)
-            .FirstOrDefault();
+        public Cruise LastCruise { get; private set; }
 
         /// <summary>
         /// Contains a collection of nearby avatars that meet your criteria
@@ -91,7 +90,8 @@ namespace Hankies.Domain.Details.DomainEntities
         /// A human readable string indicating what others should call you.
         /// </summary>
         /// <example>
-        /// Daddy, Pig, Gristle McThornbody</example>
+        /// Daddy, Pig, Gristle McThornbody
+        /// </example>
         public string Handle { get; private set; }
 
         /// <summary>
@@ -100,15 +100,17 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <remarks>
         /// Exceptions to the blindfold rule are granted in the avatar sessions
         /// </remarks>
+        /// <example>False</example>
         public bool Blindfolded { get; private set; }
 
         /// <summary>
         /// Indicates if others can see this avatar's photos by default.
         /// Immutable.
         /// </summary>
-        /// /// <remarks>
+        /// <remarks>
         /// Exceptions to the hooded rule are granted in the avatar sessions
         /// </remarks>
+        /// <example>False</example>
         public bool Hooded { get; private set; }
 
         /// <summary>
@@ -123,7 +125,8 @@ namespace Hankies.Domain.Details.DomainEntities
         /// The first thing others read about you. 
         /// </summary>
         /// <remarks>
-        /// Used in place of a photo. Not the same as being hooded.</remarks>
+        /// Used in place of a photo. Not the same as being hooded.
+        /// </remarks>
         public string ImpressionDescription { get; private set; }
 
         public DateTimeOffset? DeletedAt { get; private set; }
@@ -132,21 +135,31 @@ namespace Hankies.Domain.Details.DomainEntities
 
         #endregion
 
-        #region Aggregates
+        #region HashBackings
+
         /// <summary>
         /// Distinct cruise sessions this avatar has. 
         /// </summary>
         private HashSet<Cruise> cruises { get; }
 
         /// <summary>
-        /// Distinct cruise sessions this avatar has, as a list. 
-        /// </summary>
-        public IList<Cruise> Cruises => cruises?.ToList();
-
-        /// <summary>
         /// Hash set of all photos this customer owns
         /// </summary>
         private HashSet<IPhoto> photos { get; }
+
+        /// <summary>
+        /// Backing for both left and right displayed handkerchiefs
+        /// </summary>
+        private HashSet<Handkerchief> handkerchiefs { get; }
+
+        #endregion
+
+        #region Aggregates
+
+        /// <summary>
+        /// Distinct cruise sessions this avatar has, as a list. 
+        /// </summary>
+        public IList<Cruise> Cruises => cruises?.ToList();
 
         /// <summary>
         /// An immutable collection of exposing photos. 
@@ -167,9 +180,6 @@ namespace Hankies.Domain.Details.DomainEntities
         public IList<IPhoto> SafeForWorkPhotos => photos?
             .Where((IPhoto arg) => arg.Rating == PhotoRatings.SFW)
             .ToList();
-
-        
-        private HashSet<Handkerchief> handkerchiefs { get; }
 
         /// <summary>
         /// An immutable collection of all handkerchiefs. 
@@ -197,6 +207,7 @@ namespace Hankies.Domain.Details.DomainEntities
 
         #region Public Methods
 
+
         /// <summary>
         /// Can I see another Avatar's impression photo?
         /// </summary>
@@ -209,37 +220,24 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <returns></returns>
         public bool ICanSeeThem(Avatar them)
         {
-            // If I am blindfolded I can see no one.
-            if (Blindfolded)
+            var areTheyExemptFromMyBlindfold = LastCruise.IsBlindfoldRemovedForAvatar
+                (them);
+
+            var amIExemptFromThierHood = them.LastCruise.IsHoodRemovedForAvatar
+                (this);
+
+            if (Blindfolded && !areTheyExemptFromMyBlindfold)
+                return false;
+
+            if ((Blindfolded && areTheyExemptFromMyBlindfold) || !Blindfolded)
             {
-                // But maybe I took my blinfold off for them in this session.
-                if (LastSession.BlindfoldRemovedFor.Contains(them))
+                if (them.Hooded && !amIExemptFromThierHood)
                 {
-                    return true;
-                }
-                else
-                {
-                    // I am blinfolded and they do not have exception
                     return false;
                 }
             }
 
-            // If they are hooded I can not see them.
-            if (them.Hooded)
-            {
-                //But maybe they removed thier hood for me.
-                if (them.LastSession.HoodRemovedFor.Contains(this))
-                {
-                    return true;
-                }
-                else
-                {
-                    // I am hooded and they do not have an excpetion. 
-                    return false;
-                }
-            }
-
-            // nothing is blocking them from seeing me.
+            // Does not meet any rules for not being seen. 
             return true;
         }
 
@@ -255,7 +253,7 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <returns></returns>
         public bool TheyCanSeeMe(Avatar they)
         {
-            return they.CanISeeThem(this);
+            return they.ICanSeeThem(this);
         }
 
         /// <summary>
@@ -264,7 +262,7 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <returns></returns>
         public DateTimeOffset CurrentExperation()
         {
-            var lastEXPTime = LastCruise != null ? LastCruise.
+            var lastEXPTime = LastCruise.HasTimeRemaining();
         }
         #endregion
 
