@@ -32,7 +32,7 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <summary>
         /// All the avatars this customer has created.
         /// </summary>
-        public IEnumerable<IAvatar> Avatars { get; private set; }
+        public IEnumerable<Avatar> Avatars { get; private set; }
 
         /// <summary>
         /// Hashtable backing to blocked customers.

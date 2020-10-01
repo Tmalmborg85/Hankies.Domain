@@ -70,9 +70,25 @@ namespace Hankies.Domain.Details.DomainEntities
         public Customer Customer { get; private set; }
 
         /// <summary>
-        /// The last or current cruise. 
+        /// If LastCruise is Null or not
         /// </summary>
-        public Cruise LastCruise { get; private set; }
+        public bool HasLastCruise => LastCruise != null;
+
+        /// <summary>
+        /// The last cruise this Avatar created. 
+        /// </summary>
+        public Cruise LastCruise => Cruises.OrderBy(C => C.StartedAt)
+            .FirstOrDefault();
+
+        /// <summary>
+        /// Checks to see if the Last cruise is still active
+        /// </summary>
+        public bool HasActiveCruise => ActiveCruise != null;
+
+        /// <summary>
+        /// The current active cruise. Can be null
+        /// </summary>
+        public Cruise ActiveCruise => GetActiveCruise();
 
         /// <summary>
         /// Contains a collection of nearby avatars that meet your criteria
@@ -152,6 +168,10 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </summary>
         private HashSet<Handkerchief> handkerchiefs { get; }
 
+        /// <summary>
+        /// Handkerchiefs this avatar does not want to interact with.
+        /// </summary>
+        private HashSet<Handkerchief> hardNoHandkerchiefs { get; }
         #endregion
 
         #region Aggregates
@@ -190,6 +210,16 @@ namespace Hankies.Domain.Details.DomainEntities
         public IEnumerable<Handkerchief> Handkerchiefs => handkerchiefs.ToList();
 
         /// <summary>
+        /// Handkerchiefs this avatar never wants to see.
+        /// </summary>
+        /// <remarks>
+        /// Avatars that are flagging with any of these handkerchiefs are
+        /// flagged as clutter by the <c>CruiseRadar</c>
+        /// </remarks>
+        public IEnumerable<Handkerchief> HardNoHandkerchiefs =>
+            hardNoHandkerchiefs.ToList();
+
+        /// <summary>
         /// Only the handkerchiefs in the left pocket
         /// </summary>
         public IEnumerable<Handkerchief> LeftPocket => handkerchiefs
@@ -206,7 +236,6 @@ namespace Hankies.Domain.Details.DomainEntities
         #endregion
 
         #region Public Methods
-
 
         /// <summary>
         /// Can I see another Avatar's impression photo?
@@ -257,81 +286,142 @@ namespace Hankies.Domain.Details.DomainEntities
         }
 
         /// <summary>
-        /// Gets the experation of the last cruise. 
+        /// Checks if this Avatar has said no to this handkerchief. 
         /// </summary>
+        /// <param name="handkerchief"></param>
         /// <returns></returns>
-        public DateTimeOffset CurrentExperation()
+        public bool DidHardNoHandkerchief(Handkerchief handkerchief)
         {
-            var lastEXPTime = LastCruise.HasTimeRemaining();
+            return hardNoHandkerchiefs.Contains(handkerchief);
         }
+
+        /// <summary>
+        /// Checks if an avatar has said no to any of these hankies. 
+        /// </summary>
+        /// <param name="handkerchiefs"></param>
+        /// <returns></returns>
+        public bool DidHardNoAnyOfTheseHandkerchiefs
+            (IEnumerable<Handkerchief> handkerchiefs)
+        {
+            foreach (var hanky in handkerchiefs)
+            {
+                if (DidHardNoHandkerchief(hanky))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         #endregion
 
         #region Actions
 
-        public void CruiseAvatar(Avatar cruisee)
+        public IStatus<Avatar> StartNewCruise()
         {
-            //LastSession.CruisedAvatars
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region Helper Methods
-
-        #endregion
-        public bool HasActiveCruiseSession => throw new NotImplementedException();
-
-        
-        
-
-        public bool HardPassedOnHandkerchied(Handkerchief handkerchief)
+        public IStatus<Avatar> StopActiveCruise()
         {
-
+            throw new NotImplementedException();
         }
 
-        public bool HardPassedOnAnyOfTheseHandkerchiefs
-            (IEnumerable<Handkerchief> handkerchiefs)
+        public IStatus<Avatar> SetImpressionPhoto(IPhoto photo)
         {
-
+            throw new NotImplementedException();
         }
 
-        
+        public IStatus<Avatar> AddExsistingPhoto(IPhoto photo)
+        {
+            throw new NotImplementedException();
+        }
 
-        
+        public IStatus<Avatar> AddNewPhoto()
+        {
+            throw new NotImplementedException();
+        }
 
+        public IStatus<Avatar> SetImpressionDescription(string description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> FlagHandkerchiefAsHardNo
+            (Handkerchief handkerchief)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> StopFlaggingHandkerchiefAsHardNo
+            (Handkerchief handkerchief)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> DoffBlindfoldFor(Avatar them)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> DoffHoodFor(Avatar them)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> ReDonBlindfoldFor(Avatar them)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> ReDonHoodFor(Avatar them)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> ExtendCruiseTime()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> SendMessage(IChatMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStatus<Avatar> SearchForCruisableAvatars()
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Reactions
+
+        // should maybe an action????
         public void DeletedEntity(DateTimeOffset deletedTimestamp)
         {
             throw new NotImplementedException();
         }
 
-        public IStatus<IAvatar> DoffBlindfoldFor(IAvatar them)
+        public void WasCruisedBy(Avatar cruisee)
         {
             throw new NotImplementedException();
         }
+        #endregion
+        #region Helper Methods
 
-        public IStatus<IAvatar> DoffHoodFor(IAvatar them)
+        /// <summary>
+        /// Gets the currenly active cruise if there is one.  
+        /// </summary>
+        private Cruise GetActiveCruise()
         {
-            throw new NotImplementedException();
-        }
+            if (!HasLastCruise)
+                return null;
 
-        public void EndCruiseSession()
-        {
-            throw new NotImplementedException();
-        }
+            if (LastCruise.HasTimeRemaining())
+                return LastCruise;
 
-        public bool Equals([AllowNull] IAvatar x, [AllowNull] IAvatar y)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IStatus<ICruisee>> ExtendCurrentSession(ITimeExtension timeExtension)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetHashCode([DisallowNull] IAvatar obj)
-        {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
@@ -369,15 +459,15 @@ namespace Hankies.Domain.Details.DomainEntities
 
 
 
-            if (Sessions == null)
+            if (cruises == null)
             {
                 yield return new HankiesRuleViolation
-                    ("One avatar owns many Sessions.", Sessions);
+                    ("One avatar owns many Cruises.", cruises);
             }
-            else if (LastSession == null)
+            else if (LastCruise == null)
             {
                 yield return new HankiesRuleViolation
-                    ("Every avatar has at least one session.", LastSession);
+                    ("Every avatar has at least one session.", LastCruise);
             }
 
             // Rule: Avatars are immutable exception for the Session aggregate.
@@ -386,50 +476,16 @@ namespace Hankies.Domain.Details.DomainEntities
             yield break;
         }
 
-        public IEnumerable<IAvatar> InteractableAvatars()
+        public bool Equals([AllowNull] Avatar x, [AllowNull] Avatar y)
         {
             throw new NotImplementedException();
         }
 
-        public IStatus<IAvatar> ReDonBlindfoldFor(IAvatar them)
+        public int GetHashCode([DisallowNull] Avatar obj)
         {
             throw new NotImplementedException();
         }
 
-        public IStatus<IAvatar> ReDonHoodFor(IAvatar them)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IStatus<IAvatar> SearchForCruisableAvatars()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IStatus<IAvatar> SendMessage(IChatMessage message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IStatus<ICruisee>> StartNewCruiseSession(ICoordinates coordinates, TimeSpan time)
-        {
-            //var avatarSessionStartedDomainEvent = new AvatarSessionStartedDomainEvent();
-            throw new NotImplementedException();
-        }
-
-        public void WasCruisedBy(IAvatar cruisee)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IStatus<ICruise> StartNewCruiseSession(ICoordinates coordinates, TimeSpan time)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IStatus<ICruise> ExtendCurrentSession(ITimeExtension timeExtension)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion 
     }
 }
