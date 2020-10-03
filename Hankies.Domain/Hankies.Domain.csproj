@@ -24,5 +24,6 @@
     <Folder Include="Details\ValueObject\" />
     <Folder Include="Abstractions\Radar\" />
     <Folder Include="Details\Radar\" />
+    <Folder Include="Statuses\" />
   </ItemGroup>
 </Project>

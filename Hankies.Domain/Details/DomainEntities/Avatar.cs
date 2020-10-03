@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Hankies.Domain.Abstractions.DomainEntities;
-using Hankies.Domain.Abstractions.ValueObjects;
+using Hankies.Domain.Abstractions.Radar;
+using Hankies.Domain.Details.DomainEvents;
 using Hankies.Domain.Details.Radar;
+using Hankies.Domain.Exceptions;
 using Hankies.Domain.HelperClasses;
 using Hankies.Domain.Models.Abstractions;
+using Hankies.Domain.Models.Details;
 using Hankies.Domain.Rules;
 
 namespace Hankies.Domain.Details.DomainEntities
@@ -24,11 +27,9 @@ namespace Hankies.Domain.Details.DomainEntities
     ///
     /// Avatars are the same if they contain the same handkerchief makeup,
     /// handle, photos, ect. Start time, locations, ect can be different.
-    ///
-    /// Avatars 
     /// </remarks>
     public class Avatar : DomainEntity, IDeletableDomainEntity,
-        IEqualityComparer<Avatar>
+        IEqualityComparer<Avatar>, IRadarDetectable
     {
         const float DefaultRadarRange = 5.0f;
 
@@ -60,6 +61,16 @@ namespace Hankies.Domain.Details.DomainEntities
             
             OnValidate();
         }
+
+        /// <summary>
+        /// Create a new Avatar with a random self-generated ID. 
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="handle"></param>
+        /// <param name="_handkerchiefs"></param>
+        public Avatar (Customer owner, string handle,
+            IEnumerable<Handkerchief> _handkerchiefs) : this (new Guid(),
+                DateTimeOffset.UtcNow, owner, handle, _handkerchiefs){ }
         #endregion
 
         #region Properties
@@ -317,40 +328,203 @@ namespace Hankies.Domain.Details.DomainEntities
 
         #region Actions
 
-        public IStatus<Avatar> StartNewCruise()
+        /// <summary>
+        /// Creates a new Cruise for this avatar and triggers a domain event to
+        /// let other objects know.
+        /// </summary>
+        /// <returns></returns>
+        public IStatus<Avatar> StartNewCruise(Cruise cruiseToStart)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+
+            try
+            {
+                if (!cruiseToStart.IsValid)
+                    throw new InvalidCruiseException();
+
+                AddDomainEvent(new CruiseStartedDomainEvent(cruiseToStart
+                    , this));
+
+                cruises.Add(cruiseToStart);
+
+                response.RespondWith(this);
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+            return response;
         }
 
+        /// <summary>
+        /// Stop the currenly active cruise, if there is one. 
+        /// </summary>
+        /// <returns></returns>
         public IStatus<Avatar> StopActiveCruise()
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+
+            try
+            {
+                if (HasActiveCruise)
+                {
+                    LastCruise.StoppedAt = DateTimeOffset.UtcNow;
+
+                    var cruiseStoppedEvent = new CruiseStoppedDomainEvent
+                        (LastCruise, this);
+                    this.AddDomainEvent(cruiseStoppedEvent);
+                    response.RespondWith(this);
+                }
+                else
+                {
+                    response.AddError("No active cruise avalable to stop.");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+            return response;
         }
 
+        /// <summary>
+        /// Recive a radar pulse and return an echo. 
+        /// </summary>
+        /// <param name="pulse"></param>
+        /// <returns></returns>
+        public IStatus<Avatar> Echo(RadarPulse pulse)
+        {
+            var response = new Status<Avatar>();
+
+            try
+            {
+                AddDomainEvent(new EchoDetectedDomainEvent(pulse, this));
+                response.RespondWith(this);
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Set or change the impression photo. 
+        /// </summary>
+        /// <param name="photo"></param>
+        /// <returns></returns>
         public IStatus<Avatar> SetImpressionPhoto(IPhoto photo)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+
+            try
+            {
+                if (photo.Rating == PhotoRatings.SFW)
+                {
+                    ImpressionPhoto = photo;
+
+                    AddDomainEvent(new AvatarChangedImpressionPhotoDomainEvent
+                        (this));
+
+                    response.RespondWith(this);
+                }
+                else
+                {
+                    response.AddError
+                        ("Only SFW rated photos can be impression photos.");
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+            return response;
         }
 
-        public IStatus<Avatar> AddExsistingPhoto(IPhoto photo)
+        /// <summary>
+        /// Removes the impression photo. 
+        /// </summary>
+        /// <returns></returns>
+        public void RemoveImpressionPhoto()
         {
-            throw new NotImplementedException();
+            if (ImpressionPhoto != null)
+            {
+                ImpressionPhoto = null;
+                AddDomainEvent(new AvatarChangedImpressionPhotoDomainEvent
+                        (this));
+            }
         }
 
-        public IStatus<Avatar> AddNewPhoto()
+        /// <summary>
+        /// Add a rated photo to this Avatar. 
+        /// </summary>
+        /// <param name="photo"></param>
+        /// <returns></returns>
+        public IStatus<Avatar> AddPhoto(IPhoto photo)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+
+            try
+            {
+                if (photo.Rating == PhotoRatings.Unrated)
+                {
+                    response.AddError("Photos can not be added to an avatar " +
+                        "untill they have a rating.");
+                }
+                else
+                {
+                    photos.Add(photo);
+                    AddDomainEvent(new AvatarAddedPhotoDomainEvent
+                        (this));
+
+                    response.RespondWith(this);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+            return response;
         }
 
+        /// <summary>
+        /// Set the impression description for this Avatar. 
+        /// </summary>
+        /// <param name="description"></param>
+        /// <returns></returns>
         public IStatus<Avatar> SetImpressionDescription(string description)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+            if (DescriptionRules.IsValid(description))
+            {
+                ImpressionDescription = description;
+                response.RespondWith(this);
+            }
+            else
+            {
+                response.AddError("Can't add invalid description");
+            }
+
+            return response;
         }
 
+        /// <summary>
+        /// Adds a handkerchief to the Hard No list which will prevent this
+        /// Avatar from seeing Avarats flagging with the specified handkerchief
+        /// </summary>
+        /// <param name="handkerchief"></param>
+        /// <returns></returns>
         public IStatus<Avatar> FlagHandkerchiefAsHardNo
             (Handkerchief handkerchief)
         {
-            throw new NotImplementedException();
+            if ()
+
+                    // wait wait wait. Does validation need to be done with actions?
+                // could OnValidate() be called at the end of the action? then
+                // add the errors to status
         }
 
         public IStatus<Avatar> StopFlaggingHandkerchiefAsHardNo

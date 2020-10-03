@@ -21,7 +21,7 @@ namespace Hankies.Domain.Details.DomainEntities
     /// this can be an enimic model with no or minimalactions. Most if not all
     /// actions should be done by the owning avatar. 
     /// </remarks>
-    public class Cruise : DomainEntity, IRadarDetectable
+    public class Cruise : DomainEntity
     {
         #region Constructors
 
@@ -65,6 +65,14 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </summary>
         public DateTimeOffset StartedAt { get; }
 
+        /// <summary>
+        /// If/When this cruise was stopped
+        /// </summary>
+        public DateTimeOffset? StoppedAt { get; set; }
+
+        /// <summary>
+        /// How much time is left of this cruise. 
+        /// </summary>
         public TimeSpan Time { get; private set; }
 
         /// <summary>
@@ -124,23 +132,25 @@ namespace Hankies.Domain.Details.DomainEntities
 
 
 
-        public IStatus<EchoDetectedDomainEvent> Echo(RadarPulse pulse)
-        {
-            var response = new Status<EchoDetectedDomainEvent>();
+        
 
-            try
-            {
-                var echoEvent = new EchoDetectedDomainEvent(pulse, this);
-                this.AddDomainEvent(echoEvent);
-                response.RespondWith(echoEvent);
-            }
-            catch (Exception ex)
-            {
-                response.AddException(ex);
-            }
+        //public IStatus<Cruise> Stop()
+        //{
+        //    var response = new Status<Cruise>();
 
-            return response;
-        }
+        //    try
+        //    {
+        //        var stoppedEvent = new CruiseStoppedDomainEvent(this);
+        //        this.AddDomainEvent(echoEvent);
+        //        response.RespondWith(echoEvent);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        response.AddException(ex);
+        //    }
+
+        //    return response;
+        //}
 
         #endregion
 
