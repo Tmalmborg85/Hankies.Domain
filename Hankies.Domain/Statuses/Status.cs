@@ -56,7 +56,7 @@ namespace Hankies.Domain.Models.Details
             return true;  
         }
 
-        public void RespondWith(T responseObject)
+        public void RespondWithObject(T responseObject)
         {
             ResponseObject = responseObject;
         }

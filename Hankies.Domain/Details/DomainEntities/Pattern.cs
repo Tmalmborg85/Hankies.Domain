@@ -75,7 +75,7 @@ namespace Hankies.Domain.Details.DomainEntities
             if (!IsValid)
                 updatePattern.AddError("Updated color had rule violations");
 
-            updatePattern.RespondWith(this);
+            updatePattern.RespondWithObject(this);
             return updatePattern;
         }
 
@@ -87,7 +87,7 @@ namespace Hankies.Domain.Details.DomainEntities
             if (!IsValid)
                 updateStatus.AddError("Updated uri had rule violations");
 
-            updateStatus.RespondWith(this);
+            updateStatus.RespondWithObject(this);
             return updateStatus;
         }
 

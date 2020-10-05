@@ -328,6 +328,11 @@ namespace Hankies.Domain.Details.DomainEntities
 
         #region Actions
 
+        /* Note on validation.
+         * Not all actions require it. Only actions that are creating or
+         * altering a setting from an unvalidated onbject, like a sring.
+         */ 
+
         /// <summary>
         /// Creates a new Cruise for this avatar and triggers a domain event to
         /// let other objects know.
@@ -339,15 +344,12 @@ namespace Hankies.Domain.Details.DomainEntities
 
             try
             {
-                if (!cruiseToStart.IsValid)
-                    throw new InvalidCruiseException();
-
                 AddDomainEvent(new CruiseStartedDomainEvent(cruiseToStart
                     , this));
 
                 cruises.Add(cruiseToStart);
 
-                response.RespondWith(this);
+                response.RespondWithObject(this);
             }
             catch (Exception ex)
             {
@@ -370,10 +372,10 @@ namespace Hankies.Domain.Details.DomainEntities
                 {
                     LastCruise.StoppedAt = DateTimeOffset.UtcNow;
 
-                    var cruiseStoppedEvent = new CruiseStoppedDomainEvent
-                        (LastCruise, this);
-                    this.AddDomainEvent(cruiseStoppedEvent);
-                    response.RespondWith(this);
+                    AddDomainEvent(new CruiseStoppedDomainEvent
+                        (LastCruise, this));
+
+                    response.RespondWithObject(this);
                 }
                 else
                 {
@@ -400,7 +402,7 @@ namespace Hankies.Domain.Details.DomainEntities
             try
             {
                 AddDomainEvent(new EchoDetectedDomainEvent(pulse, this));
-                response.RespondWith(this);
+                response.RespondWithObject(this);
             }
             catch (Exception ex)
             {
@@ -415,26 +417,18 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </summary>
         /// <param name="photo"></param>
         /// <returns></returns>
-        public IStatus<Avatar> SetImpressionPhoto(IPhoto photo)
+        public IStatus<Avatar> SetImpressionPhoto(ImpressionPhoto photo)
         {
             var response = new Status<Avatar>();
 
             try
             {
-                if (photo.Rating == PhotoRatings.SFW)
-                {
-                    ImpressionPhoto = photo;
+                ImpressionPhoto = photo;
 
-                    AddDomainEvent(new AvatarChangedImpressionPhotoDomainEvent
-                        (this));
+                AddDomainEvent(new AvatarChangedImpressionPhotoDomainEvent
+                    (this));
 
-                    response.RespondWith(this);
-                }
-                else
-                {
-                    response.AddError
-                        ("Only SFW rated photos can be impression photos.");
-                }
+                response.RespondWithObject(this);
             }
             catch (Exception ex)
             {
@@ -462,26 +456,17 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </summary>
         /// <param name="photo"></param>
         /// <returns></returns>
-        public IStatus<Avatar> AddPhoto(IPhoto photo)
+        public IStatus<Avatar> AddPhoto(RatedPhoto photo)
         {
             var response = new Status<Avatar>();
 
             try
             {
-                if (photo.Rating == PhotoRatings.Unrated)
-                {
-                    response.AddError("Photos can not be added to an avatar " +
-                        "untill they have a rating.");
-                }
-                else
-                {
-                    photos.Add(photo);
-                    AddDomainEvent(new AvatarAddedPhotoDomainEvent
-                        (this));
+                photos.Add(photo);
+                AddDomainEvent(new AvatarAddedPhotoDomainEvent
+                    (this));
 
-                    response.RespondWith(this);
-                }
-                
+                response.RespondWithObject(this);
             }
             catch (Exception ex)
             {
@@ -498,16 +483,19 @@ namespace Hankies.Domain.Details.DomainEntities
         public IStatus<Avatar> SetImpressionDescription(string description)
         {
             var response = new Status<Avatar>();
-            if (DescriptionRules.IsValid(description))
-            {
-                ImpressionDescription = description;
-                response.RespondWith(this);
-            }
-            else
-            {
-                response.AddError("Can't add invalid description");
-            }
+            var oldDescription = ImpressionDescription;
+            ImpressionDescription = description;
 
+            if (!IsValid)
+            {
+                ImpressionDescription = oldDescription;
+                foreach (var violation in GetRuleViolations())
+                {
+                    response.AddError(violation.Rule);
+                }
+            } 
+
+            response.RespondWithObject(this);
             return response;
         }
 
@@ -515,43 +503,136 @@ namespace Hankies.Domain.Details.DomainEntities
         /// Adds a handkerchief to the Hard No list which will prevent this
         /// Avatar from seeing Avarats flagging with the specified handkerchief
         /// </summary>
-        /// <param name="handkerchief"></param>
+        /// <param name="handkerchief">The valid handkerchief to be flaged</param>
         /// <returns></returns>
         public IStatus<Avatar> FlagHandkerchiefAsHardNo
             (Handkerchief handkerchief)
         {
-            if ()
+            var response = new Status<Avatar>();
 
-                    // wait wait wait. Does validation need to be done with actions?
-                // could OnValidate() be called at the end of the action? then
-                // add the errors to status
+            try
+            {
+                hardNoHandkerchiefs.Add(handkerchief);
+                AddDomainEvent(new AvatarAddedHardNoHandkerchiefDomainEvent
+                    (this));
+
+                response.RespondWithObject(this);
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+            return response;
         }
 
+        /// <summary>
+        /// Removes a handkerchief from the hard no list if it was in it. 
+        /// </summary>
+        /// <param name="handkerchief"></param>
+        /// <returns></returns>
         public IStatus<Avatar> StopFlaggingHandkerchiefAsHardNo
             (Handkerchief handkerchief)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+
+            try
+            {
+                if (hardNoHandkerchiefs.Contains(handkerchief))
+                {
+                    hardNoHandkerchiefs.Remove(handkerchief);
+                    AddDomainEvent(new AvatarRemovedHardNoHandkerchiefDomainEvent
+                        (this));
+                }
+                else
+                {
+                    response.AddError
+                        ("specified handkerchief not found in hard no list.");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            response.RespondWithObject(this);
+            return response;
         }
 
+        /// <summary>
+        /// Removes your blindfold for a person, provided you are waering one. 
+        /// </summary>
+        /// <param name="them"></param>
+        /// <returns></returns>
         public IStatus<Avatar> DoffBlindfoldFor(Avatar them)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+            response = IsBlindfolded(response);
+
+            if(response.IsSuccess())
+            {
+                response = LastCruise.DoffBlindfold(response, this, them);
+            }
+
+            response.RespondWithObject(this);
+            return response;
         }
 
+        /// <summary>
+        /// Removed your hood for a person, provided you are waering one. 
+        /// </summary>
+        /// <param name="them"></param>
+        /// <returns></returns>
         public IStatus<Avatar> DoffHoodFor(Avatar them)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+            response = IsHooded(response);
+
+            if (response.IsSuccess())
+            {
+                response = LastCruise.DoffHood(response, this, them);
+            }
+            response.RespondWithObject(this);
+            return response;
         }
 
+        /// <summary>
+        /// Recinds an expection granted to your blindfold. 
+        /// </summary>
+        /// <param name="them"></param>
+        /// <returns></returns>
         public IStatus<Avatar> ReDonBlindfoldFor(Avatar them)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+            response = IsBlindfolded(response);
+            
+            if (response.IsSuccess())
+                response = LastCruise.DonBlindfold(response, this, them);
+
+            if (response.IsSuccess())
+
+                response.RespondWithObject(this);
+            return response;
         }
 
+        /// <summary>
+        /// Recinds an excpetion granted to your hood. 
+        /// </summary>
+        /// <param name="them"></param>
+        /// <returns></returns>
         public IStatus<Avatar> ReDonHoodFor(Avatar them)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+            response = IsHooded(response);
+
+            if (response.IsSuccess())
+            {
+                response = LastCruise.DonHood(response, this, them);
+            }
+            response.RespondWithObject(this);
+            return response;
         }
+
 
         public IStatus<Avatar> ExtendCruiseTime()
         {
@@ -596,6 +677,33 @@ namespace Hankies.Domain.Details.DomainEntities
                 return LastCruise;
 
             return null;
+        }
+
+        /// <summary>
+        /// Adds an error to a Status if Is Blindfold rule is violated. 
+        /// </summary>
+        /// <param name="response"></param>
+        /// <returns></returns>
+        private Status<Avatar> IsBlindfolded(Status<Avatar> response)
+        {
+            if (!Blindfolded)
+            {
+                response.AddError
+                    ("Cannot don or doff blindfold for an avatar if you are " +
+                    "not wearing a Blindfold.");
+            }
+            return response;
+        }
+
+        private Status<Avatar> IsHooded(Status<Avatar> response)
+        {
+            if (!Hooded)
+            {
+                response.AddError
+                    ("Cannot don or doff hood for an avatar if you are " +
+                    "not wearing a hood.");
+            }
+            return response;
         }
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()

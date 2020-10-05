@@ -126,7 +126,7 @@ namespace Hankies.Domain.Details.Radar
                 TimeStamp = DateTimeOffset.UtcNow;
             }
 
-            response.RespondWith(this);
+            response.RespondWithObject(this);
             return response;
         }
 
@@ -139,7 +139,7 @@ namespace Hankies.Domain.Details.Radar
 
             TimeStamp = DateTimeOffset.UtcNow;
 
-            response.RespondWith(this);
+            response.RespondWithObject(this);
 
             return response;
         }

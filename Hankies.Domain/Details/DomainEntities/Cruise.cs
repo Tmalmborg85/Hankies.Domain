@@ -51,12 +51,109 @@ namespace Hankies.Domain.Details.DomainEntities
         /// Avatars which have been exempt from any blindfold rules I have,
         /// for this cruise only. 
         /// </summary>
-        public HashSet<Avatar> DoffedBlindfoldFor { get; set; }
+        private HashSet<Avatar> DoffedBlindfoldFor { get; set; }
 
         /// <summary>
         /// Avatars which have been exempt from my hood waering rules. 
         /// </summary>
-        public HashSet<Avatar> DoffedHoodFor { get; set; }
+        private HashSet<Avatar> DoffedHoodFor { get; set; }
+        #endregion
+
+        #region Parrent Only Actions
+
+        /// <summary>
+        /// Doff a blindfold for an individual for this cruise session only. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="forAvatar"></param>
+        /// <returns></returns>
+        internal Status<Avatar> DoffBlindfold(Status<Avatar> response,
+            Avatar sender, Avatar forAvatar)
+        {
+            try
+            {
+                response = IsCorrectSender(response, sender);
+                if (response.IsSuccess())
+                {
+                    DoffedBlindfoldFor.Add(forAvatar);
+
+                    if (DoffedBlindfoldFor == null)
+                        DoffedBlindfoldFor = new HashSet<Avatar>();
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Doff a hood for an avatar if you are wearing one
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="forAvatar"></param>
+        /// <returns></returns>
+        internal Status<Avatar> DoffHood(Status<Avatar> response,
+            Avatar sender, Avatar forAvatar)
+        {
+            try
+            {
+                response = IsCorrectSender(response, sender);
+                if (response.IsSuccess())
+                {
+                    if (DoffedHoodFor == null)
+                        DoffedHoodFor = new HashSet<Avatar>();
+
+                    DoffedHoodFor.Add(forAvatar);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+            return response;
+        }
+
+        internal Status<Avatar> DonBlindfold(Status<Avatar> response,
+            Avatar sender, Avatar forAvatar)
+        {
+            try
+            {
+                response = IsCorrectSender(response, sender);
+                if (response.IsSuccess())
+                {
+                    DoffedBlindfoldFor.Remove(forAvatar);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return response;
+        }
+
+        internal Status<Avatar> DonHood(Status<Avatar> response,
+            Avatar sender, Avatar forAvatar)
+        {
+            try
+            {
+                response = IsCorrectSender(response, sender);
+                if (response.IsSuccess())
+                {
+                    DoffedHoodFor.Remove(forAvatar);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return response;
+        }
+
         #endregion
 
         #region Properties
@@ -128,33 +225,17 @@ namespace Hankies.Domain.Details.DomainEntities
         IEnumerable<TimeExtension> TimeExtensions { get; }
         #endregion
 
-        #region Actions
-
-
-
-        
-
-        //public IStatus<Cruise> Stop()
-        //{
-        //    var response = new Status<Cruise>();
-
-        //    try
-        //    {
-        //        var stoppedEvent = new CruiseStoppedDomainEvent(this);
-        //        this.AddDomainEvent(echoEvent);
-        //        response.RespondWith(echoEvent);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        response.AddException(ex);
-        //    }
-
-        //    return response;
-        //}
-
-        #endregion
-
         #region Helper Methods
+
+        private Status<Avatar> IsCorrectSender(Status<Avatar> response, Avatar sender)
+        {
+            if (Avatar != sender)
+            {
+                response.AddError
+                    ("Only the owning avatar may modify its cruise.");
+            }
+            return response;
+        }
 
         private int ExtendedByMinutes()
         {
@@ -207,6 +288,8 @@ namespace Hankies.Domain.Details.DomainEntities
         {
             throw new NotImplementedException();
         }
+
+        
 
         #endregion
     }

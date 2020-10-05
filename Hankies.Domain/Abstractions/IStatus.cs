@@ -37,7 +37,7 @@ namespace Hankies.Domain.Models.Abstractions
         /// Sets the response object. 
         /// </summary>
         /// <param name="responseObject"></param>
-        void RespondWith(T responseObject);
+        void RespondWithObject(T responseObject);
 
         /// <summary>
         /// Indicates if the status is successfull or not. 

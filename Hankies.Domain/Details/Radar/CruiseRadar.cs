@@ -38,7 +38,7 @@ namespace Hankies.Domain.Details.Radar
         /// centerpoint.</param>
         public CruiseRadar(Avatar ownedBy, float range)
         {
-            if (_contacts == null) 
+            if (_contacts == null)
                 _contacts = new HashSet<Avatar>();
 
             if (_clutter == null)
@@ -179,7 +179,7 @@ namespace Hankies.Domain.Details.Radar
                 resultStatus.AddException(ex);
             }
 
-            resultStatus.RespondWith(pulseEvent);
+            resultStatus.RespondWithObject(pulseEvent);
             return resultStatus;
         }
 
@@ -210,7 +210,7 @@ namespace Hankies.Domain.Details.Radar
                 response.AddException(ex);
             }
 
-            response.RespondWith(this);
+            response.RespondWithObject(this);
             return response;
 
         }
@@ -238,7 +238,7 @@ namespace Hankies.Domain.Details.Radar
                 RemoveClutterFromContact(cruise);
             }
 
-            response.RespondWith(this);
+            response.RespondWithObject(this);
             return response;
         }
 
@@ -269,7 +269,7 @@ namespace Hankies.Domain.Details.Radar
                 }
             }
 
-            response.RespondWith(this);
+            response.RespondWithObject(this);
             return response;
         }
         #endregion
@@ -351,7 +351,7 @@ namespace Hankies.Domain.Details.Radar
                 FlagAsClutter(echo.Source);
                 return;
             }
-            
+
         }
 
         /// <summary>

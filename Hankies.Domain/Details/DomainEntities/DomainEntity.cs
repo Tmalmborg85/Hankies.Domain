@@ -62,7 +62,7 @@ namespace Hankies.Domain.Details.DomainEntities
 
                 _domainEvents.Add(eventItem);
 
-            addEventStatus.RespondWith(this);
+            addEventStatus.RespondWithObject(this);
             return addEventStatus;
         }
 
