@@ -2,11 +2,11 @@
 using Hankies.Domain.Abstractions.DomainEvents;
 using Hankies.Domain.Details.DomainEntities;
 
-namespace Hankies.Domain.Details.DomainEvents
+namespace Hankies.Domain.Details.DomainEvents.AvatarEvents
 {
-    public class AvatarAddedPhotoDomainEvent : AvatarDomainEvent
+    public class AvatarRemovedPhotoDomainEvent : AvatarDomainEvent
     {
-        public AvatarAddedPhotoDomainEvent(Avatar avatar) :
+        public AvatarRemovedPhotoDomainEvent(Avatar avatar) :
             base(avatar)
         {
             Avatar = avatar;

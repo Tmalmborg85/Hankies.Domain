@@ -214,67 +214,36 @@ namespace Hankies.Domain.Details.Radar
             return response;
 
         }
-
-        /// <summary>
-        /// Manualy flag an avatar as clutter for this radar, skipping the
-        /// normal EvaluateEcho method.
-        /// </summary>
-        /// <param name="cruise">The object to be flagged</param>
-        /// <returns>A status.</returns>
-        /// <remarks>
-        /// This could be used in case an Avatar later decides an IAvatar is
-        /// clutter. If the IAvatar matches any avatars in Contacts, they
-        /// should be removed. </remarks>
-        public IStatus<CruiseRadar> FlagAsClutter(Avatar cruise)
-        {
-            var response = new Status<CruiseRadar>();
-
-            if (cruise == null)
-                response.AddError("Object to flag as clutter cannot be null");
-
-            if (!_clutter.Contains(cruise))
-            {
-                _clutter.Add(cruise);
-                RemoveClutterFromContact(cruise);
-            }
-
-            response.RespondWithObject(this);
-            return response;
-        }
-
-        /// <summary>
-        /// Manualy flag multiple avatars as clutter for this radar, skipping
-        /// the normal EvaluateEchos method.
-        /// </summary>
-        /// <param name="detectedObjects">The objects to be flagged</param>
-        /// <returns>A status.</returns>
-        /// <remarks>
-        /// This would be a good place to pre-flag blocked customers.
-        /// </remarks>
-        public IStatus<CruiseRadar> FlagAsClutter
-            (IEnumerable<Avatar> detectedObjects)
-        {
-            var response = new Status<CruiseRadar>();
-
-            if (detectedObjects == null)
-                response.AddError("Objects to flag as clutter cannot be null");
-
-            // Flag each object as clutter and record any errors. 
-            foreach (var detectedObject in detectedObjects)
-            {
-                var flagedStatus = FlagAsClutter(detectedObject);
-                if (!flagedStatus.IsSuccess())
-                {
-                    response.AddError(flagedStatus.ErrorMessage);
-                }
-            }
-
-            response.RespondWithObject(this);
-            return response;
-        }
         #endregion
 
         #region Helper Methods
+
+        private void FlagAsClutter(Avatar cruise)
+        {
+            if (!_clutter.Contains(cruise))
+            {
+                _clutter.Add(cruise);
+                RemoveFromContact(cruise);
+            }
+        }
+
+        private void FlagAsContact(Avatar cruise)
+        {
+            if (!_contacts.Contains(cruise))
+            {
+                _contacts.Add(cruise);
+                RemoveFromClutter(cruise);
+            }
+        }
+
+        private void FlagAsClutter(IEnumerable<Avatar> detectedObjects)
+        {
+            // Flag each object as clutter and record any errors. 
+            foreach (var detectedObject in detectedObjects)
+            {
+                FlagAsClutter(detectedObject);
+            }
+        }
 
         public override IEnumerable<HankiesRuleViolation> GetRuleViolations()
         {
@@ -328,42 +297,31 @@ namespace Hankies.Domain.Details.Radar
             if (_clutter.Contains(echo.Source))
                 return;
 
-            if (EchoOwnerIsOnMyBlockedList(echo.Source))
+            // Already in contacts, stop evaluating as new echo.
+            if (_contacts.Contains(echo.Source))
+                return;
+
+            if (MeetsClutterConditions(echo.Source))
             {
                 FlagAsClutter(echo.Source);
-                return;
             }
-
-            if (IAmBlockedByEchoOwner(echo.Source))
+            else
             {
-                FlagAsClutter(echo.Source);
-                return;
+                FlagAsContact(echo.Source);
             }
-
-            if (!echo.IsValid)
-            {
-                FlagAsClutter(echo.Source);
-                return;
-            }
-
-            if (EchoHardPassedOnAnyOfMyHandkerchiefs(echo.Source))
-            {
-                FlagAsClutter(echo.Source);
-                return;
-            }
-
         }
 
-        /// <summary>
-        /// Checks if a Cruise's Avatar has hard passed on any of my Avatars
-        /// handkerchiefs. 
-        /// </summary>
-        /// <param name="echo"></param>
-        /// <returns></returns>
-        private bool EchoHardPassedOnAnyOfMyHandkerchiefs(Avatar echo)
+        private bool MeetsClutterConditions(Avatar avatar)
         {
-            return echo.HardPassedOnAnyOfTheseHandkerchiefs
-                (Owner.Handkerchiefs);
+            if (BlockedEnforcer.AvatarCreatersHaveBlockedEachother
+                (Owner, avatar))
+                return true;
+
+            if (HardNoHankyEnforcer.WeHaveAnyOfEachothersHardNoHankies
+                (Owner, avatar))
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -392,10 +350,53 @@ namespace Hankies.Domain.Details.Radar
         /// Remove clutter from the contact list if it is there. 
         /// </summary>
         /// <param name="clutter"></param>
-        private void RemoveClutterFromContact(Avatar clutter)
+        private void RemoveFromContact(Avatar clutter)
         {
-            if (_contacts.Contains(clutter))
+            if (_clutter.Contains(clutter)
+                && _contacts.Contains(clutter))
                 _contacts.Remove(clutter);
+        }
+
+        /// <summary>
+        /// Removes an item from clutter if it is contined in clutter. 
+        /// </summary>
+        /// <param name="contact"></param>
+        private void RemoveFromClutter(Avatar contact)
+        {
+            if (_contacts.Contains(contact)
+                && _clutter.Contains(contact))
+                _clutter.Remove(contact);
+        }
+
+        /// <summary>
+        /// Iterates through all current contacts and re evaluates them for
+        /// clutter. 
+        /// </summary>
+        internal void ReEvaluateContactsForClutter()
+        {
+            foreach (var contact in Contacts)
+            {
+                if (MeetsClutterConditions(contact))
+                {
+                    FlagAsClutter(contact);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Iterates through all clutter and re evaluates them. If they no
+        /// longer meet clutter condition un mark them as clutter. they will
+        /// get re evaluated next pulse. 
+        /// </summary>
+        internal void ReEvaluateClutter()
+        {
+            foreach (var clutter in Clutter)
+            {
+                if (!MeetsClutterConditions(clutter))
+                {
+                    RemoveFromClutter(clutter);
+                }
+            }
         }
 
         #endregion

@@ -5,6 +5,7 @@ using System.Linq;
 using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Abstractions.ValueObjects;
 using Hankies.Domain.Details.DomainEvents;
+using Hankies.Domain.Details.DomainEvents.AvatarEvents;
 using Hankies.Domain.Details.Radar;
 using Hankies.Domain.Details.ValueObjects;
 using Hankies.Domain.HelperClasses;
@@ -154,6 +155,23 @@ namespace Hankies.Domain.Details.DomainEntities
             return response;
         }
 
+        internal Status<Avatar> ExtendTime(Status<Avatar> response, Avatar sender
+            , TimeExtension extension)
+        {
+            try
+            {
+                response = IsCorrectSender(response, sender);
+                if (response.IsSuccess())
+                    TimeExtensions.Add(extension);
+                
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return response;
+        }
         #endregion
 
         #region Properties
@@ -222,7 +240,7 @@ namespace Hankies.Domain.Details.DomainEntities
         /// </remarks>
         IEnumerable<Avatar> HoodRemovedFor { get; }
 
-        IEnumerable<TimeExtension> TimeExtensions { get; }
+        IList<TimeExtension> TimeExtensions { get; }
         #endregion
 
         #region Helper Methods

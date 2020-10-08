@@ -13,6 +13,9 @@
     <Compile Remove="Details\Pattern.cs" />
     <Compile Remove="Abstractions\DomainEntities\ICruiseSession.cs" />
     <Compile Remove="HelperClasses\ITerminatable.cs" />
+    <Compile Remove="Details\DomainEvents\AvatarAddedHardNoHandkerchiefDomainEvent.cs" />
+    <Compile Remove="Details\DomainEvents\AvatarRemovedPhotoDomainEvent.cs" />
+    <Compile Remove="Details\DomainEvents\AvatarChangedDescriptionDomainEvent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Abstractions\.DS_Store" />
@@ -25,5 +28,11 @@
     <Folder Include="Abstractions\Radar\" />
     <Folder Include="Details\Radar\" />
     <Folder Include="Statuses\" />
+    <Folder Include="Details\DomainEvents\AvatarEvents\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Details\DomainEvents\AvatarEvents\AvatarAddedHardNoHandkerchiefDomainEvent.cs" />
+    <Compile Include="Details\DomainEvents\AvatarEvents\AvatarChangedDescriptionDomainEvent.cs" />
+    <Compile Include="Details\DomainEvents\AvatarEvents\AvatarRemovedPhotoDomainEvent.cs" />
   </ItemGroup>
 </Project>

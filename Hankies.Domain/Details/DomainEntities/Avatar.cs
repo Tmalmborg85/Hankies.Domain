@@ -5,7 +5,9 @@ using System.Linq;
 using Hankies.Domain.Abstractions.DomainEntities;
 using Hankies.Domain.Abstractions.Radar;
 using Hankies.Domain.Details.DomainEvents;
+using Hankies.Domain.Details.DomainEvents.AvatarEvents;
 using Hankies.Domain.Details.Radar;
+using Hankies.Domain.Details.ValueObjects;
 using Hankies.Domain.Exceptions;
 using Hankies.Domain.HelperClasses;
 using Hankies.Domain.Models.Abstractions;
@@ -340,22 +342,21 @@ namespace Hankies.Domain.Details.DomainEntities
         /// <returns></returns>
         public IStatus<Avatar> StartNewCruise(Cruise cruiseToStart)
         {
-            var response = new Status<Avatar>();
+            var status = new Status<Avatar>();
 
             try
             {
-                AddDomainEvent(new CruiseStartedDomainEvent(cruiseToStart
-                    , this));
-
                 cruises.Add(cruiseToStart);
 
-                response.RespondWithObject(this);
+                AddDomainEvent(new CruiseStartedDomainEvent(cruiseToStart
+                    , this));
             }
             catch (Exception ex)
             {
-                response.AddException(ex);
+                status.AddException(ex);
             }
-            return response;
+
+            return AvatarValidationStatus(status);
         }
 
         /// <summary>
@@ -374,8 +375,6 @@ namespace Hankies.Domain.Details.DomainEntities
 
                     AddDomainEvent(new CruiseStoppedDomainEvent
                         (LastCruise, this));
-
-                    response.RespondWithObject(this);
                 }
                 else
                 {
@@ -387,7 +386,8 @@ namespace Hankies.Domain.Details.DomainEntities
             {
                 response.AddException(ex);
             }
-            return response;
+
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -401,15 +401,22 @@ namespace Hankies.Domain.Details.DomainEntities
 
             try
             {
-                AddDomainEvent(new EchoDetectedDomainEvent(pulse, this));
-                response.RespondWithObject(this);
+                if (BlockedEnforcer.AvatarCreatersHaveNotBlockedEachother(this
+                    , pulse.Source.Owner))
+                {
+                    AddDomainEvent(new EchoDetectedDomainEvent(pulse, this));
+                } else
+                {
+                    response.AddError
+                        ("Blocked customers cannot pick eachother up on radar");
+                }
             }
             catch (Exception ex)
             {
                 response.AddException(ex);
             }
 
-            return response;
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -427,28 +434,42 @@ namespace Hankies.Domain.Details.DomainEntities
 
                 AddDomainEvent(new AvatarChangedImpressionPhotoDomainEvent
                     (this));
-
-                response.RespondWithObject(this);
             }
             catch (Exception ex)
             {
                 response.AddException(ex);
             }
-            return response;
+
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
         /// Removes the impression photo. 
         /// </summary>
         /// <returns></returns>
-        public void RemoveImpressionPhoto()
+        public IStatus<Avatar> RemoveImpressionPhoto()
         {
-            if (ImpressionPhoto != null)
+            var response = new Status<Avatar>();
+
+            try
             {
-                ImpressionPhoto = null;
-                AddDomainEvent(new AvatarChangedImpressionPhotoDomainEvent
-                        (this));
+                if (ImpressionPhoto == null)
+                {
+                    response.AddError("No Impression Photo to remove.");
+                }
+                else
+                { 
+                    ImpressionPhoto = null;
+                    AddDomainEvent(new AvatarChangedImpressionPhotoDomainEvent
+                            (this));
+                }
             }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -465,14 +486,36 @@ namespace Hankies.Domain.Details.DomainEntities
                 photos.Add(photo);
                 AddDomainEvent(new AvatarAddedPhotoDomainEvent
                     (this));
-
-                response.RespondWithObject(this);
             }
             catch (Exception ex)
             {
                 response.AddException(ex);
             }
-            return response;
+
+            return AvatarValidationStatus(response);
+        }
+
+        /// <summary>
+        /// Remove the specified photo from photos. 
+        /// </summary>
+        /// <param name="photo"></param>
+        /// <returns></returns>
+        public IStatus<Avatar> RemovePhoto(RatedPhoto photo)
+        {
+            var response = new Status<Avatar>();
+
+            try
+            {
+                photos.Remove(photo);
+                AddDomainEvent(new AvatarRemovedPhotoDomainEvent
+                    (this));
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -483,20 +526,18 @@ namespace Hankies.Domain.Details.DomainEntities
         public IStatus<Avatar> SetImpressionDescription(string description)
         {
             var response = new Status<Avatar>();
-            var oldDescription = ImpressionDescription;
-            ImpressionDescription = description;
 
-            if (!IsValid)
+            try
             {
-                ImpressionDescription = oldDescription;
-                foreach (var violation in GetRuleViolations())
-                {
-                    response.AddError(violation.Rule);
-                }
-            } 
+                ImpressionDescription = description;
+                AddDomainEvent(new AvatarChangedDescriptionDomainEvent(this));
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
 
-            response.RespondWithObject(this);
-            return response;
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -514,15 +555,16 @@ namespace Hankies.Domain.Details.DomainEntities
             {
                 hardNoHandkerchiefs.Add(handkerchief);
                 AddDomainEvent(new AvatarAddedHardNoHandkerchiefDomainEvent
-                    (this));
+                    (this, handkerchief));
 
-                response.RespondWithObject(this);
+                CruiseRadar.ReEvaluateContactsForClutter();
             }
             catch (Exception ex)
             {
                 response.AddException(ex);
             }
-            return response;
+
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -541,7 +583,9 @@ namespace Hankies.Domain.Details.DomainEntities
                 {
                     hardNoHandkerchiefs.Remove(handkerchief);
                     AddDomainEvent(new AvatarRemovedHardNoHandkerchiefDomainEvent
-                        (this));
+                        (this, handkerchief));
+
+                    CruiseRadar.ReEvaluateClutter();
                 }
                 else
                 {
@@ -555,8 +599,7 @@ namespace Hankies.Domain.Details.DomainEntities
                 response.AddException(ex);
             }
 
-            response.RespondWithObject(this);
-            return response;
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -567,15 +610,22 @@ namespace Hankies.Domain.Details.DomainEntities
         public IStatus<Avatar> DoffBlindfoldFor(Avatar them)
         {
             var response = new Status<Avatar>();
-            response = IsBlindfolded(response);
-
-            if(response.IsSuccess())
+            try
             {
-                response = LastCruise.DoffBlindfold(response, this, them);
+                response = IsBlindfolded(response);
+
+                if (response.IsSuccess())
+                    response = LastCruise.DoffBlindfold(response, this, them);
+
+                if (response.IsSuccess())
+                    AddDomainEvent(new DoffedBlindfoldDomainEvent(this));
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
             }
 
-            response.RespondWithObject(this);
-            return response;
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -586,14 +636,23 @@ namespace Hankies.Domain.Details.DomainEntities
         public IStatus<Avatar> DoffHoodFor(Avatar them)
         {
             var response = new Status<Avatar>();
-            response = IsHooded(response);
-
-            if (response.IsSuccess())
+            try
             {
-                response = LastCruise.DoffHood(response, this, them);
+                response = IsHooded(response);
+
+                if (response.IsSuccess())
+                    response = LastCruise.DoffHood(response, this, them);
+                
+                if (response.IsSuccess())
+                    AddDomainEvent(new DoffedHoodDomainEvent(this, them));
+                
             }
-            response.RespondWithObject(this);
-            return response;
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -604,15 +663,21 @@ namespace Hankies.Domain.Details.DomainEntities
         public IStatus<Avatar> ReDonBlindfoldFor(Avatar them)
         {
             var response = new Status<Avatar>();
-            response = IsBlindfolded(response);
-            
-            if (response.IsSuccess())
-                response = LastCruise.DonBlindfold(response, this, them);
+            try
+            {
+                response = IsBlindfolded(response);
 
-            if (response.IsSuccess())
+                if (response.IsSuccess())
+                    response = LastCruise.DonBlindfold(response, this, them);
 
-                response.RespondWithObject(this);
-            return response;
+                if (response.IsSuccess())
+                    AddDomainEvent(new ReDonnedBlindfoldDomainEvent(this));
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+            return AvatarValidationStatus(response);
         }
 
         /// <summary>
@@ -623,20 +688,41 @@ namespace Hankies.Domain.Details.DomainEntities
         public IStatus<Avatar> ReDonHoodFor(Avatar them)
         {
             var response = new Status<Avatar>();
-            response = IsHooded(response);
-
-            if (response.IsSuccess())
+            try
             {
-                response = LastCruise.DonHood(response, this, them);
+                response = IsHooded(response);
+
+                if (response.IsSuccess())
+                    response = LastCruise.DonHood(response, this, them);
+
+                if (response.IsSuccess())
+                    AddDomainEvent(new ReDonnedHoodDomainEvent(this, them));
             }
-            response.RespondWithObject(this);
-            return response;
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return AvatarValidationStatus(response);
         }
 
-
-        public IStatus<Avatar> ExtendCruiseTime()
+        /// <summary>
+        /// Extends time left in the last cruise session
+        /// </summary>
+        /// <returns></returns>
+        public IStatus<Avatar> ExtendCruiseTime(TimeExtension extension)
         {
-            throw new NotImplementedException();
+            var response = new Status<Avatar>();
+            try
+            {
+                LastCruise.ExtendTime(response, this, extension);
+            }
+            catch (Exception ex)
+            {
+                response.AddException(ex);
+            }
+
+            return AvatarValidationStatus(response);
         }
 
         public IStatus<Avatar> SendMessage(IChatMessage message)
@@ -663,6 +749,7 @@ namespace Hankies.Domain.Details.DomainEntities
             throw new NotImplementedException();
         }
         #endregion
+
         #region Helper Methods
 
         /// <summary>
@@ -703,6 +790,20 @@ namespace Hankies.Domain.Details.DomainEntities
                     ("Cannot don or doff hood for an avatar if you are " +
                     "not wearing a hood.");
             }
+            return response;
+        }
+
+        private IStatus<Avatar> AvatarValidationStatus(Status<Avatar> response)
+        {
+            // Add any validation errors. 
+            if (!IsValid)
+            {
+                foreach (var violation in GetRuleViolations())
+                {
+                    response.AddError(violation.Rule);
+                }
+            }
+            response.RespondWithObject(this);
             return response;
         }
 
