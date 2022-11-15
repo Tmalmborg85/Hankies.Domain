@@ -13,10 +13,9 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             //Arrange
             var blueColor = new NamedColor("Blue", "#0000CD");
             var whiteColor = new NamedColor("White", "#ffffff");
-            var vertStripe = new VerticalStripe(whiteColor);
-            var expectedDescription = "Blue with vertical white stripe";
+            var expectedDescription = "Blue with white stripe";
 
-            var blueWithWhiteStripe = new SolidColorWithStripe(blueColor, vertStripe);
+            var blueWithWhiteStripe = new ColorWithStripe(blueColor, whiteColor);
 
             //Assert
             Assert.AreEqual(expectedDescription, blueWithWhiteStripe.Description);
@@ -29,10 +28,9 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             //Arrange
             var blueColor = new NamedColor("Blue", "#0000CD");
             var whiteColor = new NamedColor("White", "#ffffff");
-            var vertStripe = new VerticalStripe(whiteColor);
-            var expectedID = "BLUEWITHVERTICALWHITESTRIPE";
+            var expectedID = "BLUEWITHWHITESTRIPE";
 
-            var blueWithWhiteStripe = new SolidColorWithStripe(blueColor, vertStripe);
+            var blueWithWhiteStripe = new ColorWithStripe(blueColor, whiteColor);
 
             //Assert
             Assert.AreEqual(expectedID, blueWithWhiteStripe.ID);

@@ -5,17 +5,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Hankies.Domain.Tests.HankyCode.Appearance
 {
     [TestClass]
-    public class SolidColorWithDotsTests
+    public class CottonWithDotsTests
     {
         [TestMethod]
-        public void SolidColorWDotsDescriptionIsCorrect()
+        public void CottonWDotsDescriptionIsCorrect()
         {
             //Arrange
             var blueColor = new NamedColor("Blue", "#0000CD");
             var whiteColor = new NamedColor("White", "#ffffff");
             var expectedDescription = "Blue with white dots";
 
-            var blueWithWhiteDots = new SolidColorWithDots(blueColor, whiteColor);
+            var blueWithWhiteDots = new ColorWithDots(blueColor, whiteColor);
 
             //Assert
             Assert.AreEqual(expectedDescription, blueWithWhiteDots.Description);
@@ -23,14 +23,14 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
         }
 
         [TestMethod]
-        public void SolidColorWDotsIDIsCorrect()
+        public void CottonWDotsIDIsCorrect()
         {
             //Arrange
             var blueColor = new NamedColor("Blue", "#0000CD");
             var whiteColor = new NamedColor("White", "#ffffff");
             var expectedID = "BLUEWITHWHITEDOTS";
 
-            var blueWithWhiteDots = new SolidColorWithDots(blueColor, whiteColor);
+            var blueWithWhiteDots = new ColorWithDots(blueColor, whiteColor);
 
             //Assert
             Assert.AreEqual(expectedID, blueWithWhiteDots.ID);

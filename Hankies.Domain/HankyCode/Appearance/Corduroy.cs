@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Hankies.Domain.HankyCode.Appearance.Fabric
+namespace Hankies.Domain.HankyCode.Appearance
 {
     public class Corduroy : SolidColorFabric
     {

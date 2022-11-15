@@ -1,5 +1,5 @@
 ﻿using System;
-using Hankies.Domain.HankyCode.Appearance.Fabric;
+using Hankies.Domain.HankyCode.Appearance;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Hankies.Domain.Tests.HankyCode.Appearance

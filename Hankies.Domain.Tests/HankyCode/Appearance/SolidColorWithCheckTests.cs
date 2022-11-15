@@ -15,7 +15,7 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             var whiteColor = new NamedColor("White", "#ffffff");
             var expectedDescription = "Black with white check";
 
-            var blackWithWhiteCheck = new SolidColorWithCheck(blackColor, whiteColor);
+            var blackWithWhiteCheck = new Checkerboard(blackColor, whiteColor);
 
             //Assert
             Assert.AreEqual(expectedDescription, blackWithWhiteCheck.Description);
@@ -30,7 +30,7 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             var whiteColor = new NamedColor("White", "#ffffff");
             var expectedID = "BLACKWITHWHITECHECK";
 
-            var blackWithWhiteCheck = new SolidColorWithCheck(blackColor, whiteColor);
+            var blackWithWhiteCheck = new Checkerboard(blackColor, whiteColor);
 
             //Assert
             Assert.AreEqual(expectedID, blackWithWhiteCheck.ID);
