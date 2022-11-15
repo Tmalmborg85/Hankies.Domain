@@ -16,8 +16,9 @@ namespace Hankies.Domain.HankyCode.Appearance
             Name = name;
 
             Regex validHexRegEx = new Regex(validHexPattern);
-            if (!validHexRegEx.IsMatch(Hex))
+            if (validHexRegEx.IsMatch(hexValue))
                 Hex = hexValue;
+            
         }
 
         /*

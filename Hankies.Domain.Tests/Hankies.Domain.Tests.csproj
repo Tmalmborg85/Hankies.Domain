@@ -21,4 +21,7 @@
     <Folder Include="HankyCode\" />
     <Folder Include="HankyCode\Appearance\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hankies.Domain\Hankies.Domain.csproj" />
+  </ItemGroup>
 </Project>
