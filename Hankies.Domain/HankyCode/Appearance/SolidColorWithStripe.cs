@@ -8,10 +8,10 @@ namespace Hankies.Domain.HankyCode.Appearance
 
         public override string Description => Color.Name + " with " + Stripe.Description;
 
-        public SolidColorWithStripe(NamedColor solidColor, NamedColor stripeColor)
+        public SolidColorWithStripe(NamedColor solidColor, Stripe stripe)
         {
             Color = solidColor;
-            Color = stripeColor;
+            Stripe = stripe;
         }
 
        

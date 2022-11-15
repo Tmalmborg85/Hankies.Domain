@@ -9,6 +9,6 @@ namespace Hankies.Domain.HankyCode.Appearance
             Color = color;
         }
 
-        public override string Description => "vertical " + Color.Name + " stripe";
+        public override string Description => "vertical " + Color.Name.ToLower() + " stripe";
     }
 }
