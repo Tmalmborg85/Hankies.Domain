@@ -1,15 +1,12 @@
 ﻿using System;
 namespace Hankies.Domain.HankyCode.Appearance
 {
-    public class Velvet : Appearance, ISolidColor
+    public class Velvet : SolidColorFabric
     {
-        public NamedColor Color { get; private set; }
+        public override string FabricType => "velvet";
 
-        public override string Description => Color.Name + " velvet";
-
-        public Velvet(NamedColor solidColor)
+        public Velvet(NamedColor solidColor) : base (solidColor)
         {
-            Color = solidColor;
         }
     }
 }
