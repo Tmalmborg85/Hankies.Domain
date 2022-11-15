@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Hankies.Domain.HankyCode.Appearance
+namespace Hankies.Domain.HankyCode.Appearance.Fabric
 {
     public abstract class SolidColorFabric : Appearance, ISolidColor
     {
