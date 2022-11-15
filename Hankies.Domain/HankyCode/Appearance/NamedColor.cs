@@ -14,6 +14,7 @@ namespace Hankies.Domain.HankyCode.Appearance
         public NamedColor(string name, string hexValue)
         {
             Name = name;
+            LowercaseName = name.ToLower();
 
             Regex validHexRegEx = new Regex(validHexPattern);
             if (validHexRegEx.IsMatch(hexValue))
@@ -39,6 +40,8 @@ namespace Hankies.Domain.HankyCode.Appearance
 
         [Required, MinLength(ColorNameMinLength), MaxLength(ColorNameMaxLength)]
         public string Name { get; private set; }
+
+        public string LowercaseName { get; private set; }
 
         [Key, Required]
         public string Hex { get; private set; }
