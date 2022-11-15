@@ -1,10 +1,14 @@
 ﻿using System;
 namespace Hankies.Domain.HankyCode.Appearance
 {
-    public class VerticalStripe
+    public class VerticalStripe : Stripe
     {
-        public VerticalStripe()
+        
+        public VerticalStripe(NamedColor color)
         {
+            Color = color;
         }
+
+        public override string Description => "vertical " + Color.Name + " stripe";
     }
 }
