@@ -20,5 +20,13 @@
   <ItemGroup>
     <None Remove="Abstractions\.DS_Store" />
     <None Remove="Details\.DS_Store" />
+    <None Remove="HankyCode\" />
+    <None Remove="Cruiseing\" />
+    <None Remove="HankyCode\Handkerchief\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HankyCode\" />
+    <Folder Include="Cruiseing\" />
+    <Folder Include="HankyCode\Handkerchief\" />
   </ItemGroup>
 </Project>
