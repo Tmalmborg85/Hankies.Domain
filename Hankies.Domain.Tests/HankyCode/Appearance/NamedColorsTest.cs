@@ -36,5 +36,16 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             //Assert
             Assert.AreEqual(expectedDescription, appearance.Description);
         }
+
+        [TestMethod]
+        public void SingleColorsIDisCorrect()
+        {
+            //Arrange
+            var appearance = new SolidColor(new NamedColor("White", "#ffffff"));
+            var expectedID = "WHITE";
+
+            //Assert
+            Assert.AreEqual(expectedID, appearance.ID);
+        }
     }
 }

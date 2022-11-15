@@ -22,5 +22,21 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             Assert.AreEqual(expectedDescription, blueWithWhiteStripe.Description);
 
         }
+
+        [TestMethod]
+        public void SolidColorWStripeIDIsCorrect()
+        {
+            //Arrange
+            var blueColor = new NamedColor("Blue", "#0000CD");
+            var whiteColor = new NamedColor("White", "#ffffff");
+            var vertStripe = new VerticalStripe(whiteColor);
+            var expectedID = "BLUEWITHVERTICALWHITESTRIPE";
+
+            var blueWithWhiteStripe = new SolidColorWithStripe(blueColor, vertStripe);
+
+            //Assert
+            Assert.AreEqual(expectedID, blueWithWhiteStripe.ID);
+
+        }
     }
 }
