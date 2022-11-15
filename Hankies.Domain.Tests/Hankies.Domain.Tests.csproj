@@ -13,4 +13,12 @@
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="HankyCode\" />
+    <None Remove="HankyCode\Appearance\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HankyCode\" />
+    <Folder Include="HankyCode\Appearance\" />
+  </ItemGroup>
 </Project>

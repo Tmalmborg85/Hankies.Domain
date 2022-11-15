@@ -23,10 +23,12 @@
     <None Remove="HankyCode\" />
     <None Remove="Cruiseing\" />
     <None Remove="HankyCode\Handkerchief\" />
+    <None Remove="HankyCode\Color\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HankyCode\" />
     <Folder Include="Cruiseing\" />
     <Folder Include="HankyCode\Handkerchief\" />
+    <Folder Include="HankyCode\Appearance\" />
   </ItemGroup>
 </Project>
