@@ -1,7 +1,7 @@
 ﻿using System;
-namespace Hankies.Domain.HankyCode.Appearance
+namespace Hankies.Domain.HankyCode.Material
 {
-    public class Fur : Appearance
+    public class Fur : Material
     {
         public override string Description => "Fur";
     }

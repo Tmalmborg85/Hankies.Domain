@@ -1,7 +1,7 @@
 ﻿using System;
-namespace Hankies.Domain.HankyCode.Appearance
+namespace Hankies.Domain.HankyCode.Material
 {
-    public class Corduroy : SolidColorFabric
+    public class Corduroy : Material
     {
         public override string FabricType => "corduroy";
 

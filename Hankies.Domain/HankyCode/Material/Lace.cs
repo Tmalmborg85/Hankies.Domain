@@ -1,7 +1,7 @@
 ﻿using System;
-namespace Hankies.Domain.HankyCode.Appearance
+namespace Hankies.Domain.HankyCode.Material
 {
-    public class Lace : SolidColorFabric
+    public class Lace : Material
     {
         public override string FabricType => "lace";
 

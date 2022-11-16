@@ -4,7 +4,7 @@ namespace Hankies.Domain.HankyCode.Appearance
     /// <summary>
     /// A checkered pattern consists of squares in two different colours positioned in alternating positions. As its name suggests, think of a checkerboard or the finishing line flag at a Formula One race.
     /// </summary>
-    public class Checkerboard : Cotton
+    public class Checkerboard : SolidColor
     {
         public NamedColor CheckColor { get; private set; }
 

@@ -2,7 +2,7 @@
 
 namespace Hankies.Domain.HankyCode.Appearance
 {
-    public class ColorWithStripe : Cotton
+    public class ColorWithStripe : SolidColor
     {
         public NamedColor StripeColor { get; private set; }
 
