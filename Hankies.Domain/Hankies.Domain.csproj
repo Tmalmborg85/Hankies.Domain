@@ -24,13 +24,11 @@
     <None Remove="Cruiseing\" />
     <None Remove="HankyCode\Handkerchief\" />
     <None Remove="HankyCode\Color\" />
-    <None Remove="HankyCode\Material\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HankyCode\" />
     <Folder Include="Cruiseing\" />
     <Folder Include="HankyCode\Flag\" />
     <Folder Include="HankyCode\Appearance\" />
-    <Folder Include="HankyCode\Material\" />
   </ItemGroup>
 </Project>

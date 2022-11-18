@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Hankies.Domain.HankyCode.Appearance
 {
-    public class SolidColor : Appearance, ISolidColor
+    public class SolidColor : BaseAppearance, ISolidColor
     {
         public NamedColor Color { get; private set; }
 

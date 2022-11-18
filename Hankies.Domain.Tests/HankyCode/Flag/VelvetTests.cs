@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Drawing;
 using Hankies.Domain.HankyCode.Appearance;
+using Hankies.Domain.HankyCode.Flag;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Hankies.Domain.Tests.HankyCode.Appearance
+namespace Hankies.Domain.Tests.HankyCode.Flag
 {
     [TestClass]
     public class VelvetTests
@@ -14,7 +16,7 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             var whiteColor = new NamedColor("White", "#ffffff");
             var expectedDescription = "White velvet";
 
-            var whiteVelvet = new Velvet(whiteColor);
+            var whiteVelvet = new VelvetHanky(whiteColor);
 
             //Assert
             Assert.AreEqual(expectedDescription, whiteVelvet.Description);
@@ -22,16 +24,9 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
         }
 
         [TestMethod]
-        public void VelvetIDIsCorrect()
+        public void KnownVelvetFlagsAreCorrect()
         {
-            //Arrange
-            var whiteColor = new NamedColor("White", "#ffffff");
-            var expectedID = "WHITEVELVET";
-
-            var whiteVelvet = new Velvet(whiteColor);
-
-            //Assert
-            Assert.AreEqual(expectedID, whiteVelvet.ID);
+           // var blackVelvet = new VelvetHanky()
         }
     }
 }

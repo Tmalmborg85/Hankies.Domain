@@ -16,10 +16,12 @@
   <ItemGroup>
     <None Remove="HankyCode\" />
     <None Remove="HankyCode\Appearance\" />
+    <None Remove="HankyCode\Flag\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HankyCode\" />
     <Folder Include="HankyCode\Appearance\" />
+    <Folder Include="HankyCode\Flag\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hankies.Domain\Hankies.Domain.csproj" />
