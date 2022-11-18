@@ -5,9 +5,9 @@ using Hankies.Domain.HankyCode.Appearance;
 
 namespace Hankies.Domain.HankyCode.Flag
 {
-    public abstract class Flag
+    public abstract class BaseFlag
     {
-        public Flag()
+        public BaseFlag()
         {
         }
 

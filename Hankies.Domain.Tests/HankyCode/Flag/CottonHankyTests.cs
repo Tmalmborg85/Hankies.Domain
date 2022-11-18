@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Hankies.Domain.HankyCode.Appearance;
 using Hankies.Domain.HankyCode.Flag;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,10 +11,8 @@ namespace Hankies.Domain.Tests.HankyCode.Flag
     [TestClass]
     public class CottonHankyTests
     {
-        [TestMethod]
-        public void KnownCottonHankyFlagsAreCorrect()
+        public List<BaseFlag> GetAllKnownFlags()
         {
-            //Arrange
             var blackHanky = new CottonHanky(new SolidColor(ColorWheel.Black));
             var greyHanky = new CottonHanky(new SolidColor(ColorWheel.Grey));
             var blackWWhiteCheckHanky = new CottonHanky(new Checkerboard(ColorWheel.Black, ColorWheel.White));
@@ -68,6 +69,114 @@ namespace Hankies.Domain.Tests.HankyCode.Flag
             //Holstein?? Milker
             var creamHanky = new CottonHanky(new SolidColor(ColorWheel.Cream));
             var whiteLaceHanky = new LaceHanky(ColorWheel.White);
+
+            var whiteVelvetHanky = new VelvetHanky(ColorWheel.White);
+            var whiteWMultiColorDotsHanky = new CottonHanky(new ColorWithDots(ColorWheel.White, ColorWheel.Multicolor));
+            var silverLameHanky = new LameHanky(ColorWheel.Silver);
+            var leopardHanky = new CottonHanky(new Leopard());
+            var tanHanky = new CottonHanky(new SolidColor(ColorWheel.Tan));
+            var teddybearFlag = new TeddyBear();
+            //paisley?
+            //unionjack? - do I want that in the app
+            var mosquitoNettingFlag = new MosquitoNetting();
+            var diryJockstrapFlag = new DirtyJockstrap();
+            var doilyFlag = new Doily();
+            //ziplock bag
+            var cocktailNapkinFlag = new CocktailNapkin();
+            var tissueFlag = new Tissue();
+            var keyFlag = new Keys(); //NEEDS WORK can be flagged in 4 places. maybe house keys & car keys
+            var terryclothFlag = new TerryCloth();
+
+            var flags = new List<BaseFlag>();
+            flags.Add(blackHanky);
+            flags.Add(greyHanky);
+            flags.Add(blackWWhiteCheckHanky);
+            flags.Add(greyWBlackHanky);
+            flags.Add(greyFlannelHanky);
+            flags.Add(blackWWhiteStripeHanky);
+            flags.Add(charcoalHanky);
+            flags.Add(blackVelvetHanky);
+            flags.Add(lightBlueHanky);
+            flags.Add(lightBlueWWhiteStripeHanky);
+            flags.Add(lightBlueWWhiteDotsHanky);
+            flags.Add(lightBlueWBlackDotsHanky);
+            flags.Add(lightBlueWBrownDotsHanky);
+            flags.Add(lightBlueWYellowDotsHanky);
+            flags.Add(robinsEggBlueHanky);
+            flags.Add(mediumBlueHanky);
+            flags.Add(navyBlueHanky);
+            flags.Add(airForceBlueHanky);
+            flags.Add(tealBlueHanky);
+            flags.Add(redHanky);
+            flags.Add(redWWhiteStripeHanky);
+            flags.Add(redWBlackStripeHanky);
+            flags.Add(redGinghamHanky);
+            flags.Add(maroonHanky);
+            flags.Add(darkRedHanky);
+            flags.Add(lightPinkHanky);
+            flags.Add(darkPinkHanky);
+
+            flags.Add(magentaHanky);
+            flags.Add(purpleHanky);
+            flags.Add(lavenderHanky);
+            flags.Add(yellowHanky);
+            flags.Add(paleYellowHanky);
+            flags.Add(mustardHanky);
+            flags.Add(goldHanky);
+            flags.Add(yellowWWhiteStripeHanky);
+            flags.Add(goldLameHanky);
+            flags.Add(orangeHanky);
+            flags.Add(apricotHanky);
+            flags.Add(coralHanky);
+            flags.Add(rustHanky);
+            flags.Add(kellyGreenHanky);
+            flags.Add(hunterGreenHanky);
+            flags.Add(oliveDrabHanky);
+            flags.Add(limeGreenHanky);
+            flags.Add(beigeHanky);
+            flags.Add(brownHanky);
+            flags.Add(brownLaceHanky);
+            flags.Add(brownSatinHanky);
+            flags.Add(brownCorduroyHanky);
+            flags.Add(brownWWhiteStripeHanky);
+            flags.Add(furHanky);
+            flags.Add(whiteHanky);
+            //flags.Add();
+            flags.Add(creamHanky);
+            flags.Add(whiteLaceHanky);
+
+            flags.Add(whiteVelvetHanky);
+            flags.Add(whiteWMultiColorDotsHanky);
+            flags.Add(silverLameHanky);
+            flags.Add(leopardHanky);
+            flags.Add(tanHanky);
+            flags.Add(teddybearFlag);
+            //flags.Add();
+            //flags.Add();
+            flags.Add(mosquitoNettingFlag);
+            flags.Add(diryJockstrapFlag);
+            flags.Add(doilyFlag);
+            //flags.Add();
+            flags.Add(cocktailNapkinFlag);
+            flags.Add(tissueFlag);
+            flags.Add(keyFlag);
+            flags.Add(terryclothFlag);
+            flags.Add(navyBlueHanky);
+            return flags;
+
+        }
+        [TestMethod]
+        public void FlagsHaveUniqueIDS()
+        {
+            //Arrange
+            var flags = GetAllKnownFlags();
+            HashSet<Guid> IDs = new HashSet<Guid>();
+
+            foreach (var flag in flags)
+            {
+                Assert.IsFalse(IDs.Contains(flag.ID));
+                IDs.Add(flag.ID);
+            }
         }
     }
 }

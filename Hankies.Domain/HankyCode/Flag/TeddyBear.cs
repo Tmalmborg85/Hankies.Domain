@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Hankies.Domain.HankyCode.Flag
 {
-    public class TeddyBear : Flag
+    public class TeddyBear : BaseFlag
     {
         public TeddyBear()
         {

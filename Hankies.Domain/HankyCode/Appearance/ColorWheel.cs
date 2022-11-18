@@ -37,5 +37,11 @@ namespace Hankies.Domain.HankyCode.Appearance
         public static NamedColor Beige = new NamedColor("Beige", "#f5f5dc");
         public static NamedColor Cream = new NamedColor("Cream", "#fffdd0");
         public static NamedColor Silver = new NamedColor("Silver", "#c0c0c0");
+        public static NamedColor Tan = new NamedColor("Tan", "#d2b48c");
+
+
+
+
+        public static NamedColor Multicolor = new NamedColor("Multicolor", "");
     }
 }

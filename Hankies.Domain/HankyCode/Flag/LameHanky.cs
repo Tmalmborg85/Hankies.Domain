@@ -3,7 +3,7 @@ using Hankies.Domain.HankyCode.Appearance;
 
 namespace Hankies.Domain.HankyCode.Flag
 {
-    public class LameHanky : Flag, ISolidColor
+    public class LameHanky : BaseFlag, ISolidColor
     {
         public NamedColor Color { get; set; }
 
