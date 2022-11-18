@@ -10,23 +10,15 @@ namespace Hankies.Domain.Tests.HankyCode.Flag
     public class VelvetTests
     {
         [TestMethod]
-        public void VelvetDescriptionIsCorrect()
-        {
-            //Arrange
-            var whiteColor = new NamedColor("White", "#ffffff");
-            var expectedDescription = "White velvet";
-
-            var whiteVelvet = new VelvetHanky(whiteColor);
-
-            //Assert
-            Assert.AreEqual(expectedDescription, whiteVelvet.Description);
-
-        }
-
-        [TestMethod]
         public void KnownVelvetFlagsAreCorrect()
         {
-           // var blackVelvet = new VelvetHanky()
+            //Arrange
+            var blackVelvet = new VelvetHanky(ColorWheel.Black);
+            var whiteVelvet = new VelvetHanky(ColorWheel.White);
+
+            //Assert
+            Assert.AreEqual("Black velvet", blackVelvet.Description);
+            Assert.AreEqual("White velvet", whiteVelvet.Description);
         }
     }
 }

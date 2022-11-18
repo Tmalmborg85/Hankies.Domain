@@ -15,6 +15,9 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             Assert.AreEqual(ColorWheel.Black.Name, "Black");
             Assert.AreEqual(ColorWheel.Grey.Name, "Grey");
             Assert.AreEqual(ColorWheel.Charcoal.Name, "Charcoal");
+            Assert.AreEqual(ColorWheel.LightBlue.Name, "Light Blue");
+            Assert.AreEqual(ColorWheel.Brown.Name, "Brown");
+            Assert.AreEqual(ColorWheel.Yellow.Name, "Yellow");
         }
 
         [TestMethod]
@@ -24,6 +27,9 @@ namespace Hankies.Domain.Tests.HankyCode.Appearance
             Assert.AreEqual(ColorWheel.Black.Hex, "#000000");
             Assert.AreEqual(ColorWheel.Grey.Hex, "#808080");
             Assert.AreEqual(ColorWheel.Charcoal.Hex, "#36454f");
+            Assert.AreEqual(ColorWheel.LightBlue.Hex, "#add8e6");
+            Assert.AreEqual(ColorWheel.Brown.Hex, "#964b00");
+            Assert.AreEqual(ColorWheel.Yellow.Hex, "#ffff00");
         }
     }
 }

@@ -1,21 +1,20 @@
 ﻿using System;
-using Hankies.Domain.HankyCode.Appearance;
 using Hankies.Domain.HankyCode.Flag;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Hankies.Domain.Tests.HankyCode.Flag
 {
     [TestClass]
-    public class FurTests
+    public class CocktailNapkinTests
     {
         [TestMethod]
-        public void FurDescriptionIsCorrect()
+        public void KnownCocktailNapkinFlagsAreCorrect()
         {
-            //arrange
-            var fur = new Fur();
+            //Arrange
+            var cocktailNapkin = new CocktailNapkin();
 
             //Assert
-            Assert.AreEqual("Fur", fur.Description);
+            Assert.AreEqual("Cocktail napkin", cocktailNapkin.Description);
         }
     }
 }

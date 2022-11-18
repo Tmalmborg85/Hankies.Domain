@@ -6,16 +6,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Hankies.Domain.Tests.HankyCode.Flag
 {
     [TestClass]
-    public class FurTests
+    public class CorduroyTests
     {
         [TestMethod]
-        public void FurDescriptionIsCorrect()
+        public void KnownCorduroyFlagsAreCorrect()
         {
-            //arrange
-            var fur = new Fur();
+            //Arrange
+            var brownCorduroy = new CorduroyHanky(ColorWheel.Brown);
 
             //Assert
-            Assert.AreEqual("Fur", fur.Description);
+            Assert.AreEqual("Brown corduroy", brownCorduroy.Description);
         }
     }
 }
