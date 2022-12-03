@@ -1,5 +1,6 @@
 ﻿using System;
 using Hankies.Domain.HankyCode.Appearance;
+using Hankies.Domain.HankyCode.Fetish;
 
 namespace Hankies.Domain.HankyCode.Flag
 {
@@ -10,11 +11,11 @@ namespace Hankies.Domain.HankyCode.Flag
     {
         public BaseAppearance Appearance { get; set; }
 
-        public CottonHanky(BaseAppearance appearance)
+
+        public CottonHanky(BaseAppearance appearance, AssociatedTrait trait) : base(appearance.ID, trait)
         {
             Appearance = appearance;
+            SetVisualDescription(appearance.Description);
         }
-
-        public override string Description => Appearance.Description;
     }
 }

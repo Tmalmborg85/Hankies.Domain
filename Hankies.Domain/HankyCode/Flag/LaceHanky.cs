@@ -1,5 +1,6 @@
 ﻿using System;
 using Hankies.Domain.HankyCode.Appearance;
+using Hankies.Domain.HankyCode.Fetish;
 
 namespace Hankies.Domain.HankyCode.Flag
 {
@@ -7,11 +8,10 @@ namespace Hankies.Domain.HankyCode.Flag
     {
         public NamedColor Color { get; set; }
 
-        public override string Description => Color.Name + " lace";
-
-        public LaceHanky(NamedColor SolidColor)
+        public LaceHanky(NamedColor SolidColor, AssociatedTrait trait) : base(SolidColor.Name + "lace", trait)
         {
             Color = SolidColor;
+            SetVisualDescription(SolidColor.Name + " lace");
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Hankies.Domain.HankyCode.Appearance;
+using Hankies.Domain.HankyCode.Fetish;
 
 namespace Hankies.Domain.HankyCode.Flag
 {
@@ -7,10 +8,9 @@ namespace Hankies.Domain.HankyCode.Flag
     {
         public NamedColor Color { get; set; }
 
-        public override string Description => Color.Name + " corduroy";
-
-        public CorduroyHanky(NamedColor SolidColor)
+        public CorduroyHanky(NamedColor SolidColor, AssociatedTrait trait) : base(SolidColor.Name + "corduroy", trait)
         {
+            SetVisualDescription(SolidColor.Name + " corduroy");
             Color = SolidColor;
         }
     }

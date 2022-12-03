@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using Hankies.Domain.HankyCode.Appearance;
+using Hankies.Domain.HankyCode.Fetish;
 
 namespace Hankies.Domain.HankyCode.Flag
 {
@@ -7,11 +9,10 @@ namespace Hankies.Domain.HankyCode.Flag
     {
         public NamedColor Color { get; set; }
 
-        public override string Description => Color.Name + " lame";
-
-        public LameHanky(NamedColor SolidColor)
+        public LameHanky(NamedColor SolidColor, AssociatedTrait trait) : base(SolidColor.Name + "lame", trait)
         {
             Color = SolidColor;
+            SetVisualDescription(SolidColor.Name + " lame");
         }
     }
 }
