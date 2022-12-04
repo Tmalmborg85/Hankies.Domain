@@ -42,23 +42,23 @@ namespace Hankies.Domain.Tests.HankyCode.Flag
             Assert.IsTrue(lightBlueHankyWornOnLeft.DonnedID != Guid.Empty);
         }
 
-        [TestMethod]
-        public void DonnedFlagHasCorrectCorrespondingDonnedFlag()
-        {
-            //Arrange - Create a hanky and donn it. 
-            var lightBlueHanky = new CottonHanky(new SolidColor(ColorWheel.LightBlue),
-                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls));
+        //[TestMethod]
+        //public void DonnedFlagHasCorrectCorrespondingDonnedFlag()
+        //{
+        //    //Arrange - Create a hanky and donn it. 
+        //    var lightBlueHanky = new CottonHanky(new SolidColor(ColorWheel.LightBlue),
+        //            new AssociatedTrait("Oral sex", Rolls.TopBottomRolls));
 
-            var lightBlueHankyWornOnLeft = lightBlueHanky.DonnFlag(FlaggableLocations.Left);
-            var expectedCorrespondingHanky = lightBlueHanky.DonnFlag(FlaggableLocations.Right);
+        //    var lightBlueHankyWornOnLeft = lightBlueHanky.DonnFlag(FlaggableLocations.Left);
+        //    var expectedCorrespondingHanky = lightBlueHanky.DonnFlag(FlaggableLocations.Right);
 
-            Console.Write("Actual Corresponding DonnedID: " + lightBlueHankyWornOnLeft.CorrespondingDonnedFlagID.ToString());
-            Console.Write("\nExpected Corresponding DonnedID: " + expectedCorrespondingHanky.DonnedID.ToString());
+        //    Console.Write("Actual Corresponding DonnedID: " + lightBlueHankyWornOnLeft.CorrespondingDonnedFlagID.ToString());
+        //    Console.Write("\nExpected Corresponding DonnedID: " + expectedCorrespondingHanky.DonnedID.ToString());
 
-            //Assert - The the left hanky's CorrespondingDonnedFlag should be the same as the right 
-            Assert.IsTrue(lightBlueHankyWornOnLeft.CorrespondingDonnedFlagID == expectedCorrespondingHanky.DonnedID);
-            Assert.IsTrue(expectedCorrespondingHanky.CorrespondingDonnedFlagID == lightBlueHankyWornOnLeft.DonnedID);
-        }
+        //    //Assert - The the left hanky's CorrespondingDonnedFlag should be the same as the right 
+        //    Assert.IsTrue(lightBlueHankyWornOnLeft.CorrespondingDonnedFlagID == expectedCorrespondingHanky.DonnedID);
+        //    Assert.IsTrue(expectedCorrespondingHanky.CorrespondingDonnedFlagID == lightBlueHankyWornOnLeft.DonnedID);
+        //}
 
         [TestMethod]
         public void CorrectlyBuildsVisualDescription()

@@ -83,7 +83,8 @@ namespace Hankies.Domain.Tests.HankyCode
                 //var goldHanky = new CottonHanky(new SolidColor(ColorWheel.Gold));
                 //var yellowWWhiteStripeHanky = new CottonHanky(new ColorWithStripe(ColorWheel.Yellow, ColorWheel.White));
                 //var goldLameHanky = new LameHanky(ColorWheel.Gold);
-                //var orangeHanky = new CottonHanky(new SolidColor(ColorWheel.Orange));
+                var orangeHanky = new CottonHanky(new SolidColor(ColorWheel.Orange),
+                    new AssociatedTrait("All or Nothing", Rolls.CustomRolls("Anything, Anytime", "Nothing now, just looking")));
                 //var apricotHanky = new CottonHanky(new SolidColor(ColorWheel.Apricot));
                 //var coralHanky = new CottonHanky(new SolidColor(ColorWheel.Coral));
                 //var rustHanky = new CottonHanky(new SolidColor(ColorWheel.Rust));
@@ -129,6 +130,8 @@ namespace Hankies.Domain.Tests.HankyCode
                 HankyCode.AddFlag(charcoalHanky);
                 HankyCode.AddFlag(blackVelvetHanky);
                 HankyCode.AddFlag(lightBlueHanky);
+
+                HankyCode.AddFlag(orangeHanky);
                 //flags.Add(lightBlueWWhiteStripeHanky);
                 //flags.Add(lightBlueWWhiteDotsHanky);
                 //flags.Add(lightBlueWBlackDotsHanky);
@@ -236,6 +239,24 @@ namespace Hankies.Domain.Tests.HankyCode
 
         [TestMethod]
         /// <summary>
+        /// Makes sure that the actual opposite flag is being obtained. 
+        /// </summary>
+		public void GetOppositeDonnedFlag()
+        {
+            //Arrange - get a random flag from the flag library and donn it. Then build its expected opposie. 
+            var randFlag = HankyCode.GetRandomFlag();
+
+            var donnedRandFlag = randFlag.DonnFlag(FlaggableLocations.Left);
+            var expectedOppositeFlag = randFlag.DonnFlag(FlaggableLocations.Right);
+
+            var oppositeFlag = HankyCode.GetOppositeDonnedFlag(donnedRandFlag);
+
+            //Assert - expectedOppositeFlag's DonnedID equals oppositeFlag's DonnedID
+            Assert.IsTrue(expectedOppositeFlag.DonnedID == oppositeFlag.DonnedID);
+        }
+
+        [TestMethod]
+        /// <summary>
         /// Get a flag by its visual description. Important because
         /// crusing by a flag's description is how it happens in real life
         /// </summary>
@@ -250,12 +271,44 @@ namespace Hankies.Domain.Tests.HankyCode
             Assert.AreEqual(randFlag, retrivedFlag);
         }
 
+        [TestMethod]
         /// <summary>
         /// Get the corresponding donned flags for a donned flag. 
         /// </summary>
         public void GetCorrectCorrespondingDonnedFlags()
         {
+            //Arrange - Create a hanky and donn it.
+            var lightBlueHanky = new CottonHanky(new SolidColor(ColorWheel.LightBlue),
+                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls));
 
+            var lightBlueHankyWornOnLeft = lightBlueHanky.DonnFlag(FlaggableLocations.Left);
+            var expectedHanky = lightBlueHanky.DonnFlag(FlaggableLocations.Right);
+
+            var correspondingHanky = HankyCode.GetCorrespondingDonnedFlags(lightBlueHankyWornOnLeft).FirstOrDefault();
+            //var correspondingHanky = HankyCode.GetDonnedFlagByID(lightBlueHankyWornOnLeft.CorrespondingDonnedFlagID);
+
+            //Assert - The corresponding hanky should ID should equal the expected hanky ID
+            Assert.IsTrue(correspondingHanky.ID == expectedHanky.ID);
+        }
+
+        [TestMethod]
+        /// <summary>
+        /// The HankyCode needs to be able to handle the special case of
+        /// flagging orange left, wwitch should return all donned flags. 
+        /// </summary>
+        public void FlaggingOrangeLeftShowsAll()
+        {
+            //Arrange - create and donn an orange flag left. Get all donned 
+            //flags from the Hanky code and put them in a list of expected results. 
+            var orangeHanky = HankyCode.GetFlagByVisualDescription(new SolidColor(ColorWheel.Orange).Description);
+            var orangeLeft = orangeHanky.DonnFlag(FlaggableLocations.Left);
+
+            var correspondingFlags = HankyCode.GetCorrespondingDonnedFlags(orangeLeft);
+            var expectedResults = HankyCode.GetAllDonnedFlags();
+
+            //Assert - The expected results list and the corresponding flags
+            //list should contain the same members
+            //Assert.
         }
 
     }

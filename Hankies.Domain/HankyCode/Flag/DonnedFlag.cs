@@ -26,7 +26,7 @@ namespace Hankies.Domain.HankyCode.Flag
         /// <summary>
         /// The <c>DonnedFlag</c> that explicitly corresponds to this hanky.
         /// </summary>
-        public Guid CorrespondingDonnedFlagID { get; set; }
+        //public Guid CorrespondingDonnedFlagID { get; set; }
 
         public DonnedFlag(BaseFlag flag, FlaggableLocations location) : base(flag)
 		{
@@ -46,7 +46,7 @@ namespace Hankies.Domain.HankyCode.Flag
             var matchingFlagVisualDescription = BuildVisualDescription(description, GetOppositeLocation(location));
 
             DonnedID = GenerateID(VisualDescription);
-            CorrespondingDonnedFlagID = GenerateID(matchingFlagVisualDescription.ToUpperFirstLetter());
+            //CorrespondingDonnedFlagID = GenerateID(matchingFlagVisualDescription.ToUpperFirstLetter());
 
         }
     }

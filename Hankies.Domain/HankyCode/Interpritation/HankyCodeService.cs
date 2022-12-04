@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hankies.Domain.HankyCode.Flag;
 
 namespace Hankies.Domain.HankyCode.Interpritation
@@ -7,6 +8,8 @@ namespace Hankies.Domain.HankyCode.Interpritation
 	public class HankyCodeService
 	{
 		private Dictionary<Guid, BaseFlag> Flags { get; set; }
+        private Dictionary<Guid, DonnedFlag> DonnedLeftFlags { get; set; }
+        private Dictionary<Guid, DonnedFlag> DonnedRightFlags { get; set; }
         private Dictionary<string, Guid> FlagIDsByDescription { get; set; }
         private List<Guid> FlagKeys { get; set; }
 
@@ -26,6 +29,8 @@ namespace Hankies.Domain.HankyCode.Interpritation
             if (!HasFlag(newFlag))
 			{
 				Flags.Add(newFlag.ID, newFlag);
+                DonnedLeftFlags.Add(newFlag.ID, newFlag.DonnFlag(FlaggableLocations.Left));
+                DonnedRightFlags.Add(newFlag.ID, newFlag.DonnFlag(FlaggableLocations.Right));
                 FlagIDsByDescription.Add(newFlag.VisualDescription, newFlag.ID);
                 FlagKeys.Add(newFlag.ID);
             }
@@ -63,7 +68,7 @@ namespace Hankies.Domain.HankyCode.Interpritation
         /// </summary>
         /// <param name="iD">a valid GUID ID</param>
         /// <returns>The flag or <c>Null</c></returns>
-        public object GetFlagByID(Guid iD)
+        public BaseFlag GetFlagByID(Guid iD)
         {
             if (Flags.ContainsKey(iD))
                 return Flags[iD];
@@ -71,7 +76,7 @@ namespace Hankies.Domain.HankyCode.Interpritation
             return null;
         }
 
-        public object GetFlagByVisualDescription(string visualDescription)
+        public BaseFlag GetFlagByVisualDescription(string visualDescription)
         {
             if (FlagIDsByDescription.ContainsKey(visualDescription))
             {
@@ -80,6 +85,59 @@ namespace Hankies.Domain.HankyCode.Interpritation
             } 
 
             return null;
+        }
+
+        public List<DonnedFlag> GetCorrespondingDonnedFlags(DonnedFlag lightBlueHankyWornOnLeft)
+        {
+            var result = new List<DonnedFlag>();
+
+            //Check for special proccessing
+            if (UsesNonStandardMatchingRules(lightBlueHankyWornOnLeft.ID))
+            {
+
+            } else
+            {
+                //Standard Matching rules
+                var singleCorrespondingFlag = GetOppositeDonnedFlag(lightBlueHankyWornOnLeft);
+                result.Add(singleCorrespondingFlag);
+            }
+
+            return result;
+        }
+
+        private bool UsesNonStandardMatchingRules(Guid iD)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the <c>DonnedFlag</c> that is in the exact opposite position
+        /// from the given <c>DonnedFlag</c>. This is different than getting
+        /// corresponding or matching flags because no matching rules are
+        /// followed here.
+        /// </summary>
+        /// <param name="donnedFlag">The flag that is currenly being worn</param>
+        /// <returns>A single <c>DonnedFlag</c> that is in the opposite flagged
+        /// position.</returns>
+        public DonnedFlag GetOppositeDonnedFlag(DonnedFlag donnedFlag)
+        {
+            if (donnedFlag.Location == FlaggableLocations.Left)
+            {
+                return DonnedLeftFlags[donnedFlag.ID];
+            } else if (donnedFlag.Location == FlaggableLocations.Right)
+            {
+                return DonnedRightFlags[donnedFlag.ID];
+            } else
+            {
+                return null;
+            }
+        }
+
+        public List<DonnedFlag> GetAllDonnedFlags()
+        {
+            HashSet<DonnedFlag> hSet = new HashSet<DonnedFlag>(DonnedLeftFlags.Values);
+            hSet.UnionWith(DonnedRightFlags.Values);
+            return hSet.ToList();
         }
     }
 }
