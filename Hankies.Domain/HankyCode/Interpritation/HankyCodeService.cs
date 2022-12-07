@@ -125,10 +125,10 @@ namespace Hankies.Domain.HankyCode.Interpritation
         {
             if (donnedFlag.Location == FlaggableLocations.Left)
             {
-                return DonnedLeftFlags[donnedFlag.ID];
+                return DonnedRightFlags[donnedFlag.ID];
             } else if (donnedFlag.Location == FlaggableLocations.Right)
             {
-                return DonnedRightFlags[donnedFlag.ID];
+                return DonnedLeftFlags[donnedFlag.ID];
             } else
             {
                 return null;
