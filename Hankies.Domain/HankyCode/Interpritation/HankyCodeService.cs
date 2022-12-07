@@ -89,27 +89,28 @@ namespace Hankies.Domain.HankyCode.Interpritation
             return null;
         }
 
-        public List<DonnedFlag> GetCorrespondingDonnedFlags(DonnedFlag lightBlueHankyWornOnLeft)
+        /// <summary>
+        /// Get all the donned flags that correspond to the given donned hanky.
+        /// Typicly only one is returned but it can be multiple. 
+        /// </summary>
+        /// <param name="donnedFlag"></param>
+        /// <returns></returns>
+        public List<DonnedFlag> GetCorrespondingDonnedFlags(DonnedFlag donnedFlag)
         {
             var result = new List<DonnedFlag>();
 
             //Check for special proccessing
-            if (UsesNonStandardMatchingRules(lightBlueHankyWornOnLeft.ID))
+            if (donnedFlag.VisualDescription == "Orange worn on the left")
             {
-
+                result = GetAllDonnedFlags();
             } else
             {
                 //Standard Matching rules
-                var singleCorrespondingFlag = GetOppositeDonnedFlag(lightBlueHankyWornOnLeft);
+                var singleCorrespondingFlag = GetOppositeDonnedFlag(donnedFlag);
                 result.Add(singleCorrespondingFlag);
             }
 
             return result;
-        }
-
-        private bool UsesNonStandardMatchingRules(Guid iD)
-        {
-            return false;
         }
 
         /// <summary>
@@ -135,6 +136,23 @@ namespace Hankies.Domain.HankyCode.Interpritation
             }
         }
 
+        /// <summary>
+        /// Get all the <c>DonnedFlag</c>s on either the left or right side. 
+        /// </summary>
+        /// <param name="location">Which side to get</param>
+        /// <returns>A list of <c>DonnedFlag</c>s</returns>
+        public List<DonnedFlag> GetAllDonnedFlags(FlaggableLocations location)
+        {
+            if (location == FlaggableLocations.Left)
+                return DonnedLeftFlags.Values.ToList();
+
+            return DonnedRightFlags.Values.ToList();
+        }
+
+        /// <summary>
+        /// Get all the <c>DonnedFlag</c>s from both sides. 
+        /// </summary>
+        /// <returns>A list of <c>DonnedFlag</c>s</returns>
         public List<DonnedFlag> GetAllDonnedFlags()
         {
             HashSet<DonnedFlag> hSet = new HashSet<DonnedFlag>(DonnedLeftFlags.Values);

@@ -291,6 +291,45 @@ namespace Hankies.Domain.Tests.HankyCode
             Assert.IsTrue(correspondingHanky.ID == expectedHanky.ID);
         }
 
+        /// <summary>
+        /// Make sure donned flags is more than 1. 
+        /// </summary>
+        [TestMethod]
+        public void GetDonnedLeftFlags()
+        {
+            Assert.IsTrue(HankyCode.GetAllDonnedFlags(FlaggableLocations.Left).Count > 0);
+        }
+
+        /// <summary>
+        /// Make sure donned flags is more than 1. 
+        /// </summary>
+        [TestMethod]
+        public void GetDonnedRightFlags()
+        {
+            Assert.IsTrue(HankyCode.GetAllDonnedFlags(FlaggableLocations.Right).Count > 0);
+        }
+
+        /// <summary>
+        /// Compare the count of leftDonned Hankies and right to the count of
+        /// get all to make sure they are the same. 
+        /// </summary>
+        [TestMethod]
+        public void GetAllDonnedFlagsReturnsCorrect()
+        {
+            //Arrange - combine the lists and get the expected count.
+            var expectedDonnedHash = HankyCode.GetAllDonnedFlags
+                (FlaggableLocations.Left).Concat<DonnedFlag>
+                (HankyCode.GetAllDonnedFlags(FlaggableLocations.Right))
+                .ToHashSet<DonnedFlag>();
+            var donnedHash = HankyCode.GetAllDonnedFlags().ToHashSet<DonnedFlag>();
+
+
+            //Assert - compare the counts and make sure they have a value higher than 0.
+            Assert.IsTrue(HankyCode.GetAllDonnedFlags().Count == expectedDonnedHash.Count);
+            Assert.IsTrue(donnedHash.Count > 0);
+            Assert.IsTrue(donnedHash.SetEquals(expectedDonnedHash));
+        }
+
         [TestMethod]
         /// <summary>
         /// The HankyCode needs to be able to handle the special case of
@@ -299,16 +338,21 @@ namespace Hankies.Domain.Tests.HankyCode
         public void FlaggingOrangeLeftShowsAll()
         {
             //Arrange - create and donn an orange flag left. Get all donned 
-            //flags from the Hanky code and put them in a list of expected results. 
-            var orangeHanky = HankyCode.GetFlagByVisualDescription(new SolidColor(ColorWheel.Orange).Description);
+            //flags from the Hanky code and put them in a list of expected
+            //results. 
+            var orangeHanky = HankyCode.GetFlagByVisualDescription
+                (new SolidColor(ColorWheel.Orange).Description);
             var orangeLeft = orangeHanky.DonnFlag(FlaggableLocations.Left);
 
-            var correspondingFlags = HankyCode.GetCorrespondingDonnedFlags(orangeLeft);
-            var expectedResults = HankyCode.GetAllDonnedFlags();
+            var correspondingFlagsHash = HankyCode.GetCorrespondingDonnedFlags
+                (orangeLeft).ToHashSet<DonnedFlag>();
+            var expectedResultsHash = HankyCode.GetAllDonnedFlags()
+                .ToHashSet<DonnedFlag>();
 
-            //Assert - The expected results list and the corresponding flags
-            //list should contain the same members
-            //Assert.
+
+            //Assert - The expected results hash and the corresponding flags
+            //hash should contain the same members
+            Assert.IsTrue(correspondingFlagsHash.SetEquals(expectedResultsHash));
         }
 
     }
