@@ -16,6 +16,8 @@ namespace Hankies.Domain.HankyCode.Interpritation
         public HankyCodeService()
 		{
             Flags = new Dictionary<Guid, BaseFlag>();
+            DonnedLeftFlags = new Dictionary<Guid, DonnedFlag>();
+            DonnedRightFlags = new Dictionary<Guid, DonnedFlag>();
             FlagIDsByDescription = new Dictionary<string, Guid>();
             FlagKeys = new List<Guid>();
         }
