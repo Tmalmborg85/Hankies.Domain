@@ -99,7 +99,7 @@ namespace Hankies.Domain.HankyCode.Interpritation
         /// Typicly only one is returned but it can be multiple. 
         /// </summary>
         /// <param name="donnedFlag"></param>
-        /// <returns></returns>
+        /// <returns>A list of corresponding Hankies</returns>
         public List<DonnedFlag> GetCorrespondingDonnedFlags(DonnedFlag donnedFlag)
         {
             var result = new List<DonnedFlag>();
@@ -113,6 +113,31 @@ namespace Hankies.Domain.HankyCode.Interpritation
                 //Standard Matching rules
                 var singleCorrespondingFlag = GetOppositeDonnedFlag(donnedFlag);
                 result.Add(singleCorrespondingFlag);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get all the donned flags that correspond to the given donned hankies.
+        /// </summary>
+        /// <remarks>
+        /// This has bad BigO Notation. consider a solution with hash tables.</remarks>
+        /// <param name="donnedFlags"></param>
+        /// <returns>A list of corresponding Hankies</returns>
+        public List<DonnedFlag> GetCorrespondingDonnedFlags(List<DonnedFlag> donnedFlags)
+        {
+            var result = new List<DonnedFlag>();
+            foreach (var donnedFlag in donnedFlags)
+            {
+                var correspondingFlags = GetCorrespondingDonnedFlags(donnedFlag);
+                foreach (var correspondingFlag in correspondingFlags)
+                {
+                    if (!result.Contains(correspondingFlag))
+                    {
+                        result.Add(correspondingFlag);
+                    }
+                }
             }
 
             return result;

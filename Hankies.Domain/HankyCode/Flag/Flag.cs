@@ -110,5 +110,34 @@ namespace Hankies.Domain.HankyCode.Flag
                 return null;
             }
         }
+
+        /// <summary>
+        /// Flags are equal to eachother if they have the same ID. ID is
+        /// generated from visual appearance, whitch must be unique. 
+        /// </summary>
+        /// <param name="otherFlag">The other flag to compare this to</param>
+        /// <returns>True if the IDs are equal. Returns false if the other object is not a flag</returns>
+        public override bool Equals(object obj)
+        {
+            try
+            {
+                var otherFlag = (BaseFlag)obj;
+                return ID == otherFlag.ID;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public static bool operator ==(BaseFlag left, BaseFlag right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(BaseFlag left, BaseFlag right)
+        {
+            return !(left == right);
+        }
     }
 }

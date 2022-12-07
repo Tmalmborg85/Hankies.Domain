@@ -309,6 +309,64 @@ namespace Hankies.Domain.Tests.HankyCode
         }
 
         /// <summary>
+        /// Create a hanky and get the same hanky from the HankCode. They
+        /// should be equal when compared. 
+        /// </summary>
+        [TestMethod]
+        public void FlagsAreEqualToEachotherWhenTheyHaveTheSameID()
+        {
+            var blackHanky = new CottonHanky(new SolidColor(ColorWheel.Black),
+                    new AssociatedTrait("Heavy Sadomasochism", Rolls.TopBottomRolls));
+            var alsoBlackHanky = HankyCode.GetFlagByID(blackHanky.ID);
+
+            Assert.IsTrue(blackHanky == alsoBlackHanky);
+            Assert.AreEqual(blackHanky, alsoBlackHanky);
+        }
+
+        /// <summary>
+        /// Get the correct corresponding donned flags for the provided donned flags. 
+        /// </summary>
+        [TestMethod]
+        public void GetCorrectCorrespondingDonnedFlagsForMultipleFlags()
+        {
+            //Arrange - get two random flags and don them left and right. The
+            //expected results will be thouse same flags donned right and left
+            var randFlag1 = HankyCode.GetRandomFlag();
+            var randFlag2 = HankyCode.GetRandomFlag();
+
+            var donnedFlags = new List<DonnedFlag>()
+            {
+                randFlag1.DonnFlag(FlaggableLocations.Left),
+                randFlag2.DonnFlag(FlaggableLocations.Right)
+            };
+            
+            var correspondingFlagsHash = HankyCode.GetCorrespondingDonnedFlags(donnedFlags).ToHashSet<DonnedFlag>();
+            var expectedResults = new HashSet<DonnedFlag>()
+            {
+                randFlag1.DonnFlag(FlaggableLocations.Right),
+                randFlag2.DonnFlag(FlaggableLocations.Left)
+            };
+
+            Console.Write("\n\ncorresponding:");
+            PrintHashSet(correspondingFlagsHash);
+
+            Console.Write("\n\nexpected:");
+            PrintHashSet(expectedResults);
+
+            //Assert - The expected results hash and the corresponding flags
+            //hash should contain the same members
+            Assert.IsTrue(correspondingFlagsHash.SetEquals(expectedResults));
+        }
+
+        private void PrintHashSet(HashSet<DonnedFlag> flagSet)
+        {
+            foreach (var flag in flagSet)
+            {
+                Console.Write("\n"+flag.VisualDescription + "-" + flag.DonnedID);
+            }
+        }
+
+        /// <summary>
         /// Make sure donned flags is more than 1. 
         /// </summary>
         [TestMethod]
