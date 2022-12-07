@@ -13,6 +13,11 @@ namespace Hankies.Domain.HankyCode.Interpritation
         private Dictionary<string, Guid> FlagIDsByDescription { get; set; }
         private List<Guid> FlagKeys { get; set; }
 
+        /// <summary>
+        /// The total number of flags currently in this Hanky Code. 
+        /// </summary>
+        public int FlagCount => Flags.Count;
+
         public HankyCodeService()
 		{
             Flags = new Dictionary<Guid, BaseFlag>();

@@ -222,6 +222,23 @@ namespace Hankies.Domain.Tests.HankyCode
 			Assert.IsTrue(HankyCode.HasFlag(newFlag));
         }
 
+        /// <summary>
+        /// Should fail to add a duplicate flag to the hanky code.   
+        /// </summary>
+        [TestMethod]
+        public void FailToAddDuplicateFlagToHankyCode()
+        {
+            //Arrange - Get an exsisting flag from the hanky code.  
+            var duplicateFlag = HankyCode.GetRandomFlag();
+            var expectedCount = HankyCode.FlagCount;
+
+            //Atempt to re-add it. Should fail and not increase count. 
+            HankyCode.AddFlag(duplicateFlag);
+
+            //Assert - that HankyCode's Flag count did not increase. 
+            Assert.IsTrue(HankyCode.FlagCount == expectedCount);
+        }
+
         [TestMethod]
         /// <summary>
         /// Gets a flag by its ID from the Hanky Code
