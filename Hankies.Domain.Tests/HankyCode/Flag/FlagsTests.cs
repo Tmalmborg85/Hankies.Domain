@@ -57,8 +57,8 @@ namespace Hankies.Domain.Tests.HankyCode.Flag
         public void CanDonnFlag()
         {
             //Arrange
-            var lightBlueHanky = new CottonHanky(new SolidColor(ColorWheel.LightBlue),
-                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls));
+            var lightBlueHanky = new DoffedFlag(new CottonHanky(new SolidColor(ColorWheel.LightBlue),
+                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls)));
 
             var lightBlueHankyWornOnLeft = lightBlueHanky.DonnFlag(FlaggableLocations.Left);
 

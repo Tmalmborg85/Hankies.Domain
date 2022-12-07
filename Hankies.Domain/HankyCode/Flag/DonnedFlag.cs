@@ -17,38 +17,30 @@ namespace Hankies.Domain.HankyCode.Flag
 	 * that isnt a very solid argument so I'm going with maintaining a list of 
 	 * corresponding worn hankies. 
 	 * */
-	public class DonnedFlag : BaseFlag, IDonned
+	public class DonnedFlag : BaseFlag//, IDonned
     {
 
-        public Guid DonnedID { get; set; }
-        public FlaggableLocations Location { get; set; }
+        //public Guid DonnedID { get; set; }
+        public Guid DoffedID { get; private set; }
+        public FlaggableLocations Location { get; private set; }
+
+		private DoffedFlag doffed { get; set; }
 
         /// <summary>
         /// The <c>DonnedFlag</c> that explicitly corresponds to this hanky.
         /// </summary>
         //public Guid CorrespondingDonnedFlagID { get; set; }
 
-        public DonnedFlag(BaseFlag flag, FlaggableLocations location) : base(flag)
+        public DonnedFlag(DoffedFlag doffedFlag, FlaggableLocations location) :
+            base(doffedFlag.GenerateID(doffedFlag.VisualDescription + " worn on the " + location.ToString()), doffedFlag)
 		{
-			SetVisualDescription(BuildVisualDescription(flag.VisualDescription, location));
+            doffed = doffedFlag;
+            SetVisualDescription(doffedFlag.VisualDescription + " worn on the " + location.ToString());
             Location = location;
-
-            GenerateFlagIDs(flag.VisualDescription, location);
+            DoffedID = doffedFlag.ID;
         }
 
-        private string BuildVisualDescription(string flagDescription, FlaggableLocations location)
-        {
-            return flagDescription + " worn on the " + location.ToString();
-        }
-
-        private void GenerateFlagIDs(string description, FlaggableLocations location)
-        {
-            var matchingFlagVisualDescription = BuildVisualDescription(description, GetOppositeLocation(location));
-
-            DonnedID = GenerateID(VisualDescription);
-            //CorrespondingDonnedFlagID = GenerateID(matchingFlagVisualDescription.ToUpperFirstLetter());
-
-        }
+        public DoffedFlag DoffFlag() => doffed;
     }
 }
 

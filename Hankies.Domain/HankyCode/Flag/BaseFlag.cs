@@ -24,8 +24,19 @@ namespace Hankies.Domain.HankyCode.Flag
         {
             id = baseFlag.ID;
             Trait = baseFlag.Trait;
+            SetVisualDescription(baseFlag.VisualDescription);
+        }
 
+        public BaseFlag(Guid flagID, AssociatedTrait trait)
+        {
+            id = flagID;
+            Trait = trait;
+        }
 
+        public BaseFlag(Guid flagID, BaseFlag baseFlag)
+        {
+            id = flagID;
+            Trait = baseFlag.Trait;
         }
 
         /// <summary>
@@ -95,23 +106,6 @@ namespace Hankies.Domain.HankyCode.Flag
         //flag needs someway to define matching rules??? well, only one flag breaks the standard match rules
 
         /// <summary>
-        /// Create a donned flag from this flag. 
-        /// </summary>
-        /// <param name="location">The side the flag is going to be worn on</param>
-        /// <returns>A <c>DonnedFlag</c> or Null if an error happens.</returns>
-        public DonnedFlag DonnFlag(FlaggableLocations location)
-        {
-            try
-            {
-                return new DonnedFlag(this, location);
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
         /// Flags are equal to eachother if they have the same ID. ID is
         /// generated from visual appearance, whitch must be unique. 
         /// </summary>
@@ -128,6 +122,11 @@ namespace Hankies.Domain.HankyCode.Flag
             {
                 return false;
             }
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ID, VisualDescription);
         }
 
         public static bool operator ==(BaseFlag left, BaseFlag right)

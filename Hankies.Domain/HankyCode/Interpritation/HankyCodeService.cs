@@ -7,7 +7,8 @@ namespace Hankies.Domain.HankyCode.Interpritation
 {
 	public class HankyCodeService
 	{
-		private Dictionary<Guid, BaseFlag> Flags { get; set; }
+		private Dictionary<Guid, DoffedFlag> DoffedFlags { get; set; }
+        private Dictionary<Guid, DonnedFlag> DonnedFlags { get; set; }
         private Dictionary<Guid, DonnedFlag> DonnedLeftFlags { get; set; }
         private Dictionary<Guid, DonnedFlag> DonnedRightFlags { get; set; }
         private Dictionary<string, Guid> FlagIDsByDescription { get; set; }
@@ -16,11 +17,12 @@ namespace Hankies.Domain.HankyCode.Interpritation
         /// <summary>
         /// The total number of flags currently in this Hanky Code. 
         /// </summary>
-        public int FlagCount => Flags.Count;
+        public int FlagCount => DoffedFlags.Count;
 
         public HankyCodeService()
 		{
-            Flags = new Dictionary<Guid, BaseFlag>();
+            DoffedFlags = new Dictionary<Guid, DoffedFlag>();
+            DonnedFlags = new Dictionary<Guid, DonnedFlag>();
             DonnedLeftFlags = new Dictionary<Guid, DonnedFlag>();
             DonnedRightFlags = new Dictionary<Guid, DonnedFlag>();
             FlagIDsByDescription = new Dictionary<string, Guid>();
@@ -31,15 +33,24 @@ namespace Hankies.Domain.HankyCode.Interpritation
 		/// Adds a new flag to the Hanky Code Flag Library if that flag does not already exsist. 
 		/// </summary>
 		/// <param name="newFlag"></param>
-        public void AddFlag(BaseFlag newFlag)
+        public void AddFlag(DoffedFlag newFlag)
         {
-            if (!HasFlag(newFlag))
+            
+            if (!HasFlag(newFlag.ID))
 			{
-				Flags.Add(newFlag.ID, newFlag);
-                DonnedLeftFlags.Add(newFlag.ID, newFlag.DonnFlag(FlaggableLocations.Left));
-                DonnedRightFlags.Add(newFlag.ID, newFlag.DonnFlag(FlaggableLocations.Right));
+                Console.WriteLine("\nAdding flag to code ID: " + newFlag.ID);
+                DoffedFlags.Add(newFlag.ID, newFlag);
+
+                var donnedLeftFlag = newFlag.DonnFlag(FlaggableLocations.Left);
+                var donnedRightFlag = newFlag.DonnFlag(FlaggableLocations.Right);
+                DonnedFlags.Add(donnedLeftFlag.ID, donnedLeftFlag);
+                DonnedFlags.Add(donnedRightFlag.ID, donnedRightFlag);
+                DonnedLeftFlags.Add(newFlag.ID, donnedLeftFlag);
+                DonnedRightFlags.Add(newFlag.ID, donnedRightFlag);
+
                 FlagIDsByDescription.Add(newFlag.VisualDescription, newFlag.ID);
                 FlagKeys.Add(newFlag.ID);
+                Console.WriteLine("\nAdded flag(s)");
             }
         }
 
@@ -50,12 +61,12 @@ namespace Hankies.Domain.HankyCode.Interpritation
         /// <returns>True if the flag is in the library and false if it is not. </returns>
         public bool HasFlag(BaseFlag flag)
 		{
-			return Flags.ContainsKey(flag.ID);
+			return DoffedFlags.ContainsKey(flag.ID);
 		}
 
         public bool HasFlag(Guid flagID)
         {
-            return Flags.ContainsKey(flagID);
+            return DoffedFlags.ContainsKey(flagID);
         }
 
         public bool HasFlag(string flagDescription)
@@ -63,11 +74,11 @@ namespace Hankies.Domain.HankyCode.Interpritation
             return FlagIDsByDescription.ContainsKey(flagDescription);
         }
 
-        public BaseFlag GetRandomFlag()
+        public DoffedFlag GetRandomDoffedFlag()
         {
             var randIndex = new Random().Next(FlagKeys.Count);
             var randKey = FlagKeys[randIndex];
-            return Flags[randKey];
+            return DoffedFlags[randKey];
         }
 
         /// <summary>
@@ -75,15 +86,15 @@ namespace Hankies.Domain.HankyCode.Interpritation
         /// </summary>
         /// <param name="iD">a valid GUID ID</param>
         /// <returns>The flag or <c>Null</c></returns>
-        public BaseFlag GetFlagByID(Guid iD)
+        public DoffedFlag GetFlagByID(Guid iD)
         {
-            if (Flags.ContainsKey(iD))
-                return Flags[iD];
+            if (DoffedFlags.ContainsKey(iD))
+                return DoffedFlags[iD];
 
             return null;
         }
 
-        public BaseFlag GetFlagByVisualDescription(string visualDescription)
+        public DoffedFlag GetFlagByVisualDescription(string visualDescription)
         {
             if (FlagIDsByDescription.ContainsKey(visualDescription))
             {
@@ -154,13 +165,22 @@ namespace Hankies.Domain.HankyCode.Interpritation
         /// position.</returns>
         public DonnedFlag GetOppositeDonnedFlag(DonnedFlag donnedFlag)
         {
-            if (donnedFlag.Location == FlaggableLocations.Left)
+            try
             {
-                return DonnedRightFlags[donnedFlag.ID];
-            } else if (donnedFlag.Location == FlaggableLocations.Right)
-            {
-                return DonnedLeftFlags[donnedFlag.ID];
-            } else
+                if (donnedFlag.Location == FlaggableLocations.Left)
+                {
+                    return DonnedRightFlags[donnedFlag.DoffedID];
+                }
+                else if (donnedFlag.Location == FlaggableLocations.Right)
+                {
+                    return DonnedLeftFlags[donnedFlag.DoffedID];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
             {
                 return null;
             }
@@ -188,6 +208,38 @@ namespace Hankies.Domain.HankyCode.Interpritation
             HashSet<DonnedFlag> hSet = new HashSet<DonnedFlag>(DonnedLeftFlags.Values);
             hSet.UnionWith(DonnedRightFlags.Values);
             return hSet.ToList();
+        }
+
+        /// <summary>
+        /// Get a donned flag by its doffedID and location. Checks both left and right hash sets.
+        /// </summary>
+        /// <param name="doffedID">The GUID of the doffed flag</param>
+        /// <returns>A DonnedFlag. Can return null</returns>
+        public DonnedFlag GetDonnedFlagByDoffedID(Guid doffedID, FlaggableLocations locations)
+        {
+            try
+            {
+                if (locations == FlaggableLocations.Left)
+                {
+                    return DonnedLeftFlags[doffedID];
+                }
+                else
+                {
+                    return DonnedRightFlags[doffedID];
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public DonnedFlag GetDonnedFlagByID(Guid iD)
+        {
+            if (DonnedFlags.ContainsKey(iD))
+                return DonnedFlags[iD];
+
+            return null;
         }
     }
 }

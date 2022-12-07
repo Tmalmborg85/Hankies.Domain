@@ -14,32 +14,32 @@ namespace Hankies.Domain.Tests.HankyCode.Flag
 		}
 
 		[TestMethod]
-        public void DonnFlagHasBaseFlagID()
+        public void DonnFlagHasDoffedFlagID()
         {
             //Arrange - Create a hanky and donn it. 
-            var lightBlueHanky = new CottonHanky(new SolidColor(ColorWheel.LightBlue),
-                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls));
+            var lightBlueHanky = new DoffedFlag(new CottonHanky(new SolidColor(ColorWheel.LightBlue),
+                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls)));
 
             var lightBlueHankyWornOnLeft = lightBlueHanky.DonnFlag(FlaggableLocations.Left);
 
             //Assert - The IDs are the same
-            Assert.IsTrue(lightBlueHankyWornOnLeft.ID == lightBlueHanky.ID);
+            Assert.IsTrue(lightBlueHankyWornOnLeft.DoffedID == lightBlueHanky.ID);
         }
 
         [TestMethod]
-        public void DonnedFlagHasDonnedID()
+        public void DonnedFlagHasIDandDoffedID()
         {
             //Arrange - Create a hanky and donn it. 
-            var lightBlueHanky = new CottonHanky(new SolidColor(ColorWheel.LightBlue),
-                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls));
+            var lightBlueHanky = new DoffedFlag(new CottonHanky(new SolidColor(ColorWheel.LightBlue),
+                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls)));
 
             var lightBlueHankyWornOnLeft = lightBlueHanky.DonnFlag(FlaggableLocations.Left);
 
-            Console.Write("DonnedID: " + lightBlueHankyWornOnLeft.DonnedID.ToString());
+            Console.Write("ID: " + lightBlueHankyWornOnLeft.ID.ToString());
 
             //Assert - Donned ID is not null or empty. 
-            Assert.IsTrue(lightBlueHankyWornOnLeft.DonnedID != null);
-            Assert.IsTrue(lightBlueHankyWornOnLeft.DonnedID != Guid.Empty);
+            Assert.IsTrue(lightBlueHankyWornOnLeft.ID != null);
+            Assert.IsTrue(lightBlueHankyWornOnLeft.ID != Guid.Empty);
         }
 
         //[TestMethod]
@@ -64,8 +64,8 @@ namespace Hankies.Domain.Tests.HankyCode.Flag
         public void CorrectlyBuildsVisualDescription()
         {
             //Arrange - Create a hanky and donn it. 
-            var lightBlueHanky = new CottonHanky(new SolidColor(ColorWheel.LightBlue),
-                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls));
+            var lightBlueHanky = new DoffedFlag(new CottonHanky(new SolidColor(ColorWheel.LightBlue),
+                    new AssociatedTrait("Oral sex", Rolls.TopBottomRolls)));
 
             var lightBlueHankyWornOnLeft = lightBlueHanky.DonnFlag(FlaggableLocations.Left);
 
