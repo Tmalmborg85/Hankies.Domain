@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Hankies.Domain.HankyCode.Flag;
 
@@ -15,6 +16,8 @@ namespace Hankies.Domain.HankyCode.Interpritation
         private Dictionary<string, Guid> FlagIDsByDescription { get; set; }
         private List<Guid> FlagKeys { get; set; }
 
+        public Decimal HankyCodeVersion { get; private set; }
+
         /// <summary>
         /// The total number of flags currently in this Hanky Code. 
         /// </summary>
@@ -22,6 +25,7 @@ namespace Hankies.Domain.HankyCode.Interpritation
 
         public HankyCodeService()
 		{
+            HankyCodeVersion = 0;
             RecomendedFlags = new Dictionary<Guid, RecomendedFlag>();
             DoffedFlags = new Dictionary<Guid, DoffedFlag>();
             DonnedFlags = new Dictionary<Guid, DonnedFlag>();
@@ -264,6 +268,29 @@ namespace Hankies.Domain.HankyCode.Interpritation
         public List<RecomendedFlag> GetRecomendedFlags()
         {
             return RecomendedFlags.Values.ToList();
+        }
+
+        public HankyCodeModel ToHankyCodeModel()
+        {
+            return new HankyCodeModel()
+            {
+                Flags = DoffedFlags.ToDictionary(x => x.Key, x => x.Value as BaseFlag),
+                //RecomendedFlags = this.RecomendedFlags,
+                Version = HankyCodeVersion
+            };
+        }
+
+        public void SaveHankyCode(string fileName = "HankyCode.JSON")
+        {
+            try
+            {
+                var hankyCodeString = ToHankyCodeModel().ToJSON();
+                File.WriteAllText(fileName, hankyCodeString);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

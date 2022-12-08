@@ -243,6 +243,31 @@ namespace Hankies.Domain.Tests.HankyCode
         //}
 
         [TestMethod]
+        public void LoadHankyCodeFromJSONFile()
+        {
+            Assert.Fail();
+        }
+
+        /// <summary>
+        /// Build a HankyCodeModel from the service, increase the version to
+        /// similate the save, then convert to JSON. Save the hanky code and
+        /// make sure the JSONS are the same. 
+        /// </summary>
+        [TestMethod]
+        public void SaveHankyCodeToJSONFile()
+        {
+            var hankyModel = HankyCode.ToHankyCodeModel();
+            hankyModel.Version++;
+            var expectedHankyCodeJSON = hankyModel.ToJSON();
+
+            HankyCode.SaveHankyCode("HankyCode_TESTING.JSON");
+
+            var hankyCodeJSON = HankyCode.ToHankyCodeModel().ToJSON();
+
+            Assert.IsTrue(hankyCodeJSON == expectedHankyCodeJSON);
+        }
+
+        [TestMethod]
         public void RecomendNewFlagToHankyCode()
         {
             //Arrange -create a new doffed flag and recomend it to the code.
@@ -283,19 +308,19 @@ namespace Hankies.Domain.Tests.HankyCode
         [TestMethod]
         public void ApprovingRecomendedFlagAddsFlagToDoffed()
         {
-
+            Assert.Fail();
         }
 
         [TestMethod]
         public void ApprovingMissingRecomendedFlagDoesNothing()
         {
-
+            Assert.Fail();
         }
 
         [TestMethod]
         public void ApprovingRecomendedFlagRemovesFlagFromRecomended()
         {
-
+            Assert.Fail();
         }
 
         [TestMethod]
