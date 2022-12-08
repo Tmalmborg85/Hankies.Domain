@@ -22,6 +22,7 @@ namespace Hankies.Domain.HankyCode.Interpritation
 
         public HankyCodeService()
 		{
+            RecomendedFlags = new Dictionary<Guid, RecomendedFlag>();
             DoffedFlags = new Dictionary<Guid, DoffedFlag>();
             DonnedFlags = new Dictionary<Guid, DonnedFlag>();
             DonnedLeftFlags = new Dictionary<Guid, DonnedFlag>();

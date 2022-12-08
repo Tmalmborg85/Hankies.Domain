@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Hankies.Domain.HankyCode.Appearance;
 using Hankies.Domain.HankyCode.Fetish;
@@ -208,37 +209,93 @@ namespace Hankies.Domain.Tests.HankyCode
         /// <summary>
         /// Add a new undonned(not worn) flag to the HankyCode.  
         /// </summary>
-        [TestMethod]
-        public void AddNewFlagToHankyCode()
-		{
-            //Arrange
-            //create a new flag with appearance
-            var newFlag = new DoffedFlag(new CottonHanky(
-                new SolidColor(ColorWheel.RobinEggBlue),
-                new AssociatedTrait("69", Rolls.IntoNotIntoRolls, "Mutual oral sex")));
-                
-            //add the flag to the hanky code.
-            HankyCode.AddFlag(newFlag);
+        //      [TestMethod]
+        //      public void AddNewFlagToHankyCode()
+        //{
+        //          //Arrange
+        //          //create a new flag with appearance
+        //          var newFlag = new DoffedFlag(new CottonHanky(
+        //              new SolidColor(ColorWheel.RobinEggBlue),
+        //              new AssociatedTrait("69", Rolls.IntoNotIntoRolls, "Mutual oral sex")));
 
-			//Assert
-			Assert.IsTrue(HankyCode.HasFlag(newFlag));
-        }
+        //          //add the flag to the hanky code.
+        //          HankyCode.AddFlag(newFlag);
+
+        //	//Assert
+        //	Assert.IsTrue(HankyCode.HasFlag(newFlag));
+        //      }
 
         /// <summary>
         /// Should fail to add a duplicate flag to the hanky code.   
         /// </summary>
+        //[TestMethod]
+        //public void FailToAddDuplicateFlagToHankyCode()
+        //{
+        //    //Arrange - Get an exsisting flag from the hanky code.  
+        //    var duplicateFlag = HankyCode.GetRandomDoffedFlag();
+        //    var expectedCount = HankyCode.FlagCount;
+
+        //    //Atempt to re-add it. Should fail and not increase count. 
+        //    HankyCode.AddFlag(duplicateFlag);
+
+        //    //Assert - that HankyCode's Flag count did not increase. 
+        //    Assert.IsTrue(HankyCode.FlagCount == expectedCount);
+        //}
+
         [TestMethod]
-        public void FailToAddDuplicateFlagToHankyCode()
+        public void RecomendNewFlagToHankyCode()
         {
-            //Arrange - Get an exsisting flag from the hanky code.  
-            var duplicateFlag = HankyCode.GetRandomDoffedFlag();
-            var expectedCount = HankyCode.FlagCount;
+            //Arrange -create a new doffed flag and recomend it to the code.
+            var newFlag = new RecomendedFlag(new CottonHanky(
+                new SolidColor(ColorWheel.RobinEggBlue),
+                new AssociatedTrait("69", Rolls.IntoNotIntoRolls, "Mutual oral sex")));
 
-            //Atempt to re-add it. Should fail and not increase count. 
-            HankyCode.AddFlag(duplicateFlag);
+            HankyCode.RecomendNewFlagToHankyCode(newFlag);
+            var recomededFlags = HankyCode.GetRecomendedFlags().ToHashSet<RecomendedFlag>();
 
-            //Assert - that HankyCode's Flag count did not increase. 
-            Assert.IsTrue(HankyCode.FlagCount == expectedCount);
+            //Assert - recomended flag must contain the new flag
+            Assert.IsTrue(recomededFlags.Contains(newFlag));
+        }
+
+        /// <summary>
+        /// create a new recomended flag and recomend it to the code. Get the
+        /// count of recomended flags, that is the expected result. Then
+        /// recomend the flag again. the count of recomended flags should not increase
+        /// </summary>
+        [TestMethod]
+        public void CantRecomendDuplicateOrExsistingFlagToHankyCode()
+        {
+            var newFlag = new RecomendedFlag(new CottonHanky(
+                new SolidColor(ColorWheel.RobinEggBlue),
+                new AssociatedTrait("69", Rolls.IntoNotIntoRolls, "Mutual oral sex")));
+            var duplicateNewFlag = newFlag;
+            var exsistingFlag = new RecomendedFlag(HankyCode.GetRandomDoffedFlag());
+
+            HankyCode.RecomendNewFlagToHankyCode(newFlag);
+            var expectedCount = HankyCode.GetRecomendedFlags().Count;
+            HankyCode.RecomendNewFlagToHankyCode(duplicateNewFlag);
+            HankyCode.RecomendNewFlagToHankyCode(exsistingFlag);
+            var actualCount = HankyCode.GetRecomendedFlags().Count;
+
+            Assert.IsTrue(actualCount == expectedCount);
+        }
+
+        [TestMethod]
+        public void ApprovingRecomendedFlagAddsFlagToDoffed()
+        {
+
+        }
+
+        [TestMethod]
+        public void ApprovingMissingRecomendedFlagDoesNothing()
+        {
+
+        }
+
+        [TestMethod]
+        public void ApprovingRecomendedFlagRemovesFlagFromRecomended()
+        {
+
         }
 
         [TestMethod]

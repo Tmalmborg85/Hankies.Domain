@@ -1,9 +1,12 @@
 ﻿using System;
 namespace Hankies.Domain.HankyCode.Flag
 {
-	public class RecomendedFlag
+	public class RecomendedFlag : BaseFlag
 	{
-		public RecomendedFlag()
+		//this seems stupid
+		public bool Approved { get; set; }
+
+		public RecomendedFlag(BaseFlag flag) : base(flag)
 		{
 		}
 	}
