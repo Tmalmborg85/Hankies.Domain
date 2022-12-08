@@ -7,7 +7,8 @@ namespace Hankies.Domain.HankyCode.Interpritation
 {
 	public class HankyCodeService
 	{
-		private Dictionary<Guid, DoffedFlag> DoffedFlags { get; set; }
+        private Dictionary<Guid, RecomendedFlag> RecomendedFlags { get; set; }
+        private Dictionary<Guid, DoffedFlag> DoffedFlags { get; set; }
         private Dictionary<Guid, DonnedFlag> DonnedFlags { get; set; }
         private Dictionary<Guid, DonnedFlag> DonnedLeftFlags { get; set; }
         private Dictionary<Guid, DonnedFlag> DonnedRightFlags { get; set; }
@@ -240,6 +241,28 @@ namespace Hankies.Domain.HankyCode.Interpritation
                 return DonnedFlags[iD];
 
             return null;
+        }
+
+        /// <summary>
+        /// Recomend a new flag to the Hanky Code that is not already in the
+        /// code or has been recomended. 
+        /// </summary>
+        /// <param name="newFlag">The new flag to be recomended. Its ID is what
+        /// determines if its already in use.</param>
+        public void RecomendNewFlagToHankyCode(RecomendedFlag newFlag)
+        {
+            if (!RecomendedFlags.ContainsKey(newFlag.ID) &&
+                !DoffedFlags.ContainsKey(newFlag.ID))
+                RecomendedFlags.Add(newFlag.ID, newFlag);
+        }
+
+        /// <summary>
+        /// Gets all the recomended flags.
+        /// </summary>
+        /// <returns>A list of recomended flags</returns>
+        public List<RecomendedFlag> GetRecomendedFlags()
+        {
+            return RecomendedFlags.Values.ToList();
         }
     }
 }
