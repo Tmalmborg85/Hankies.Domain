@@ -37,10 +37,10 @@ namespace Hankies.Domain.HankyCode.Fetish
             History = history;
         }
 
-        public string Name { get; }
-        public string Definition { get; }
+        public string Name { get; set; }
+        public string Definition { get; set; }
         public string History { get; }
-        public List<FlaggedRoll> Rolls { get; }
+        public List<FlaggedRoll> Rolls { get; set; }
     }
 }
 

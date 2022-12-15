@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Security.Cryptography.X509Certificates;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using System.Reflection;
+using System.IO;
 
 namespace Hankies.Domain.HankyCode.Interpritation
 {
@@ -15,33 +17,30 @@ namespace Hankies.Domain.HankyCode.Interpritation
 	{
 		public Decimal Version { get; set; }
 
-        [JsonConverter(typeof(DictionaryGUIDConverter))]
-        public Dictionary<Guid, BaseFlag> Flags { get; set; }
+        public List<FlagJSONModel> Flags { get; set; }
 
-        [JsonConverter(typeof(DictionaryGUIDConverter))]
-        public Dictionary<Guid, RecomendedFlag> RecomendedFlags { get; set; }
-        
+        //[JsonConverter(typeof(DictionaryGUIDConverter))]
+        //public Dictionary<Guid, RecomendedFlag> RecomendedFlags { get; set; }
 
-		public HankyCodeModel()
+
+
+        public HankyCodeModel()
 		{
-            Version = 0;
-            RecomendedFlags = new Dictionary<Guid, RecomendedFlag>();
-            Flags = new Dictionary<Guid, BaseFlag>();
+           Version = 0;
+           //// RecomendedFlags = new Dictionary<Guid, RecomendedFlag>();
+           Flags = new List<FlagJSONModel>();
         }
-	}
 
-    public static class HankyCodeModelExtensions
-    {
-        public static string ToJSON(this HankyCodeModel model)
+        //maybe this should be in some kind of file manager service?
+        public static HankyCodeModel LoadHankyCodeModel(string fileName = "HankyCode.JSON")
         {
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            };
-
-            //return JsonSerializer.Serialize(model, options);
-            return JsonSerializer.Serialize(model);
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                fileName);
+            var hankyCodeJSON = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<HankyCodeModel>(hankyCodeJSON);
         }
+
+
     }
 }
 

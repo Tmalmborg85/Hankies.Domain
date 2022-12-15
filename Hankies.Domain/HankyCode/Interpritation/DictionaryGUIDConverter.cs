@@ -7,20 +7,20 @@ using Hankies.Domain.HankyCode.Flag;
 
 namespace Hankies.Domain.HankyCode.Interpritation
 {
-	public class DictionaryGUIDConverter : JsonConverter<Dictionary<Guid, object>>
+	public class DictionaryGUIDConverter : JsonConverter<Dictionary<Guid, BaseFlag>>
     {
         public DictionaryGUIDConverter()
 		{
 		}
 
-        public override Dictionary<Guid, object> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override Dictionary<Guid, BaseFlag> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
             {
                 throw new JsonException($"JsonTokenType was of type {reader.TokenType}, only objects are supported");
             }
 
-            var dictionary = new Dictionary<Guid, object>();
+            var dictionary = new Dictionary<Guid, BaseFlag>();
             while (reader.Read())
             {
                 if (reader.TokenType == JsonTokenType.EndObject)
@@ -41,15 +41,18 @@ namespace Hankies.Domain.HankyCode.Interpritation
                 }
 
                 reader.Read();
+
+                string itemValue = reader.GetString();
+
                 Guid key;
                 Guid.TryParse(propertyName, out key);
-                dictionary.Add(key, ExtractValue(ref reader, options));
+                //dictionary.Add(key, itemValue);
             }
 
             return dictionary;
         }
 
-        public override void Write(Utf8JsonWriter writer, Dictionary<Guid, object> dictionary, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, Dictionary<Guid, BaseFlag> dictionary, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
 
@@ -62,41 +65,7 @@ namespace Hankies.Domain.HankyCode.Interpritation
             writer.WriteEndObject();
         }
 
-        private object ExtractValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
-        {
-            switch (reader.TokenType)
-            {
-                case JsonTokenType.String:
-                    if (reader.TryGetDateTime(out var date))
-                    {
-                        return date;
-                    }
-                    return reader.GetString();
-                case JsonTokenType.False:
-                    return false;
-                case JsonTokenType.True:
-                    return true;
-                case JsonTokenType.Null:
-                    return null;
-                case JsonTokenType.Number:
-                    if (reader.TryGetInt64(out var result))
-                    {
-                        return result;
-                    }
-                    return reader.GetDecimal();
-                case JsonTokenType.StartObject:
-                    return Read(ref reader, null, options);
-                case JsonTokenType.StartArray:
-                    var list = new List<object>();
-                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
-                    {
-                        list.Add(ExtractValue(ref reader, options));
-                    }
-                    return list;
-                default:
-                    throw new JsonException($"'{reader.TokenType}' is not supported");
-            }
-        }
+ 
     }
 }
 

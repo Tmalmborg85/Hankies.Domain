@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Text.Json;
 using Hankies.Domain.HankyCode.Flag;
 
 namespace Hankies.Domain.HankyCode.Interpritation
@@ -272,26 +274,39 @@ namespace Hankies.Domain.HankyCode.Interpritation
 
         public HankyCodeModel ToHankyCodeModel()
         {
+            var flagModels = new List<FlagJSONModel>();
+            foreach (var flag in DoffedFlags.Values)
+            {
+                flagModels.Add(flag.ToModel());
+            }
+            Console.WriteLine("Model Flags - " + flagModels.Count);
+
             return new HankyCodeModel()
             {
-                Flags = DoffedFlags.ToDictionary(x => x.Key, x => x.Value as BaseFlag),
+                Flags = flagModels,
                 //RecomendedFlags = this.RecomendedFlags,
                 Version = HankyCodeVersion
             };
         }
 
+        
+
         public void SaveHankyCode(string fileName = "HankyCode.JSON")
         {
-            try
-            {
-                var hankyCodeString = ToHankyCodeModel().ToJSON();
-                File.WriteAllText(fileName, hankyCodeString);
-            }
-            catch (Exception ex)
-            {
+            HankyCodeVersion++;
+                var hankyCodeModel = ToHankyCodeModel();
+                Console.WriteLine("Created Hanky Model");
 
-            }
+                var hankyCodeString = hankyCodeModel.ToJSON();
+            Console.WriteLine("\nHanky Code JSON:\n\n" + hankyCodeString +"\n");
+
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                fileName);
+            File.WriteAllText(path, hankyCodeString);
+
         }
+
+
     }
 }
 

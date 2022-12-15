@@ -99,7 +99,7 @@ namespace Hankies.Domain.HankyCode.Flag
         /// </summary>
         public Guid ID => id;
 
-        public AssociatedTrait Trait { get;}
+        public AssociatedTrait Trait { get; private set; }
 
         public string VisualDescription { get; private set; }
 
